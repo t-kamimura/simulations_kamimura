@@ -1,6 +1,6 @@
 % fileName: symbolic_flight.m
 % initDate: 20200616
-% Object:   2脚ロボットの運動方程式を導く(flight phase)
+% Object:   2脚ロボットの運動方程式を導く(flight phase)aaa
 
 %% initial settings
 clear
