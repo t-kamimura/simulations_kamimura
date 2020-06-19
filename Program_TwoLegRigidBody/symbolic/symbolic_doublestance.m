@@ -12,7 +12,7 @@ close all
 syms m J kh kf xf_toe xh_toe gamma_h_td gamma_f_td% x*_toe :足先位置
 syms l l0
 syms g
-param = [m J kh kf x_ini gamma_h_td gamma_f_td l l0 g]
+param = [m J kh kf xf_toe xh_toe gamma_h_td gamma_f_td l l0 g]
 
 % state variables
 syms x y theta
