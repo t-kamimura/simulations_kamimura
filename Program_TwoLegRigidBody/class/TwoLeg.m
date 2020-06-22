@@ -116,17 +116,12 @@ classdef TwoLeg < handle
             self.gb = u_inital(1);
             self.gf = u_inital(2);
 
-            % エネルギーの計算
-            y_ini = q_initial(2);
-            dx_ini = q_initial(4);
-            dy_ini = q_initial(5);
-            dth_ini = q_initial(6);
-
             qe = self.q_ini;
             self.lb = self.l3;
             self.lf = self.l4;
 
             % 初期値おかしかったとき
+            y_ini = q_initial(2);
             if y_ini < 0
                 self.eveflg = 22;
             end
