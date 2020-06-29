@@ -27,9 +27,9 @@ model = TwoLeg;
 x_ini = 0;
 y_ini = 0.58;
 theta_ini = 0;
-dx_ini = 2.0;
+dx_ini = 3.0;
 dy_ini = 0;
-dtheta_ini = 3.0;
+dtheta_ini = 0;
 gb_ini = pi / 8;
 gf_ini = pi / 8;
 
