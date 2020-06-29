@@ -12,6 +12,6 @@ function [value, isterminal, direction] = events5(y, model)
 
     value = [dyg; hind_toeHight; fore_toeHight; yg];
     isterminal = [1; 1; 1; 1];
-    direction = [0; -1; -1; 0];
+    direction = [-1; -1; -1; 0];
 
 end
