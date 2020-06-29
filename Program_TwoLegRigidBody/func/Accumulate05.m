@@ -10,6 +10,7 @@ elseif ie(1) == 1
     model.eveflg = 1;
 else
 %     disp('error @phase5')
+%     ie
     model.eveflg = 30;
 end
 

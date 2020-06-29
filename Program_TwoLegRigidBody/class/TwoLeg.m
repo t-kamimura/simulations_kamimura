@@ -27,21 +27,21 @@ classdef TwoLeg < handle
         I = 0.36 * 8; %後胴体の慣性モーメント
 
         % 質量m [kg]
-        m = 10.432 * 2;
+        m = 20.865;
 
         % ばね定数k_leg [N / m]
-        kb = 6341; %後脚のバネ定数
-        kf = 6341; %前脚のバネ定数
+        kb = 6340; %後脚のバネ定数
+        kf = 6340; %前脚のバネ定数
 
         % 減衰定数 [Ns / m]
         c = 0;
 
         %  胴体の長さL[m](脚の付根から重心まで)
-        L = 0.138 * 2;
+        L = 0.552/2;
 
         % 足のばねの自然帳l_0[m]
-        l3 = 0.36; %後脚の長さ
-        l4 = 0.36; %前脚の長さ
+        l3 = 0.323; %後脚の長さ
+        l4 = 0.323; %前脚の長さ
 
         % 重力加速度 [m/s^2]
         g = 9.8;
@@ -83,9 +83,9 @@ classdef TwoLeg < handle
         % ode45　のリトライ回数？？
         refine = 4;
         % 相対誤差
-        relval = 1e-12; %(この値でないと同時接地を見抜けない)
+        relval = 1e-6; %(この値でないと同時接地を見抜けない)
         % 絶対誤差
-        absval = 1e-12;
+        absval = 1e-6;
         % シミュレーション最大時間(ｓ)
         tfinal = 10;
     end
@@ -117,17 +117,12 @@ classdef TwoLeg < handle
             self.gb = u_inital(1);
             self.gf = u_inital(2);
 
-            % エネルギーの計算
-            y_ini = q_initial(2);
-            dx_ini = q_initial(4);
-            dy_ini = q_initial(5);
-            dth_ini = q_initial(6);
-
             qe = self.q_ini;
             self.lb = self.l3;
             self.lf = self.l4;
 
             % 初期値おかしかったとき
+            y_ini = q_initial(2);
             if y_ini < 0
                 self.eveflg = 22;
             end
@@ -143,7 +138,7 @@ classdef TwoLeg < handle
 
                 if self.eveflg > 9
                     % eveflgが大きい値をとったとき，ちゃんとイベント起こっていない．これ以上計算しても無駄なのでやめる．
-                    disp('detect error. Cannot continue. BREAK.')
+                    % disp('fall down')
                     break
                 end
 
@@ -194,7 +189,7 @@ classdef TwoLeg < handle
                             self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 3)) + self.lout(end, 2) * sin(self.gout(end, 2));
                         end
 
-                    case 2% Hind leg stance
+                    case 2 % Hind leg stance
                         eve2 = @(t, q) events2(q, self); %イベント関数を定義．ゼロになる変数と方向を指定．
                         ode2 = @(t, q) f2(q, self); %odeで解く微分方程式を定義．
                         options2 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve2, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
@@ -220,7 +215,7 @@ classdef TwoLeg < handle
                             liftOffFlag.hind = true;
                         end
 
-                    case 3% Double leg stance
+                    case 3 % Double leg stance
                         eve3 = @(t, q) events3(q, self); %イベント関数を定義．ゼロになる変数と方向を指定．
                         ode3 = @(t, q) f3(q, self); %odeで解く微分方程式を定義．
                         options3 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve3, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
@@ -279,14 +274,14 @@ classdef TwoLeg < handle
                 % 結果を保存とeveflg書き換え．
                 [self] = Accumulate05(t, q, te, qe, ie, self);
             else
-                disp('not entered to flight @phase5')
-                disp(['eveflg = ', num2str(self.eveflg)])
+                % disp('not entered to flight @phase5')
+                % disp(['eveflg = ', num2str(self.eveflg)])
             end
 
             % 最終処理　apex heightに戻ってきたか否かでやることが変わる
             if self.eveflg == 1
                 % reached apex height
-                disp('reached apex height')
+                % disp('reached apex height')
                 % 誤差の計算
                 x0 = self.q_ini(1);
                 y0 = self.q_ini(2);
@@ -317,7 +312,7 @@ classdef TwoLeg < handle
                 self.E = T1 + T2 + V;
 
             else
-                disp('gone away')
+                % disp('gone away')
                 % 誤差の計算
                 x0 = self.q_ini(1);
                 y0 = self.q_ini(2);

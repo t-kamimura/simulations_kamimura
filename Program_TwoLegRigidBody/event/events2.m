@@ -4,7 +4,7 @@ function [value, isterminal, direction] = events2(y, model)
     yg = y(2);
     theta = y(3);
 
-    fore_toeHight = yg + model.L .* sin(theta) - model.lf * cos(model.gf);
+    fore_toeHight = yg + model.L .* sin(theta) - model.l4 * cos(model.gf);
 
     HipB = [xg - model.L .* cos(theta); yg - model.L .* sin(theta)];
     lb_x = model.xb_toe - HipB(1);
