@@ -25,13 +25,15 @@ addpath(pwd, 'fig')
 model = TwoLeg;
 
 x_ini = 0;
-y_ini = 0.35;
+y_ini = 0.324;
 theta_ini = 0;
-dx_ini = 3.0;
+dx_ini = 1.39;
 dy_ini = 0;
-dtheta_ini = 0;
-gb_ini = pi / 8;
-gf_ini = pi / 8;
+dtheta_ini = deg2rad(145.9);
+% gb_ini = 0*pi / 8;
+% gf_ini = 0*pi / 8;
+gb_ini = deg2rad(16);
+gf_ini = deg2rad(14);
 
 q_ini = [x_ini y_ini theta_ini dx_ini dy_ini dtheta_ini];
 u_ini = [gb_ini gf_ini];
@@ -40,4 +42,4 @@ model.init
 model.bound(q_ini, u_ini)
 
 model.plot(saveflag)
-model.anime(0.1, false);
+model.anime(0.1, true);
