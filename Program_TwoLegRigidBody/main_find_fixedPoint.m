@@ -11,6 +11,20 @@ set(0, 'defaultTextFontSize', 16);
 set(0, 'defaultTextFontName', 'times');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Construct a questdlg with three options
+choice = questdlg('Do you want to save the result(s)?', ...
+    'Saving opptions', ...
+    'Yes', 'No', 'Yes');
+% Handle response
+saveflag = false;
+
+switch choice
+    case 'Yes'
+        saveflag = true;
+    case 'No'
+        saveflag = false;
+end
+
 % path追加
 addpath(pwd, 'class')
 addpath(pwd, 'symbolic')
@@ -27,7 +41,7 @@ model = TwoLeg;
 dx0 = 1.0;
 y0 = 0.35;
 
-dtheta0set = [0:100:500]; % [deg/s]
+dtheta0set = [0:10:500]; % [deg/s]
 dtheta0set = deg2rad(dtheta0set);
 
 gammaset = [-50:10:50]; % [deg]
@@ -122,5 +136,20 @@ end
 
 xlabel("pitch rate [deg/s]")
 ylabel("touchdown angle [deg]")
+
+try
+
+    if saveflag == true
+        figname0 = ['fig/fixedPoints_for_y0=', num2str(y0), '_dx0=', num2str(dx0)];
+        figname1 = [figname0,'.fig'];
+        saveas(gcf, figname1, 'fig')
+        figname2 = [figname0,'.png'];
+        saveas(gcf, figname2, 'png')
+        disp('save finish!')
+    end
+
+catch
+    disp('some error(s) occurred in saving process')
+end
 
 h = msgbox('Caluculation finished !');
