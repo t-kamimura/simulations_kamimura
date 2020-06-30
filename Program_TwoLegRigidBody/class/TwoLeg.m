@@ -24,14 +24,14 @@ classdef TwoLeg < handle
     properties (SetAccess = public)
         % robotParamの定義(Poulakais2013より)
         % 慣性モーメント [kg m^2]
-        I = 0.36 * 8; %後胴体の慣性モーメント
+        I = 1.3; %後胴体の慣性モーメント
 
         % 質量m [kg]
         m = 20.865;
 
         % ばね定数k_leg [N / m]
-        kb = 6340; %後脚のバネ定数
-        kf = 6340; %前脚のバネ定数
+        kb = 7040; %後脚のバネ定数
+        kf = 7040; %前脚のバネ定数
 
         % 減衰定数 [Ns / m]
         c = 0;
@@ -168,6 +168,7 @@ classdef TwoLeg < handle
                         options1 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve1, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
 
                         % ode45で微分方程式をとく
+                        clearvars t q te ie
                         [t, q, te, qe, ie] = ode45(ode1, [self.tstart self.tfinal], qe(1, :), options1);
 
                         % 結果を保存とeveflg書き換え．
@@ -194,6 +195,7 @@ classdef TwoLeg < handle
                         options2 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve2, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
 
                         % ode45で微分方程式をとく
+                        clearvars t q te ie
                         [t, y, te, qe, ie] = ode45(ode2, [self.tstart, self.tfinal], qe(1, :), options2);
 
                         % 結果を保存とeveflg書き換え．
@@ -219,6 +221,7 @@ classdef TwoLeg < handle
                         ode3 = @(t, q) f3(q, self); %odeで解く微分方程式を定義．
                         options3 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve3, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
                         % ode45で微分方程式をとく
+                        clearvars t q te ie
                         [t, q, te, qe, ie] = ode45(ode3, [self.tstart, self.tfinal], qe(1, :), options3);
                         % 結果を保存とeveflg書き換え．
                         self = Accumulate03(t, q, te, qe, ie, self);
@@ -241,6 +244,7 @@ classdef TwoLeg < handle
                         ode4 = @(t, q) f4(q, self); %odeで解く微分方程式を定義．
                         options4 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve4, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
                         % ode45で微分方程式をとく
+                        clearvars t q te ie
                         [t, q, te, qe, ie] = ode45(ode4, [self.tstart, self.tfinal], qe(1, :), options4);
                         % 結果を保存とeveflg書き換え．
                         [self] = Accumulate04(t, q, te, qe, ie, self);
@@ -269,6 +273,7 @@ classdef TwoLeg < handle
                 %     ode5;  %odeで解く微分方程式はode1でよい．
                 options5 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve5, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
                 % ode45で微分方程式をとく
+                clearvars t q te ie
                 [t, q, te, qe, ie] = ode45(ode1, [self.tstart, self.tfinal], qe(1, :), options5);
                 % 結果を保存とeveflg書き換え．
                 [self] = Accumulate05(t, q, te, qe, ie, self);
@@ -435,7 +440,7 @@ classdef TwoLeg < handle
         end % plot
 
         function anime(self, speed, rec)
-            FPS = 60;
+            FPS = 30;
             dt = speed / FPS; % [ms]
             % 時間を等間隔に修正
             tstart = self.tout(1);
