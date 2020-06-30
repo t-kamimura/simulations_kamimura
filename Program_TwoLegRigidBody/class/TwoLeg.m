@@ -98,7 +98,8 @@ classdef TwoLeg < handle
             self.tout = [];
             self.qout = [];
             self.gout = [];
-            self.lout = [];
+            self.lout = [];T1
+            
 
             self.teout = [];
             self.qeout = [];
@@ -180,7 +181,7 @@ classdef TwoLeg < handle
                         if self.eveflg == 2
                             % 次はhind leg stance
                             self.xb_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 3)) + self.lout(end, 1) * sin(self.gout(end, 1));
-                        elseif self.eveflg == 3
+                        elseif  self.eveflg == 3
                             % 次はDouble leg stance
                             self.xb_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 3)) + self.lout(end, 1) * sin(self.gout(end, 1));
                             self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 3)) + self.lout(end, 2) * sin(self.gout(end, 2));

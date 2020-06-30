@@ -8,9 +8,8 @@ function dqdt1 = f3(t,states,param,param_ctrl)
     dyg = states(5);
     dtheta = states(6);
 
-    q = [xg yg theta];
-    dq = [dxg dyg dtheta];
-   
+    
+    
     
     % Inertia matrix
     M = myMassMatrix_F(q, param);
@@ -21,10 +20,7 @@ function dqdt1 = f3(t,states,param,param_ctrl)
     % acceleration
     dd_q = M\(f_cg+tau);
 
-    dqdt1 = [dxg ; dyg ;  dtheta ; dd_q(1) ; dd_q(2) ; dd_q(3)];
-   
-end
-    
+
 
 
 %%---------------------------------------------------------------------------------
