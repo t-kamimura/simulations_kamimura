@@ -119,15 +119,6 @@ save(filename, 'fixedPoint');
 
 figure
 hold on
-for i = 1:length(fixedPoint)
-    plot(rad2deg(fixedPoint(i).q_constants(3)), rad2deg(fixedPoint(i).u_fix(1)),'d','markerfacecolor','b','markeredgecolor','none');
-    plot(rad2deg(fixedPoint(i).q_constants(3)), rad2deg(fixedPoint(i).u_fix(2)),'o','markerfacecolor','w','markeredgecolor','r');
-end
-xlabel("pitch rate [deg/s]")
-ylabel("touchdown angle [deg]")
-
-figure
-hold on
 
 for i = 1:length(fixedPoint)
     plot(rad2deg(fixedPoint(i).q_constants(3)), rad2deg(fixedPoint(i).u_fix(1)), 'd', 'markerfacecolor', 'b', 'markeredgecolor', 'none');
