@@ -16,10 +16,8 @@ function dqdt1 = f5(y,model)
     M = myMassMatrix_F(q, param);
     % Colioris and gravity
     f_cg = myF_CoriGrav_F(q, dq, param);
-    % input torque
-    %tau = [0; myInputFunc_flight(q, dq, param_ctrl)];
     % acceleration
-    dd_q = M\(f_cg);
+    dd_q = M\(-f_cg);
     
     dqdt1 = [dxg ; dyg ;  dtheta ; dd_q(1) ; dd_q(2) ; dd_q(3)];
 

@@ -430,7 +430,7 @@ classdef TwoLeg < handle
             ylabel('Energy', 'interpreter', 'latex', 'Fontsize', 14);
             legend('trans.', 'rot.', 'grav.', 'hind leg', 'fore leg')
             xlim([0, self.tout(end)])
-            ylim([0, self.Eout(1, 6)])
+            ylim([0, max(self.Eout(:, 6))])
 
             if saveflag == 1
                 figname = [date, 'variable4'];

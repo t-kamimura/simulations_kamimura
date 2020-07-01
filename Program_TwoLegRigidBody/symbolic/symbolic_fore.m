@@ -9,7 +9,7 @@ close all
 %% definition
 
 % parameters
-syms m J kh kf xf_toe gamma_h_td gamma_f_td % xf_toe :足先位置
+syms m J kh kf xf_toe gamma_h_td gamma_f_td% xf_toe :足先位置
 syms L l3 l4
 syms g
 param = [m J kh kf xf_toe gamma_h_td gamma_f_td L l3 l4 g]
@@ -32,7 +32,7 @@ lf = sqrt(Yf^2 + delta_xf^2);
 
 % Energy
 T1 = 0.5 * m * (dx^2 + dy^2); % 並進の運動エネルギー
-T2 = 0.5 * J * m * L^2 * dtheta^2; % 回転の運動エネルギー
+T2 = 0.5 * J * dtheta^2; % 回転の運動エネルギー
 U1 = m * g * y; % 重力のポテンシャルエネルギー
 U2 = 0; % 後足バネのポテンシャルエネルギー
 U3 = 0.5 * kf * (l4 - lf)^2; % 前足バネのポテンシャルエネルギー

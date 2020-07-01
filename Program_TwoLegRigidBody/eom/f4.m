@@ -1,6 +1,6 @@
-function dqdt1 = f4(y,model)
-    %double stance phase
-    param = [model.m model.J model.kh model.kf model.xf_toe model.xh_toe model.gamma_h_td model.gamma_f_td model.L model.l3 model.l4 model.g];
+function dqdt1 = f4(y, model)
+    %fore stance phase
+    param = [model.m model.J model.kh model.kf model.xf_toe model.gamma_h_td model.gamma_f_td model.L model.l3 model.l4 model.g];
       
     % state variables
     xg = y(1);
@@ -13,14 +13,12 @@ function dqdt1 = f4(y,model)
     q = [xg yg theta];
     dq = [dxg dyg dtheta];
     
-     % Inertia matrix
-    M = myMassMatrix_Doublestance(q, param);
+    % Inertia matrix
+    M = myMassMatrix_Fore(q, param);
     % Colioris and gravity
-    f_cg = myF_CoriGrav_Doublestance(q, dq, param);
-    % input torque
-    %tau = [0; myInputFunc_flight(q, dq, param_ctrl)];
+    f_cg = myF_CoriGrav_Fore(q, dq, param);
     % acceleration
-    dd_q = M\(f_cg);
+    dd_q = M\(-f_cg);
     
     dqdt1 = [dxg ; dyg ;  dtheta ; dd_q(1) ; dd_q(2) ; dd_q(3)];
 

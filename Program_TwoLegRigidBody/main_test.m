@@ -42,4 +42,4 @@ model.init
 model.bound(q_ini, u_ini)
 
 model.plot(saveflag)
-model.anime(0.1, true);
+model.anime(0.1, false);

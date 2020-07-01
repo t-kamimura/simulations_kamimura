@@ -6,10 +6,10 @@ if isempty(ie)
 %     disp('ie is empty event did not occured @phase5')
     model.eveflg = 20;
 elseif ie(1) == 1
-%      disp('reached apex height@phase5')
+     disp('reached apex height@phase5')
     model.eveflg = 1;
 else
-%     disp('error @phase5')
+    disp('error @phase5')
 %     ie
     model.eveflg = 30;
 end
