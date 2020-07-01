@@ -24,13 +24,13 @@ classdef TwoLeg < handle
     properties (SetAccess = public)
         % robotParamの定義(Poulakais2013より)
         % 慣性モーメント [kg m^2]
-        I = 1.3; %後胴体の慣性モーメント
+        J = 1.3; %後胴体の慣性モーメント
 
         % 質量m [kg]
         m = 20.865;
 
         % ばね定数k_leg [N / m]
-        kb = 7040; %後脚のバネ定数
+        kh= 7040; %後脚のバネ定数
         kf = 7040; %前脚のバネ定数
 
         % 減衰定数 [Ns / m]
@@ -48,11 +48,11 @@ classdef TwoLeg < handle
 
         % 状態変数など
         q_ini = zeros(1, 6);
-        gb = 0;
-        gf = 0;
-        lb = 0;
+        gamma_h_td = 0;
+        gamma_f_td = 0;
+        lh = 0;
         lf = 0;
-        xb_toe = 0;
+        xh_toe = 0;
         xf_toe = 0;
         E = 0;
 
@@ -98,7 +98,7 @@ classdef TwoLeg < handle
             self.tout = [];
             self.qout = [];
             self.gout = [];
-            self.lout = [];T1
+            self.lout = [];
             
 
             self.teout = [];
@@ -115,11 +115,11 @@ classdef TwoLeg < handle
             %disp('Bound Start')
 
             self.q_ini = q_initial;
-            self.gb = u_inital(1);
-            self.gf = u_inital(2);
+            self.gamma_h_td = u_inital(1);
+            self.gamma_f_td = u_inital(2);
 
             qe = self.q_ini;
-            self.lb = self.l3;
+            self.lh = self.l3;
             self.lf = self.l4;
 
             % 初期値おかしかったとき
@@ -181,10 +181,10 @@ classdef TwoLeg < handle
 
                         if self.eveflg == 2
                             % 次はhind leg stance
-                            self.xb_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 3)) + self.lout(end, 1) * sin(self.gout(end, 1));
+                            self.xh_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 3)) + self.lout(end, 1) * sin(self.gout(end, 1));
                         elseif  self.eveflg == 3
                             % 次はDouble leg stance
-                            self.xb_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 3)) + self.lout(end, 1) * sin(self.gout(end, 1));
+                            self.xh_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 3)) + self.lout(end, 1) * sin(self.gout(end, 1));
                             self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 3)) + self.lout(end, 2) * sin(self.gout(end, 2));
                         elseif self.eveflg == 4
                             % 次はFore leg stance
@@ -258,11 +258,11 @@ classdef TwoLeg < handle
                             liftOffFlag.fore = true;
                         elseif self.eveflg == 2
                             % 次はhind leg stance
-                            self.xb_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 3)) + self.lout(end, 1) * sin(self.gout(end, 1));
+                            self.xh_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 3)) + self.lout(end, 1) * sin(self.gout(end, 1));
                             liftOffFlag.fore = true;
                         elseif self.eveflg == 3
                             % 次はDouble leg stance
-                            self.xb_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 3)) + self.lout(end, 1) * sin(self.gout(end, 1));
+                            self.xh_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 3)) + self.lout(end, 1) * sin(self.gout(end, 1));
                         end
 
                 end % eveflag
@@ -313,7 +313,7 @@ classdef TwoLeg < handle
                 % エネルギーの計算
                 self.Eout = calc_Energy(self);
                 T1 = 0.5 * self.m * (dx^2 + dy^2);
-                T2 = 0.5 * self.I * dth^2;
+                T2 = 0.5 * self.J * dth^2;
                 V = self.m * self.g * y;
                 self.E = T1 + T2 + V;
 
@@ -343,7 +343,7 @@ classdef TwoLeg < handle
                 % エネルギーの計算
                 self.Eout = calc_Energy(self);
                 T1 = 0.5 * self.m * (dx^2 + dy^2);
-                T2 = 0.5 * self.I * dth^2;
+                T2 = 0.5 * self.J * dth^2;
                 V = self.m * self.g * y;
                 self.E = T1 + T2 + V;
             end

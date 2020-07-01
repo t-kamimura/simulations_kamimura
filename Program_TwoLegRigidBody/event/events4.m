@@ -6,7 +6,7 @@ function [value, isterminal, direction] = events4(y, model)
     yg = y(2);
     theta = y(3);
 
-    hind_toeHight = yg - model.L .* sin(theta) - model.l3 * cos(model.gb);
+    hind_toeHight = yg - model.L .* sin(theta) - model.l3 * cos(model.gamma_h_td);
 
     Head = [xg + model.L .* cos(theta); yg + model.L .* sin(theta)];
     lf_x = model.xf_toe - Head(1);

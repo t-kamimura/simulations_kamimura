@@ -18,8 +18,8 @@ end
 model.tout = [model.tout; t(2:nt)];
 model.qout = [model.qout; q(2:nt,:)];
 
-model.lout = [model.lout; ones(nt - 1, 1) * model.lb, ones(nt - 1, 1) * model.lf];
-model.gout = [model.gout; ones(nt - 1, 1) * model.gb, ones(nt - 1, 1) * model.gf];
+model.lout = [model.lout; ones(nt - 1, 1) * model.lh, ones(nt - 1, 1) * model.lf];
+model.gout = [model.gout; ones(nt - 1, 1) * model.gamma_h_td, ones(nt - 1, 1) * model.gamma_f_td];
 
 model.teout = [model.teout; te(1)];
 model.qeout = [model.qeout; qe(1,:)];

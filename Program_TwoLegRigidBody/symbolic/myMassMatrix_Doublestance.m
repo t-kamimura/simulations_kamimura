@@ -6,6 +6,6 @@ function M = myMassMatrix_Doublestance(in1,in2)
 %    19-Jun-2020 12:26:06
 
 J = in2(:,2);
-l = in2(:,9);
+L = in2(:,9);
 m = in2(:,1);
-M = reshape([m,0.0,0.0,0.0,m,0.0,0.0,0.0,J.*l.^2.*m],[3,3]);
+M = reshape([m,0.0,0.0,0.0,m,0.0,0.0,0.0,J.*L.^2.*m],[3,3]);

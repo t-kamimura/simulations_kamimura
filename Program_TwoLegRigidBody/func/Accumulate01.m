@@ -42,8 +42,8 @@ function model = Accumulate01(t, q, te, qe, ie, model)
     model.tout = [model.tout; t(2:nt)];
     model.qout = [model.qout; q(2:nt, :)];
 
-    model.lout = [model.lout; ones(nt - 1, 1) * model.lb, ones(nt - 1, 1) * model.lf];
-    model.gout = [model.gout; ones(nt - 1, 1) * model.gb(1), ones(nt - 1, 1) * model.gf(1)];
+    model.lout = [model.lout; ones(nt - 1, 1) * model.l3, ones(nt - 1, 1) * model.l4];
+    model.gout = [model.gout; ones(nt - 1, 1) * model.gamma_h_td(1), ones(nt - 1, 1) * model.gamma_f_td(1)];
 
     model.teout = [model.teout; te(1)];
     model.qeout = [model.qeout; qe(1, :)];

@@ -7,8 +7,8 @@ function [value, isterminal, direction] = events5(y, model)
     dxg = y(4);
     dyg = y(5);
 
-    hind_toeHight = yg - model.L .* sin(theta) - model.lb * cos(model.gb);
-    fore_toeHight = yg + model.L .* sin(theta) - model.lf * cos(model.gf);
+    hind_toeHight = yg - model.L .* sin(theta) - model.lh * cos(model.gamma_h_td);
+    fore_toeHight = yg + model.L .* sin(theta) - model.lf * cos(model.gamma_f_td);
 
     value = [dyg; hind_toeHight; fore_toeHight; yg];
     isterminal = [1; 1; 1; 1];

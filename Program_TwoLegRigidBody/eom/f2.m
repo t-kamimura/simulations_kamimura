@@ -1,44 +1,30 @@
-function dqdt1 = f2(t,states,param,param_ctrl)
+function dqdt1 = f2(y,model)
 
+    %hind stance phase
+    param = [model.m model.J model.kh model.kf model.xh_toe model.gamma_h_td model.L model.l3 model.l4 model.g]; 
+    
+    
     % state variables
-    xg = states(1);
-    yg = states(2);
-    theta= states(3);
-    dxg = states(4);
-    dyg = states(5);
-    dtheta = states(6);
-    
-    
+    xg = y(1);
+    yg = y(2);
+    theta= y(3);
+    dxg = y(4);
+    dyg = y(5);
+    dtheta = y(6);
+        
     q = [xg yg theta];
     dq = [dxg dyg dtheta];
     
-    % Inertia matrix
-    M = myMassMatrix_F(q, param);
+     % Inertia matrix
+    M = myMassMatrix_Hind(q, param);
     % Colioris and gravity
-    f_cg = myF_CoriGrav_F(q, dq, param);
+    f_cg = myF_CoriGrav_Hind(q, dq, param);
     % input torque
-    tau = [0; myInputFunc_flight(q, dq, param_ctrl)];
+    %tau = [0; myInputFunc_flight(q, dq, param_ctrl)];
     % acceleration
-    dd_q = M\(f_cg+tau);
-    
+    dd_q = M\(f_cg);
     
     dqdt1 = [dxg ; dyg ;  dtheta ; dd_q(1) ; dd_q(2) ; dd_q(3)];
-    %
-    %A = model.xb_toe - xg + model.L * cos(theta);
-    %B = yg - mode.L * cos(theta);
-    %lbt = sqrt(A^2 + B^2);
-
-    %dd_q = (model.kb * (-model.lb + lbt) / lbt) * (M \ [A; B; A * model.L * sin(theta) - B * model.L * cos(theta)]) + ...
-    %  [0; -model.g; 0]
-    %dydt1 = [dx1
-    %    dy1
-    %    dtheta
-    %    dd_q(1)
-    %    dd_q(2)
-    
-    
-
-    
 
 end
 

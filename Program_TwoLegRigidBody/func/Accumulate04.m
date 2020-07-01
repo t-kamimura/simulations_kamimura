@@ -49,8 +49,8 @@ function [model] = Accumulate04(t, q, te, qe, ie, model)
     LBf = sqrt(Pf.^2 + Qf.^2);
     GBf = atan2(Pf, -Qf);
 
-    model.lout = [model.lout; ones(nt - 1, 1) * model.lb, LBf];
-    model.gout = [model.gout; ones(nt - 1, 1) * model.gb, GBf];
+    model.lout = [model.lout; ones(nt - 1, 1) * model.lh, LBf];
+    model.gout = [model.gout; ones(nt - 1, 1) * model.gamma_h_td, GBf];
 
     model.teout = [model.teout; te(1)];
     model.qeout = [model.qeout; qe(1, :)];

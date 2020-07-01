@@ -10,9 +10,9 @@ close all
 
 % parameters
 syms m J 
-syms l l0
+syms L l3 l4
 syms g
-param = [m J  l l0 g]
+param = [m J  L l3 l4 g]
 
 
 % state variables
@@ -25,14 +25,10 @@ dq = [dx dy dtheta];
 syms T1 T2 U1 U2 U3
 syms L
 
-%それ以外のパラメータ
-%I=1/3*m*l^2;
-
-
 
 % Energy
 T1 = 0.5*m*(dx^2 + dy^2); % 並進の運動エネルギー
-T2 = 0.5*J*m*l^2*dtheta^2; % 回転の運動エネルギー
+T2 = 0.5*J*m*L^2*dtheta^2; % 回転の運動エネルギー
 U1 = m*g*y; % 重力のポテンシャルエネルギー
 U2 = 0; % 後足バネのポテンシャルエネルギー
 U3 = 0; % 前足バネのポテンシャルエネルギー

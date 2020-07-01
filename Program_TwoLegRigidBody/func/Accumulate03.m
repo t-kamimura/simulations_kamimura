@@ -48,7 +48,7 @@ function [model] = Accumulate03(t, q, te, qe, ie, model)
     xf = q(2:nt, 1) + model.L * cos(theta);
     yf = q(2:nt, 2) + model.L * sin(theta);
 
-    Pb = model.xb_toe * ones(nt - 1, 1) - xb;
+    Pb = model.xh_toe * ones(nt - 1, 1) - xb;
     Qb = 0 - yb;
     LBb = sqrt(Pb.^2 + Qb.^2);
     GBb = atan2(Pb, -Qb);
