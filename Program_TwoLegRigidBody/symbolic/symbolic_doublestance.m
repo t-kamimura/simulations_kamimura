@@ -10,9 +10,9 @@ close all
 
 % parameters
 syms m J kh kf xf_toe xh_toe gamma_h_td gamma_f_td% x*_toe :足先位置
-syms l l0
+syms L l3 l4
 syms g
-param = [m J kh kf xf_toe xh_toe gamma_h_td gamma_f_td l l0 g]
+param = [m J kh kf xf_toe xh_toe gamma_h_td gamma_f_td L l3 l4 g]
 
 % state variables
 syms x y theta
@@ -25,23 +25,23 @@ syms T1 T2 U1 U2 U3
 syms L
 
 %それ以外のパラメータ定義
-Xh = x - l * cos(theta);    % hip position
-Yh = y - l * sin(theta);    % hip position
+Xh = x - L * cos(theta);    % hip position
+Yh = y - L * sin(theta);    % hip position
 delta_xh = xh_toe - Xh;
 lb = sqrt(Yh^2 + delta_xh^2);
 
-Xf = x + l * cos(theta);
-Yf = y + l * sin(theta);
+Xf = x + L * cos(theta);
+Yf = y + L * sin(theta);
 delta_xf = xf_toe - Xf;
 %gamma_f_td = arctan(delta_xf/Yf);
 lf = sqrt(Yf^2 + delta_xf^2);
 
 % Energy
 T1 = 0.5 * m * (dx^2 + dy^2); % 並進の運動エネルギー
-T2 = 0.5 * J * m * l^2 * dtheta^2; % 回転の運動エネルギー
+T2 = 0.5 * J * m * L^2 * dtheta^2; % 回転の運動エネルギー
 U1 = m * g * y; % 重力のポテンシャルエネルギー
-U2 = 0.5 * kh * (l0 - lb)^2; % 後足バネのポテンシャルエネルギー
-U3 = 0.5 * kf * (l0 - lf)^2; % 前足バネのポテンシャルエネルギー
+U2 = 0.5 * kh * (l3 - lb)^2; % 後足バネのポテンシャルエネルギー
+U3 = 0.5 * kf * (l4 - lf)^2; % 前足バネのポテンシャルエネルギー
 
 L = simplify(T1 + T2 - U1 - U2 - U3);
 E = simplify(T1 + T2 + U1 + U2 + U3);

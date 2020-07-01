@@ -6,6 +6,6 @@ function M = myMassMatrix_Hind(in1,in2)
 %    19-Jun-2020 12:25:48
 
 J = in2(:,2);
-l = in2(:,7);
+L = in2(:,7);
 m = in2(:,1);
-M = reshape([m,0.0,0.0,0.0,m,0.0,0.0,0.0,J.*l.^2.*m],[3,3]);
+M = reshape([m,0.0,0.0,0.0,m,0.0,0.0,0.0,J.*L.^2.*m],[3,3]);
