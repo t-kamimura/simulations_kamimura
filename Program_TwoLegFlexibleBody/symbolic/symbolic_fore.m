@@ -9,7 +9,9 @@ close all
 %% definition
 
 % parameters
-syms m J kh kf xf_toe gamma_h_td gamma_f_td % xf_toe :足先位置
+syms m J
+syms kh kf kt
+syms xf_toe % xf_toe :足先位置
 syms l l0
 syms g
 param = [m J kh kf xf_toe gamma_h_td gamma_f_td l l0 g]
@@ -21,7 +23,7 @@ syms dx dy dtheta
 dq = [dx dy dtheta];
 
 % Energy functions
-syms T1 T2 U1 U2 U3
+syms T1 T2 U1 U2 U3 U4
 syms L
 
 %それ以外のパラメータ定義
@@ -36,9 +38,10 @@ T2 = 0.5 * J * m * l^2 * dtheta^2; % 回転の運動エネルギー
 U1 = m * g * y; % 重力のポテンシャルエネルギー
 U2 = 0; % 後足バネのポテンシャルエネルギー
 U3 = 0.5 * kf * (l0 - lf)^2; % 前足バネのポテンシャルエネルギー
+U4 = 0.5 * kt * phi^2; % 体幹バネのポテンシャルエネルギー
 
-L = simplify(T1 + T2 - U1 - U2 - U3);
-E = simplify(T1 + T2 + U1 + U2 + U3);
+L = simplify(T1 + T2 - U1 - U2 - U3 - U4);
+E = simplify(T1 + T2 + U1 + U2 + U3 + U4);
 
 % Differentials
 dLddq = jacobian(L, dq);
