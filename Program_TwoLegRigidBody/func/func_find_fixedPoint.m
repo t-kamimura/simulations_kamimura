@@ -61,7 +61,7 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
         model.bound(q_ini, u_ini)
         
 %         fprintf('*')
-        % model.plot(false) % debug
+%         model.plot(false) % debug
         
 
         % 誤差最大のものを抜き出し，本当に固定点になっているか確認
@@ -74,12 +74,12 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
         
         if model.eveflg == 1
             % 最大床反力の計算
-            GRF = model.kb*(model.l3 - min(model.lout(:,1)));
+            GRF = model.kh*(model.l3 - min(model.lout(:,1)));
             
             % 力積の計算
             p = 0;
             for i_t = 2:length(model.tout)
-                p = p + model.kb*(model.l3 - model.lout(i_t,1))*cos(model.gout(i_t,1))*(model.tout(i_t)-model.tout(i_t-1));
+                p = p + model.kh*(model.l3 - model.lout(i_t,1))*cos(model.gout(i_t,1))*(model.tout(i_t)-model.tout(i_t-1));
             end
             
             % データ保存

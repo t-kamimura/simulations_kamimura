@@ -5,21 +5,21 @@ function [model] = Accumulate02(t, q, te, qe, ie, model)
     % value = [fore_toeHight; lb_length; yg];
     switch length(ie)
         case 0
-            disp('no event occured @phase2')
+%             disp('no event occured @phase2')
             model.eveflg = 20;
         case 1
 
             if ie(1) == 1
-                disp('fore leg touch down @phase2')
+%                 disp('fore leg touch down @phase2')
                 model.eveflg = 3;
             elseif ie(1) == 2
-                disp('hind leg lift off @phase2')
+%                 disp('hind leg lift off @phase2')
                 model.eveflg = 1;
             elseif ie(1) == 3
-                disp('fall down @phase2')
+%                 disp('fall down @phase2')
                 model.eveflg = 30;
             else
-                disp('unknown error @phase2')
+%                 disp('unknown error @phase2')
                 model.eveflg = 30;
             end
 
