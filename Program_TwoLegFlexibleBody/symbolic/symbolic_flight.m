@@ -9,11 +9,10 @@ close all
 %% definition
 
 % parameters
-syms m J kt xh yh xf xf
-syms l l0
+syms m J kt xh yh xf yf dxh dyh dxf dyf
+syms L l3 l4
 syms g
-% param = [ m J kt xh yh xf xf l l0 g]
-param = [m J kt l l0 g]% 定数のみ
+param = [m J kt L l3 l4 g]% 定数のみ
 
 % state variables
 syms x y theta phi
@@ -23,33 +22,38 @@ dq = [dx dy dtheta dphi];
 
 % Energy functions
 syms T1 T2 U1 U2 U3 U4
-syms L
+syms Lag
 
 %それ以外のパラメータ
-xh = x - l * cos(phi) * cos(theta);
-yh = y - l * cos(phi) * sin(theta);
-xf = x + l * cos(phi) * cos(theta);
-xf = y + l * cos(phi) * sin(theta);
-dxh = jacobian(xh, q) * dq.';
-dyh = jacobian(yh, q) * dq.';
-dxf = jacobian(xf, q) * dq.';
-dxf = jacobian(xf, q) * dq.';
+xh = x - L * cos(phi) * cos(theta);
+yh = y - L * cos(phi) * sin(theta);
+xf = x + L * cos(phi) * cos(theta);
+yf = y + L * cos(phi) * sin(theta);
+dxh = jacobian(xh, dq) * dq.';
+dyh = jacobian(yh, dq) * dq.';
+dxf = jacobian(xf, dq) * dq.';
+dyf = jacobian(yf, dq) * dq.';
+% dxh = dx + (dtheta)^2 * L * sin(theta) * cos(phi) + (dphi)^2 * L * sin(phi) * cos(theta); 
+% dyh = dy - (dtheta)^2 * L * cos(phi) * cos(theta) + (dphi)^2 * L * sin(phi) * sin(theta);
+% dxf = dx - (dtheta)^2 * L * cos(phi) * sin(theta) - (dphi)^2 * L * sin(phi) * cos(theta);
+% dyf = dy + (dtheta)^2 * L * cos(phi) * cos(theta) - (dphi)^2 * L * sin(theta) * sin(phi);
+
 
 % Energy
-T1 = 0.5 * m * (dxh^2 + dyh^2) + 0.5 * m * (dxf^2 + dxf^2); % 並進の運動エネルギー
+T1 = 0.5 * m * (dxh^2 + dyh^2) + 0.5 * m * (dxf^2 + dyf^2); % 並進の運動エネルギー
 T2 = J * (dtheta^2 + dphi^2); % TODO: 回転の運動エネルギー
 U1 = 2 * m * g * y; % 重力のポテンシャルエネルギー
 U2 = 0; % 後足バネのポテンシャルエネルギー
 U3 = 0; % 前足バネのポテンシャルエネルギー
 U4 = 0.5 * kt * (2 * phi)^2; % 体幹バネのポテンシャルエネルギー
 
-L = simplify(T1 + T2 - U1 - U2 - U3 - U4);
+Lag = simplify(T1 + T2 - U1 - U2 - U3 - U4);
 E = simplify(T1 + T2 + U1 + U2 + U3 + U4);
 
 % Differentials
-dLddq = jacobian(L, dq);
+dLddq = jacobian(Lag, dq);
 d_dLddq_dt = jacobian(dLddq, q) * dq.';
-dLdq = jacobian(L, q);
+dLdq = jacobian(Lag, q);
 
 M = jacobian(dLddq, dq); % Inertia matrix
 M = simplify(M);
