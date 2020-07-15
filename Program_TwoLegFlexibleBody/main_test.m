@@ -25,7 +25,7 @@ addpath(pwd, 'fig')
 model = Twoleg;
 
 x_ini = 0;
-y_ini = 0.324;
+y_ini = 0.9;
 theta_ini = 0;
 phi_ini = deg2rad(15);
 dx_ini = 1.39;

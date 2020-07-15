@@ -12,7 +12,7 @@ close all
 syms m J kt xh yh xf yf dxh dyh dxf dyf
 syms L l3 l4
 syms g
-param = [m J kt L l3 l4 g]% 定数のみ
+param = [m J kt L l3 l4 g];% 定数のみ
 
 % state variables
 syms x y theta phi

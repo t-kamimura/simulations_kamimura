@@ -1,6 +1,6 @@
 function dqdt1 = f4(q, model)
     %fore stance phase
-    param = [model.m model.J model.kf model.kt model.xf_toe model.gamma_f_td model.L model.l4 model.D model.g]
+    param = [model.m model.J model.kf model.kt model.xf_toe model.gamma_f_td model.L model.l4 model.D model.g];
     % param = [model.m model.J model.kh model.kf model.xf_toe model.gamma_h_td model.gamma_f_td model.L model.l3 model.l4 model.g];
       
     % state variables

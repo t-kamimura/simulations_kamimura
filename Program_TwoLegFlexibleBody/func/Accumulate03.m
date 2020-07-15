@@ -6,36 +6,36 @@ function [model] = Accumulate03(t, q, te, qe, ie, model)
     % value = [lb_length; lf_length; yg];
     switch length(ie)
         case 0
-%             disp('no event occured @phase3')
+            disp('no event occured @phase3')
             model.eveflg = 20;
         case 1
 
             if ie(1) == 1
-%                 disp('hind leg lift off @phase3')
+                disp('hind leg lift off @phase3')
                 model.eveflg = 4;
             elseif ie(1) == 2
-%                 disp('fore leg lift off @phase3')
+                disp('fore leg lift off @phase3')
                 model.eveflg = 2;
             elseif ie(1) == 3
-%                 disp('fall down @phase3')
+                disp('fall down @phase3')
                 model.eveflg = 30;
             else
-%                 disp('unknown error @phase3')
+                disp('unknown error @phase3')
                 model.eveflg = 30;
             end
 
         case 2
 
             if ie(1) == 1 && ie(2) == 2
-%                 disp('fore & hind leg lift off @phase3')
+                disp('fore & hind leg lift off @phase3')
                 model.eveflg = 1;
             else
-%                 disp('fall down @phase3')
+                disp('fall down @phase3')
                 model.eveflg = 30;
             end
 
         case 3
-%             disp('unkown error@phase3')
+            disp('unkown error@phase3')
             model.eveflg = 30;
     end
 
@@ -43,11 +43,11 @@ function [model] = Accumulate03(t, q, te, qe, ie, model)
     model.qout = [model.qout; q(2:nt, :)];
 
     theta = q(2:nt, 3);
-    pho = w(2:nt, 4);
-    xb = q(2:nt, 1) - model.L * cos(phi) * cos(theta) - model.D * cos(theta - phi);
-    yb = q(2:nt, 2) - model.L * cos(phi) * sin(theta) - model.D * sin(theta - phi);
-    xf = q(2:nt, 1) + model.L * cos(phi) * cos(theta) + model.D * cos(theta + phi);
-    yf = q(2:nt, 2) + model.L * cos(phi) * sin(theta) + model.D * sin(theta + phi);
+    phi = q(2:nt, 4);
+    xb = q(2:nt, 1) - model.L .* cos(phi) .* cos(theta) - model.D .* cos(theta - phi);
+    yb = q(2:nt, 2) - model.L .* cos(phi) .* sin(theta) - model.D .* sin(theta - phi);
+    xf = q(2:nt, 1) + model.L .* cos(phi) .* cos(theta) + model.D .* cos(theta + phi);
+    yf = q(2:nt, 2) + model.L .* cos(phi) .* sin(theta) + model.D .* sin(theta + phi);
     % theta = q(2:nt, 3);
     % xb = q(2:nt, 1) - model.L * cos(theta);
     % yb = q(2:nt, 2) - model.L * sin(theta);

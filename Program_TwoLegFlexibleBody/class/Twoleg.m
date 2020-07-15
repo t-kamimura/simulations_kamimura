@@ -183,15 +183,15 @@ classdef Twoleg < handle
 
                         if self.eveflg == 2
                             % 次はhind leg stance
-                            self.xh_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 4)) * cos(self.qout(end,3))  - self.D * cos(self.qout(end, 3) - self.qout(end, 4)) + self.lout(end, 2) * sin(self.gout(end, 2));
+                            self.xh_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 4)) * cos(self.qout(end,3))  - self.D * cos(self.qout(end, 3) - self.qout(end, 4)) + self.lout(end, 1) * sin(self.gout(end, 1));
                         elseif  self.eveflg == 3
                             % 次はDouble leg stance
-                            self.xh_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 4)) * cos(self.qout(end,3))  - self.D * cos(self.qout(end, 3) - self.qout(end, 4)) + self.lout(end, 2) * sin(self.gout(end, 2)); %hind
+                            self.xh_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 4)) * cos(self.qout(end,3))  - self.D * cos(self.qout(end, 3) - self.qout(end, 4)) + self.lout(end, 1) * sin(self.gout(end, 1)); %hind
 
-                            self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 4)) * cos(self.qout(end, 3)) + self.D * cos(self.qout(end, 3) + self.qout(end, 4)) + self.lout(end, 1) * sin(self.gout(end, 1)); % fore
+                            self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 4)) * cos(self.qout(end, 3)) + self.D * cos(self.qout(end, 3) + self.qout(end, 4)) + self.lout(end, 2) * sin(self.gout(end, 2)); % fore
                         elseif self.eveflg == 4
                             % 次はFore leg stance
-                            self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 4)) * cos(self.qout(end, 3)) + self.D * cos(self.qout(end, 3) + self.qout(end, 4)) + self.lout(end, 1) * sin(self.gout(end, 1));
+                            self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 4)) * cos(self.qout(end, 3)) + self.D * cos(self.qout(end, 3) + self.qout(end, 4)) + self.lout(end, 2) * sin(self.gout(end, 2));
                         end
 
 
@@ -215,10 +215,10 @@ classdef Twoleg < handle
                             liftOffFlag.hind = true;
                         elseif self.eveflg == 3
                             % 次はDouble leg stance
-                            self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 4)) * cos(self.qout(end, 3)) + self.D * cos(self.qout(end, 3) + self.qout(end, 4)) + self.lout(end, 1) * sin(self.gout(end, 1)); 
+                            self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 4)) * cos(self.qout(end, 3)) + self.D * cos(self.qout(end, 3) + self.qout(end, 4)) + self.lout(end, 2) * sin(self.gout(end, 2)); 
                         elseif self.eveflg == 4
                             % 次はFore leg stance
-                            self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 4)) * cos(self.qout(end, 3)) + self.D * cos(self.qout(end, 3) + self.qout(end, 4)) + self.lout(end, 1) * sin(self.gout(end, 1));
+                            self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 4)) * cos(self.qout(end, 3)) + self.D * cos(self.qout(end, 3) + self.qout(end, 4)) + self.lout(end, 2) * sin(self.gout(end, 2));
                             liftOffFlag.hind = true;
                         end
 
@@ -262,11 +262,11 @@ classdef Twoleg < handle
                             liftOffFlag.fore = true;
                         elseif self.eveflg == 2
                             % 次はhind leg stance
-                            self.xh_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 4)) * cos(self.qout(end,3))  - self.D * cos(self.qout(end, 3) - self.qout(end, 4)) + self.lout(end, 2) * sin(self.gout(end, 2));
+                            self.xh_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 4)) * cos(self.qout(end,3))  - self.D * cos(self.qout(end, 3) - self.qout(end, 4)) + self.lout(end, 1) * sin(self.gout(end, 1));
                             liftOffFlag.fore = true;
                         elseif self.eveflg == 3
                             % 次はDouble leg stance
-                            self.xh_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 4)) * cos(self.qout(end,3))  - self.D * cos(self.qout(end, 3) - self.qout(end, 4)) + self.lout(end, 2) * sin(self.gout(end, 2));
+                            self.xh_toe = self.qout(end, 1) - self.L * cos(self.qout(end, 4)) * cos(self.qout(end,3))  - self.D * cos(self.qout(end, 3) - self.qout(end, 4)) + self.lout(end, 1) * sin(self.gout(end, 1));
                         end
 
                 end % eveflag
@@ -296,30 +296,36 @@ classdef Twoleg < handle
                 x0 = self.q_ini(1);
                 y0 = self.q_ini(2);
                 th0 = self.q_ini(3);
-                dx0 = self.q_ini(4);
-                dy0 = self.q_ini(5);
-                dth0 = self.q_ini(6);
+                ph0 = self.q_ini(4);
+                dx0 = self.q_ini(5);
+                dy0 = self.q_ini(6);
+                dth0 = self.q_ini(7);
+                dph0 = self.q_ini(8);
                 x = self.qout(end, 1);
                 y = self.qout(end, 2);
                 th = self.qout(end, 3);
-                dx = self.qout(end, 4);
-                dy = self.qout(end, 5);
-                dth = self.qout(end, 6);
+                ph = self.qout(end, 4);
+                dx = self.qout(end, 5);
+                dy = self.qout(end, 6);
+                dth = self.qout(end, 7);
+                dph = self.qout(end, 8);
 
                 self.mileage = x - x0;
                 self.q_err(1) = y - y0;
                 self.q_err(2) = th - th0;
-                self.q_err(3) = dx - dx0;
-                self.q_err(4) = dy - dy0;
-                self.q_err(5) = dth - dth0;
+                self.q_err(3) = ph - ph0;
+                self.q_err(4) = dx - dx0;
+                self.q_err(5) = dy - dy0;
+                self.q_err(6) = dth - dth0;
+                self.q_err(7) = dph - dph0;
                 self.q_err_max = max(self.q_err);
 
                 % エネルギーの計算
                 self.Eout = calc_Energy(self);
-                T1 = 0.5 * self.m * (dx^2 + dy^2);
-                T2 = 0.5 * self.J * dth^2;
-                V = self.m * self.g * y;
-                self.E = T1 + T2 + V;
+                % T1 = 0.5 * self.m * (dx^2 + dy^2);
+                % T2 = 0.5 * self.J * dth^2;
+                % V = self.m * self.g * y;
+                % self.E = T1 + T2 + V;
 
             else
                 % disp('gone away')
@@ -327,29 +333,54 @@ classdef Twoleg < handle
                 x0 = self.q_ini(1);
                 y0 = self.q_ini(2);
                 th0 = self.q_ini(3);
-                dx0 = self.q_ini(4);
-                dy0 = self.q_ini(5);
-                dth0 = self.q_ini(6);
+                ph0 = self.q_ini(4);
+                dx0 = self.q_ini(5);
+                dy0 = self.q_ini(6);
+                dth0 = self.q_ini(7);
+                dph0 = self.q_ini(8);
                 x = self.qout(end, 1);
                 y = self.qout(end, 2);
                 th = self.qout(end, 3);
-                dx = self.qout(end, 4);
-                dy = self.qout(end, 5);
-                dth = self.qout(end, 6);
+                ph = self.qout(end, 4);
+                dx = self.qout(end, 5);
+                dy = self.qout(end, 6);
+                dth = self.qout(end, 7);
+                dph = self.qout(end, 8)
+                % x0 = self.q_ini(1);
+                % y0 = self.q_ini(2);
+                % th0 = self.q_ini(3);
+                % dx0 = self.q_ini(4);
+                % dy0 = self.q_ini(5);
+                % dth0 = self.q_ini(6);
+                % x = self.qout(end, 1);
+                % y = self.qout(end, 2);
+                % th = self.qout(end, 3);
+                % dx = self.qout(end, 4);
+                % dy = self.qout(end, 5);
+                % dth = self.qout(end, 6);
 
                 self.mileage = x - x0;
                 self.q_err(1) = y - y0;
                 self.q_err(2) = th - th0;
-                self.q_err(3) = dx - dx0;
-                self.q_err(4) = dy - dy0;
-                self.q_err(5) = dth - dth0;
+                self.q_err(3) = ph - ph0;
+                self.q_err(4) = dx - dx0;
+                self.q_err(5) = dy - dy0;
+                self.q_err(6) = dth - dth0;
+                self.q_err(7) = dph - dph0;
                 self.q_err_max = max(self.q_err);
+                % self.mileage = x - x0;
+                % self.q_err(1) = y - y0;
+                % self.q_err(2) = th - th0;
+                % self.q_err(3) = dx - dx0;
+                % self.q_err(4) = dy - dy0;
+                % self.q_err(5) = dth - dth0;
+                % self.q_err_max = max(self.q_err);
                 % エネルギーの計算
                 self.Eout = calc_Energy(self);
-                T1 = 0.5 * self.m * (dx^2 + dy^2);
-                T2 = 0.5 * self.J * dth^2;
-                V = self.m * self.g * y;
-                self.E = T1 + T2 + V;
+                % T1 = 0.5 * self.m * (dx^2 + dy^2);
+                % T2 = 0.5 * self.J * dth^2;
+                % V = self.m * self.g * y;
+                % self.E = T1 + T2 + V;
             end
 
         end % bound
@@ -357,16 +388,18 @@ classdef Twoleg < handle
         function plot(self, saveflag)
 
             % -----------------------------------------------------------------
-            qlabelset = {'$$x_g$$', '$$y_g$$', '$$\theta$$', ...
-                '$$\dot{x}_g$$', '$$\dot{y}_g$$', '$$\dot\theta$$'};
+            qlabelset = {'$$x_g$$', '$$y_g$$', '$$\theta$$', '$$\phi$$'...
+                '$$\dot{x}_g$$', '$$\dot{y}_g$$', '$$\dot\theta$$', '$$\dot\phi$$'};
             % -----------------------------------------------------------------
             % 座標変換
             qout_(:, 1) = self.qout(:, 1);
             qout_(:, 2) = self.qout(:, 2);
             qout_(:, 3) = self.qout(:, 3) * 180 / pi; %degに変換
-            qout_(:, 4) = self.qout(:, 4);
+            qout_(:, 4) = self.qout(:, 4) * 180 / pi;
             qout_(:, 5) = self.qout(:, 5);
-            qout_(:, 6) = self.qout(:, 6) * 180 / pi; %degに変換;
+            qout_(:, 6) = self.qout(:, 6);
+            qout_(:, 7) = self.qout(:, 7) * 180 / pi; %degに変換;
+            qout_(:, 8) = self.qout(:, 8) * 180 / pi;
 
             tend = self.tout(end);
             tout_ = self.tout;
@@ -375,8 +408,8 @@ classdef Twoleg < handle
             figure
             % figure('outerposition', [50, 200, 1200, 500])
 
-            for pp = 1:6
-                subplot(2, 3, pp)
+            for pp = 1:8
+                subplot(2, 4, pp)
                 plot(tout_, qout_(:, pp));
                 hold on
                 xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
@@ -400,7 +433,8 @@ classdef Twoleg < handle
             xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
             ylabel('$$l_{\rm h},l_{\rm f}$$', 'interpreter', 'latex', 'Fontsize', 14);
             xlim([0, max(tout_)]);
-            ylim([min(self.lout(:, 1)) - 0.01, 0.37]);
+            ylim([min(self.lout(:, 1)) - 0.01, max(self.lout(:, 1))]);
+            % ylim([min(self.lout(:, 1)) - 0.01, 0.37]);
             legend({'hind leg', 'fore leg'}, 'Location', 'best')
 
             if saveflag == 1
@@ -471,11 +505,12 @@ classdef Twoleg < handle
                 x = qout_(i, 1);
                 y = qout_(i, 2);
                 th = qout_(i, 3);
-
-                x_hip(i) = x - self.L * cos(th);
-                y_hip(i) = y - self.L * sin(th);
-                x_head(i) = x + self.L * cos(th);
-                y_head(i) = y + self.L * sin(th);
+                ph = qout_(i, 4);
+;
+                x_hip(i) = x - self.L * cos(th) * cos(ph) - self.D * cos(th - ph);
+                y_hip(i) = y - self.L * cos(ph) * sin(th) - self.D * sin(th - ph);
+                x_head(i) = x + self.L * cos(th) * cos(ph) + self.D * cos(th + ph);
+                y_head(i) = y + self.L * cos(ph) * sin(th) + self.D * sin(th + ph);
 
                 x_foot_b(i) = x_hip(i) + lout_(i, 1) * sin(gout_(i, 1));
                 y_foot_b(i) = y_hip(i) - lout_(i, 1) * cos(gout_(i, 1));

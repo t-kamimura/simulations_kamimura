@@ -14,7 +14,7 @@ syms kh kf kt
 syms xf_toe xh_toe gamma_h_td gamma_f_td% x*_toe :足先位置
 syms L l3 l4 D
 syms g
-param = [m J kh kf kt xf_toe xh_toe gamma_h_td gamma_f_td L l3 l4 D g]
+param = [m J kh kf kt xf_toe xh_toe gamma_h_td gamma_f_td L l3 l4 D g];
 
 % state variables
 syms x y theta phi
@@ -44,14 +44,14 @@ Xh = xh - D * cos(theta - phi);    % hip position
 Yh = yh - D * sin(theta - phi);    % hip position
 delta_xh = xh_toe - Xh;
 lb = sqrt(Yh^2 + delta_xh^2);
-xh_toe = Xh + lb * sin(gamma_h_td);
+% xh_toe = Xh + lb * sin(gamma_h_td);
 
 Xf = xf + D * cos(theta + phi);
 Yf = yf + D * sin(theta + phi);
 delta_xf = xf_toe - Xf;
 %gamma_f_td = arctan(delta_xf/Yf);
 lf = sqrt(Yf^2 + delta_xf^2);
-xf_toe = Xf + lf * sin(gamma_f_td);
+% xf_toe = Xf + lf * sin(gamma_f_td);
 
 % Energy
 T1 = 0.5 * m * (dxh^2 + dyh^2) + 0.5 * m * (dxf^2 +dyf^2); % 並進の運動エネルギー

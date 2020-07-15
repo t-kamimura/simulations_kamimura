@@ -8,7 +8,7 @@ function [value, isterminal, direction] = events2(q, model)
     fore_toeHight = y + model.L * cos(phi) * sin(theta) + model.D * sin(theta + phi) - model.l4 * cos(model.gamma_f_td);
     % fore_toeHight = yg + model.L .* sin(theta) - model.l4 * cos(model.gamma_f_td);
 
-    HipB = [x - L * cos(phi) * cos(theta)- D * cos(theta - phi) ; y - L * cos(phi) * sin(theta) - D * sin(theta - phi)];
+    HipB = [x - model.L * cos(phi) * cos(theta)- model.D * cos(theta - phi) ; y - model.L * cos(phi) * sin(theta) - model.D * sin(theta - phi)];
     lh_x = model.xh_toe - HipB(1);
     lh_y = HipB(2);
     lh_length = sqrt(lh_x^2 + lh_y^2) - model.lh;

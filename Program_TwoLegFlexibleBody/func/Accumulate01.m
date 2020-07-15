@@ -7,35 +7,35 @@ function model = Accumulate01(t, q, te, qe, ie, model)
     % value = [hind_toeHight; fore_toeHight; yg]; % from events1
     switch length(ie)
         case 0 % どのイベントも発生していない
-%             disp('no event occured @phase1')
+            disp('no event occured @phase1')
             model.eveflg = 20;
         case 1
             if ie(1) == 1
-%                 disp('hind leg touch down @phase1')
+                disp('hind leg touch down @phase1')
                 model.eveflg = 2;   % next phase: hind leg stance
             elseif ie(1) == 2
-%                 disp('fore leg touch down @phase1')
+                disp('fore leg touch down @phase1')
                 model.eveflg = 4;   % next phase: fore leg stance
             elseif ie(1) == 3
-%                 disp('fall down @phase1')
+                disp('fall down @phase1')
                 model.eveflg = 30;
             else
-%                 disp('unknown error @phase1')
+                disp('unknown error @phase1')
                 model.eveflg = 30;
             end
 
         case 2  % 同時に2個のイベントが発生
 
             if ie(1) == 1 && ie(2) == 2
-%                 disp('hind & fore leg touch down @phase1')
+                disp('hind & fore leg touch down @phase1')
                 model.eveflg = 3;
             else
-%                 disp('fall down @phase1')
+                disp('fall down @phase1')
                 model.eveflg = 30;
             end
 
         case 3
-%             disp('unknown error @phase1')
+            disp('unknown error @phase1')
             model.eveflg = 30;
     end
 

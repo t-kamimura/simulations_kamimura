@@ -14,7 +14,7 @@ syms kf kt
 syms xf_toe gamma_h_td gamma_f_td% xf_toe :足先位置
 syms L l4 D
 syms g
-param = [m J kf kt xf_toe gamma_f_td L l4 D g]
+param = [m J kf kt xf_toe gamma_f_td L l4 D g];
 
 % state variables
 syms x y theta phi
@@ -40,12 +40,11 @@ dyf = jacobian(yf, q) * dq.';
 % dxf = dx - dtheta^2 * L * cos(phi) * sin(theta) - dphi^2 * L * sin(phi) * cos(theta);
 % dyf = dy + dtheta^2 * L * cos(phi) * cos(theta) - dphi^2 * L * sin(theta) * sin(phi);
 
-
 Xf = xf + D * cos(theta + phi); % shoulder position
 Yf = yf + D * sin(theta + phi); % shoulder position
 delta_xf = xf_toe - Xf;
 lf = sqrt(Yf^2 + delta_xf^2);
-xf_toe = Xf + lf * sin(gamma_f_td);
+% xf_toe = Xf + lf * sin(gamma_f_td);
 
 % Energy
 T1 = 0.5 * m * (dxh^2 + dyh^2) + 0.5 * m * (dxf^2 +dyf^2); % 並進の運動エネルギー
