@@ -66,7 +66,7 @@ classdef Twoleg < handle
         lout = [];
         gout = [];
 
-        
+
         teout = [];
         qeout = [];
         ieout = [];
@@ -101,7 +101,7 @@ classdef Twoleg < handle
             self.qout = [];
             self.gout = [];
             self.lout = [];
-            
+
 
             self.teout = [];
             self.qeout = [];
@@ -215,7 +215,7 @@ classdef Twoleg < handle
                             liftOffFlag.hind = true;
                         elseif self.eveflg == 3
                             % 次はDouble leg stance
-                            self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 4)) * cos(self.qout(end, 3)) + self.D * cos(self.qout(end, 3) + self.qout(end, 4)) + self.lout(end, 2) * sin(self.gout(end, 2)); 
+                            self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 4)) * cos(self.qout(end, 3)) + self.D * cos(self.qout(end, 3) + self.qout(end, 4)) + self.lout(end, 2) * sin(self.gout(end, 2));
                         elseif self.eveflg == 4
                             % 次はFore leg stance
                             self.xf_toe = self.qout(end, 1) + self.L * cos(self.qout(end, 4)) * cos(self.qout(end, 3)) + self.D * cos(self.qout(end, 3) + self.qout(end, 4)) + self.lout(end, 2) * sin(self.gout(end, 2));
@@ -461,14 +461,15 @@ classdef Twoleg < handle
                 saveas(gcf, figname, 'epsc')
             end
 
+            % エネルギーのグラフ
             figure
-            Eout_ = [self.Eout(:, 1), self.Eout(:, 2), self.Eout(:, 3), self.Eout(:, 4), self.Eout(:, 5)];
+            Eout_ = [self.Eout(:, 1), self.Eout(:, 2), self.Eout(:, 3), self.Eout(:, 4), self.Eout(:, 5), self.Eout(:,6)];
             area(tout_, Eout_)
             xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
             ylabel('Energy', 'interpreter', 'latex', 'Fontsize', 14);
-            legend('trans.', 'rot.', 'grav.', 'hind leg', 'fore leg')
+            legend('trans.', 'rot.', 'grav.', 'hind leg', 'fore leg', 'torso')
             xlim([0, self.tout(end)])
-            ylim([0, max(self.Eout(:, 6))])
+            ylim([0, max(self.Eout(:, 7))])
 
             if saveflag == 1
                 figname = [date, 'variable4'];
