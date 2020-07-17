@@ -345,7 +345,7 @@ classdef Twoleg < handle
                 dx = self.qout(end, 5);
                 dy = self.qout(end, 6);
                 dth = self.qout(end, 7);
-                dph = self.qout(end, 8)
+                dph = self.qout(end, 8);
                 % x0 = self.q_ini(1);
                 % y0 = self.q_ini(2);
                 % th0 = self.q_ini(3);
@@ -406,7 +406,7 @@ classdef Twoleg < handle
 
             %% 状態量のグラフ
             figure
-            % figure('outerposition', [50, 200, 1200, 500])
+            figure('outerposition', [50, 200, 1200, 500])
 
             for pp = 1:8
                 subplot(2, 4, pp)
@@ -503,20 +503,28 @@ classdef Twoleg < handle
 
             %% 描画する各点を計算
             for i = 1:anim_num
-                x = qout_(i, 1);
+                x = qout_(i, 1);   %質量中心
                 y = qout_(i, 2);
                 th = qout_(i, 3);
                 ph = qout_(i, 4);
-;
-                x_hip(i) = x - self.L * cos(th) * cos(ph) - self.D * cos(th - ph);
-                y_hip(i) = y - self.L * cos(ph) * sin(th) - self.D * sin(th - ph);
-                x_head(i) = x + self.L * cos(th) * cos(ph) + self.D * cos(th + ph);
-                y_head(i) = y + self.L * cos(ph) * sin(th) + self.D * sin(th + ph);
 
-                x_foot_b(i) = x_hip(i) + lout_(i, 1) * sin(gout_(i, 1));
-                y_foot_b(i) = y_hip(i) - lout_(i, 1) * cos(gout_(i, 1));
-                x_foot_f(i) = x_head(i) + lout_(i, 2) * sin(gout_(i, 2));
-                y_foot_f(i) = y_head(i) - lout_(i, 2) * cos(gout_(i, 2));
+                x_joint(i) = x - self.L * cos(ph) * cos(th) + self.L * cos(th - ph);   %ジョイント部
+                y_joint(i) = y - self.L * cos(ph) * sin(th) + self.L * sin(th - ph);
+
+                x_hip(i) = x - self.L * cos(th) * cos(ph) - self.L * cos(th - ph);  %胴体
+                y_hip(i) = y - self.L * cos(ph) * sin(th) - self.L * sin(th - ph);
+                x_head(i) = x + self.L * cos(th) * cos(ph) + self.L * cos(th + ph);
+                y_head(i) = y + self.L * cos(ph) * sin(th) + self.L * sin(th + ph);
+                
+                x_hipjoint(i) = x - self.L * cos(th) * cos(ph) - self.D * cos(th - ph);    %関節
+                y_hipjoint(i) = y - self.L * cos(ph) * sin(th) - self.D * sin(th - ph);
+                x_headjoint(i) = x + self.L * cos(th) * cos(ph) + self.D * cos(th + ph);
+                y_headjoint(i) = y + self.L * cos(ph) * sin(th) + self.D * sin(th + ph);
+
+                x_foot_b(i) = x_hipjoint(i) + lout_(i, 1) * sin(gout_(i, 1));     %脚先
+                y_foot_b(i) = y_hipjoint(i) - lout_(i, 1) * cos(gout_(i, 1));
+                x_foot_f(i) = x_headjoint(i) + lout_(i, 2) * sin(gout_(i, 2));
+                y_foot_f(i) = y_headjoint(i) - lout_(i, 2) * cos(gout_(i, 2));
 
             end
 
@@ -531,25 +539,51 @@ classdef Twoleg < handle
             axis equal
             xlim([-0.5 max(x_head) + 0.2])
             ylim([-0.2 1.3])
-            body = line([x_hip(1), x_head(1)], [y_hip(1), y_head(1)], 'color', 'k', 'LineWidth', 3);
-            hindLeg = line([x_hip(1), x_foot_b(1)], [y_hip(1), y_foot_b(1)], 'color', 'r', 'LineWidth', 3);
-            foreLeg = line([x_head(1), x_foot_f(1)], [y_head(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
+            body1 = line([x_hip(1), x_joint(1)], [y_hip(1), y_joint(1)], 'color', 'k', 'LineWidth', 3);
+            body2 = line([x_joint(1), x_head(1)], [y_joint(1), y_head(1)], 'color', 'k', 'LineWidth', 3);
+            hindLeg = line([x_hipjoint(1), x_foot_b(1)], [y_hipjoint(1), y_foot_b(1)], 'color', 'r', 'LineWidth', 3);
+            foreLeg = line([x_headjoint(1), x_foot_f(1)], [y_headjoint(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
             line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
+
+            %もともと
+            % body1 = line([x_hip(1), qout_(1, 1)], [y_hip(1), qout_(1, 2)], 'color', 'k', 'LineWidth', 3);
+            % body2 = line([qout_(1, 1), x_head(1)], [qout_(1, 2), y_head(1)], 'color', 'k', 'LineWidth', 3);
+            % hindLeg = line([x_hipjoint(1), x_foot_b(1)], [y_hipjoint(1), y_foot_b(1)], 'color', 'r', 'LineWidth', 3);
+            % foreLeg = line([x_headjoint(1), x_foot_f(1)], [y_headjoint(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
+            % line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
+
+
+            %体バラしてみたかった
+            % body1 = line([x_hip(1), x_hipjoint(1)], [y_hip(1), y_hipjoint(1)], 'color', 'k', 'LineWidth', 3);
+            % body2 = line([x_hipjoint(1), qout_(1, 1)], [y_hipjoint(1), qout_(1, 2)], 'color', 'k', 'LineWidth', 3);
+            % body3 = line([qout_(1, 1), x_headjoint(1)], [qout_(1, 2), y_headjoint(1)], 'color', 'k', 'LineWidth', 3);
+            % body4 = line([x_headjoint(1), x_head(1)], [y_headjoint(1), y_head(1)], 'color', 'k', 'LineWidth', 3);
+            % hindLeg = line([x_hipjoint(1), x_foot_b(1)], [y_hipjoint(1), y_foot_b(1)], 'color', 'r', 'LineWidth', 3);
+            % foreLeg = line([x_headjoint(1), x_foot_f(1)], [y_headjoint(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
+            % line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
 
             strng = [num2str(0, '%.2f'), ' s'];
             t = text(0, -0.1, strng, 'color', 'k', 'fontsize', 16);
             strng2 = ['x', num2str(speed, '%.2f')];
             t2 = text(max(x_head) - 0.1, -0.1, strng2, 'color', 'k', 'fontsize', 16);
+            % xlim([-0.5 max(x_head) + 0.2])
+            % ylim([-0.2 1.3])
+            % body = line([x_hip(1), x_head(1)], [y_hip(1), y_head(1)], 'color', 'k', 'LineWidth', 3);
+            % hindLeg = line([x_hip(1), x_foot_b(1)], [y_hip(1), y_foot_b(1)], 'color', 'r', 'LineWidth', 3);
+            % foreLeg = line([x_head(1), x_foot_f(1)], [y_head(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
+            % line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
 
             F = [];
-
+            
             for i_t = 10:1:anim_num - 10
-                body.XData = [x_hip(i_t), x_head(i_t)];
-                body.YData = [y_hip(i_t), y_head(i_t)];
-                hindLeg.XData = [x_hip(i_t), x_foot_b(i_t)];
-                hindLeg.YData = [y_hip(i_t), y_foot_b(i_t)];
-                foreLeg.XData = [x_head(i_t), x_foot_f(i_t)];
-                foreLeg.YData = [y_head(i_t), y_foot_f(i_t)];
+                body1.XData = [x_hip(i_t), x_joint(i_t)];
+                body1.YData = [y_hip(i_t), y_joint(i_t)];
+                body2.XData = [x_joint(i_t), x_head(i_t)];
+                body2.YData = [y_joint(i_t), y_head(i_t)];
+                hindLeg.XData = [x_hipjoint(i_t), x_foot_b(i_t)];
+                hindLeg.YData = [y_hipjoint(i_t), y_foot_b(i_t)];
+                foreLeg.XData = [x_headjoint(i_t), x_foot_f(i_t)];
+                foreLeg.YData = [y_headjoint(i_t), y_foot_f(i_t)];
                 strng = [num2str(teq(i_t), '%.3f'), ' s'];
                 t.String = strng;
                 drawnow
@@ -559,6 +593,22 @@ classdef Twoleg < handle
                 end
 
             end
+            % for i_t = 10:1:anim_num - 10
+            %     body.XData = [x_hip(i_t), x_head(i_t)];
+            %     body.YData = [y_hip(i_t), y_head(i_t)];
+            %     hindLeg.XData = [x_hip(i_t), x_foot_b(i_t)];
+            %     hindLeg.YData = [y_hip(i_t), y_foot_b(i_t)];
+            %     foreLeg.XData = [x_head(i_t), x_foot_f(i_t)];
+            %     foreLeg.YData = [y_head(i_t), y_foot_f(i_t)];
+            %     strng = [num2str(teq(i_t), '%.3f'), ' s'];
+            %     t.String = strng;
+            %     drawnow
+
+            %     if rec == true
+            %         F = [F; getframe(h1)];
+            %     end
+
+            % end
 
             if rec == true
                 videoobj = VideoWriter([date, 'movie.mp4'], 'MPEG-4');
