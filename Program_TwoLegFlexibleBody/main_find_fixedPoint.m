@@ -1,6 +1,6 @@
 % fileName: main_find_fixedPoint.m
-% initDate: 20200626
-% Object:   Poulakakis (2006)の再現プログラム．ポアンカレ断面上の固定点を求める
+% initDate: 20200722
+% Object:  TwoLegFlexibleの固定点探索
 
 clear
 close all
@@ -12,18 +12,18 @@ set(0, 'defaultTextFontName', 'times');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Construct a questdlg with three options
-choice = questdlg('Do you want to save the result(s)?', ...
-    'Saving opptions', ...
-    'Yes', 'No', 'Yes');
-% Handle response
-saveflag = false;
+% choice = questdlg('Do you want to save the result(s)?', ...
+%     'Saving opptions', ...
+%     'Yes', 'No', 'Yes');
+% % Handle response
+% saveflag = false;
 
-switch choice
-    case 'Yes'
-        saveflag = true;
-    case 'No'
-        saveflag = false;
-end
+% switch choice
+%     case 'Yes'
+%         saveflag = true;
+%     case 'No'
+%         saveflag = false;
+% end
 
 % path追加
 addpath(pwd, 'class')
@@ -35,11 +35,12 @@ addpath(pwd, 'data')
 addpath(pwd, 'fig')
 
 %% 定数の決定
-model = TwoLeg;
+model = Twoleg;
 
 %% 定数の決定
-dx0 = 1.0;
-y0 = 0.35;
+dx0 = 2.5;
+y0 = 1.0;
+phi0 = deg2rad(10);
 
 dtheta0set = [0:10:500]; % [deg/s]
 dtheta0set = deg2rad(dtheta0set);
@@ -56,7 +57,7 @@ fprintf('[  0.0 %%] ');
 figure
 for i_pitch = 1:length(dtheta0set)
     dtheta0 = dtheta0set(i_pitch);
-    q_constants = [y0 dx0 dtheta0];
+    q_constants = [y0 phi0 dx0 dtheta0];
 
     for i_gb = 1:length(gammaset)
         gb_ini = gammaset(i_gb);
@@ -121,8 +122,8 @@ figure
 hold on
 
 for i = 1:length(fixedPoint)
-    plot(rad2deg(fixedPoint(i).q_constants(3)), rad2deg(fixedPoint(i).u_fix(1)), 'd', 'markerfacecolor', 'b', 'markeredgecolor', 'none');
-    plot(rad2deg(fixedPoint(i).q_constants(3)), rad2deg(fixedPoint(i).u_fix(2)), 'o', 'markerfacecolor', 'none', 'markeredgecolor', 'r');
+    plot(rad2deg(fixedPoint(i).q_constants(4)), rad2deg(fixedPoint(i).u_fix(1)), 'd', 'markerfacecolor', 'b', 'markeredgecolor', 'none');
+    plot(rad2deg(fixedPoint(i).q_constants(4)), rad2deg(fixedPoint(i).u_fix(2)), 'o', 'markerfacecolor', 'none', 'markeredgecolor', 'r');
 end
 
 xlabel("pitch rate [deg/s]")

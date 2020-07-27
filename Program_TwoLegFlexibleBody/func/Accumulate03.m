@@ -6,36 +6,36 @@ function [model] = Accumulate03(t, q, te, qe, ie, model)
     % value = [lb_length; lf_length; yg];
     switch length(ie)
         case 0
-            disp('no event occured @phase3')
+            % disp('no event occured @phase3')
             model.eveflg = 20;
         case 1
 
             if ie(1) == 1
-                disp('hind leg lift off @phase3')
+                % disp('hind leg lift off @phase3')
                 model.eveflg = 4;
             elseif ie(1) == 2
-                disp('fore leg lift off @phase3')
+                % disp('fore leg lift off @phase3')
                 model.eveflg = 2;
             elseif ie(1) == 3
-                disp('fall down @phase3')
+                % disp('fall down @phase3')
                 model.eveflg = 30;
             else
-                disp('unknown error @phase3')
+                % disp('unknown error @phase3')
                 model.eveflg = 30;
             end
 
         case 2
 
             if ie(1) == 1 && ie(2) == 2
-                disp('fore & hind leg lift off @phase3')
+                % disp('fore & hind leg lift off @phase3')
                 model.eveflg = 1;
             else
-                disp('fall down @phase3')
+                % disp('fall down @phase3')
                 model.eveflg = 30;
             end
 
         case 3
-            disp('unkown error@phase3')
+            % disp('unkown error@phase3')
             model.eveflg = 30;
     end
 

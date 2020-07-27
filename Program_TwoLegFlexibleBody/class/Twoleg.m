@@ -405,7 +405,7 @@ classdef Twoleg < handle
             tout_ = self.tout;
 
             %% 状態量のグラフ
-            figure
+            %figure
             figure('outerposition', [50, 200, 1200, 500])
 
             for pp = 1:8

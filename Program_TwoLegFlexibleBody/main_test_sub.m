@@ -1,6 +1,6 @@
-% fileName: main_test.m
-% initDate:　2020/7/13
-% Object:   Twolegflexible
+% fileName: main_test_sub.m
+% initDate:　2020/7/27
+% Object:   Twolegflexible周期解かどうか確認したい
 
 clear
 close all
@@ -24,18 +24,20 @@ addpath(pwd, 'fig')
 
 model = Twoleg;
 
-x_ini = 0;
-y_ini = 1.0;
-theta_ini = 0;
-phi_ini = deg2rad(10);
-dx_ini = 2.5;
-dy_ini = 0;
-dtheta_ini = deg2rad(60);
-dphi_ini = 0;
+load('fixedPoints_for_y0=1_dx0=2.5.mat')
+
+x_ini = fixedPoint(7).q_ini(1);
+y_ini = fixedPoint(7).q_ini(2);
+theta_ini = fixedPoint(7).q_ini(3);
+phi_ini = fixedPoint(7).q_ini(4);
+dx_ini = fixedPoint(7).q_ini(5);
+dy_ini = fixedPoint(7).q_ini(6);
+dtheta_ini = fixedPoint(7).q_ini(7);
+dphi_ini = fixedPoint(7).q_ini(8);
 % gb_ini = 0*pi / 8;
 % gf_ini = 0*pi / 8;
-gamma_h_td_ini = deg2rad(14);
-gamma_f_td_ini = deg2rad(14);
+gamma_h_td_ini = fixedPoint(7).u_fix(1);
+gamma_f_td_ini = fixedPoint(7).u_fix(2);
 
 q_ini = [x_ini y_ini theta_ini phi_ini dx_ini dy_ini dtheta_ini dphi_ini];
 u_ini = [gamma_h_td_ini gamma_f_td_ini];

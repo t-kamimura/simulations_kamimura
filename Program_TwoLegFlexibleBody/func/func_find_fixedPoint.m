@@ -47,14 +47,16 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
         x0 = 0.0;
         y0 = q_constants(1);
         theta0 = 0;
-        dx0 = q_constants(2);
+        phi0 =q_constants(2);
+        dx0 = q_constants(3);
         dy0 = 0;
-        dtheta0 = q_constants(3);
+        dtheta0 = q_constants(4);
+        dphi0 = 0;
 
         gb_ini = u_fix(1);
         gf_ini = u_fix(2);
 
-        q_ini = [x0 y0 theta0 dx0 dy0 dtheta0];
+        q_ini = [x0 y0 theta0 phi0 dx0 dy0 dtheta0 dphi0];
         u_ini = [gb_ini gf_ini];
 
         model.init
@@ -87,6 +89,7 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
 
             logDat.trajectory.tout = model.tout;
             logDat.trajectory.qout = model.qout;
+            
 
             logDat.event.teout = model.teout;
             logDat.event.qeout = model.qeout;
