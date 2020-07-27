@@ -1,5 +1,5 @@
 % １周期のバウンド歩行の周期解を見つける関数
-%  
+%
 
 % 結果
 %   u_fix       : [gb, gf] 指定されたポアンカレ断面上の状態量zで周期解を達成するための入力
@@ -10,23 +10,23 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
 
     % 今回，解を探す関数の定義
     % 入力uを計算することになる
-    myNeutonFunc = @(u) func_poincreMapBound(u, model, q_constants);
+    myNewtonFunc = @(u) func_poincreMapBound(u, model, q_constants);
 
     % Newton法実行
-    options = optimset('Algorithm','levenberg-marquardt','Display','iter'); %debug
-    % options = optimset('Algorithm','levenberg-marquardt','Display','none');
-    [u_fix, fval, exitflag, output, jacobi] = fsolve(myNeutonFunc, u_ini, options);
+%     options = optimset('Algorithm','levenberg-marquardt','Display','iter'); %debug
+    options = optimset('Algorithm','levenberg-marquardt','Display','none');
+    [u_fix, fval, exitflag, output, jacobi] = fsolve(myNewtonFunc, u_ini, options);
 
     % logDatの初期化
     logDat.q_constants = q_constants;
     logDat.q_ini = [];
     logDat.u_fix = u_fix;
-    
+
     logDat.fsolveResult.fval = fval;
     logDat.fsolveResult.exitflag = exitflag;
     logDat.fsolveResult.output = output;
     logDat.fsolveResult.jacobi = jacobi;
-    
+
     logDat.trajectory.tout = [];
     logDat.trajectory.qout = [];
 
@@ -36,10 +36,10 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
 
     logDat.error.q_err = [];
     logDat.error.q_err_max = [];
-    
+
     logDat.GRF = 0;
     logDat.p = 0;
-    
+
     % logDataを得るために一度バウンド実行
     % disp('make Logdata')
     if exitflag > 0
@@ -47,10 +47,10 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
         x0 = 0.0;
         y0 = q_constants(1);
         theta0 = 0;
-        phi0 =q_constants(2);
-        dx0 = q_constants(3);
+        phi0 = u_fix(3);
+        dx0 = q_constants(2);
         dy0 = 0;
-        dtheta0 = q_constants(4);
+        dtheta0 = q_constants(3);
         dphi0 = 0;
 
         gb_ini = u_fix(1);
@@ -61,10 +61,10 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
 
         model.init
         model.bound(q_ini, u_ini)
-        
-%         fprintf('*')
+
+        fprintf('*')
 %         model.plot(false) % debug
-        
+
 
         % 誤差最大のものを抜き出し，本当に固定点になっているか確認
         maxError = max(abs(model.q_err));
@@ -73,23 +73,23 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
             % logDat.error.zmax
             disp('invalid fsolve! this is not fixed point...')
         end
-        
+
         if model.eveflg == 1
             % 最大床反力の計算
             GRF = model.kh*(model.l3 - min(model.lout(:,1)));
-            
+
             % 力積の計算
             p = 0;
             for i_t = 2:length(model.tout)
                 p = p + model.kh*(model.l3 - model.lout(i_t,1))*cos(model.gout(i_t,1))*(model.tout(i_t)-model.tout(i_t-1));
             end
-            
+
             % データ保存
             logDat.q_ini = q_ini;
 
             logDat.trajectory.tout = model.tout;
             logDat.trajectory.qout = model.qout;
-            
+
 
             logDat.event.teout = model.teout;
             logDat.event.qeout = model.qeout;
