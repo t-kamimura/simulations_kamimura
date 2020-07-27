@@ -51,16 +51,18 @@ function [z_new] = func_poincreMapBound(u, model, q_constants)
         if model.eveflg == 1
             % Apexに戻ってきていたら，一周したあとの状態変数誤差
             z_new(1) = model.q_err(1);
-            z_new(2) = model.q_err(3);
-            z_new(3) = model.q_err(4);
-            z_new(4) = model.q_err(6);
+            z_new(2) = model.q_err(2);
+            z_new(3) = model.q_err(3);
+            z_new(4) = model.q_err(4);
+            z_new(5) = model.q_err(6);
+            z_new(6) = model.q_err(7);
         else
             % エラー起きたらとりあえず　全てに１を入れておく
-            z_new = [1 1 1 1];
+            z_new = [1 1 1 1 1 1];
         end
     catch
         % エラー起きたらとりあえず　全てに１を入れておく
-        z_new = [1 1 1 1];
+        z_new = [1 1 1 1 1 1];
     end
 
 % return;

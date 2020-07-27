@@ -13,8 +13,8 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
     myNeutonFunc = @(u) func_poincreMapBound(u, model, q_constants);
 
     % Newton法実行
-%     options = optimset('Algorithm','levenberg-marquardt','Display','iter'); %debug
-    options = optimset('Algorithm','levenberg-marquardt','Display','none');
+    options = optimset('Algorithm','levenberg-marquardt','Display','iter'); %debug
+    % options = optimset('Algorithm','levenberg-marquardt','Display','none');
     [u_fix, fval, exitflag, output, jacobi] = fsolve(myNeutonFunc, u_ini, options);
 
     % logDatの初期化

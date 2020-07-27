@@ -26,18 +26,20 @@ model = Twoleg;
 
 load('fixedPoints_for_y0=1_dx0=2.5.mat')
 
-x_ini = fixedPoint(7).q_ini(1);
-y_ini = fixedPoint(7).q_ini(2);
-theta_ini = fixedPoint(7).q_ini(3);
-phi_ini = fixedPoint(7).q_ini(4);
-dx_ini = fixedPoint(7).q_ini(5);
-dy_ini = fixedPoint(7).q_ini(6);
-dtheta_ini = fixedPoint(7).q_ini(7);
-dphi_ini = fixedPoint(7).q_ini(8);
+i = 7;
+
+x_ini = fixedPoint(i).q_ini(1);
+y_ini = fixedPoint(i).q_ini(2);
+theta_ini = fixedPoint(i).q_ini(3);
+phi_ini = fixedPoint(i).q_ini(4);
+dx_ini = fixedPoint(i).q_ini(5);
+dy_ini = fixedPoint(i).q_ini(6);
+dtheta_ini = fixedPoint(i).q_ini(7);
+dphi_ini = fixedPoint(i).q_ini(8);
 % gb_ini = 0*pi / 8;
 % gf_ini = 0*pi / 8;
-gamma_h_td_ini = fixedPoint(7).u_fix(1);
-gamma_f_td_ini = fixedPoint(7).u_fix(2);
+gamma_h_td_ini = fixedPoint(i).u_fix(1);
+gamma_f_td_ini = fixedPoint(i).u_fix(2);
 
 q_ini = [x_ini y_ini theta_ini phi_ini dx_ini dy_ini dtheta_ini dphi_ini];
 u_ini = [gamma_h_td_ini gamma_f_td_ini];
