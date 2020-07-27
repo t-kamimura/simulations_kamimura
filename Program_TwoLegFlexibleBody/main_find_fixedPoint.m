@@ -38,15 +38,18 @@ addpath(pwd, 'fig')
 model = Twoleg;
 
 %% 定数の決定
-dx0 = 2.5;
-y0 = 1.0;
-phi0 = deg2rad(10);
+dx0 =0.0;
+y0 = 0.68;
 
-dtheta0set = [0:10:500]; % [deg/s]
+phi0set = [0:1:10];
+phi0set = deg2rad(phi0set);
+
+% dtheta0set = [0:10:20]; % [deg/s]
+dtheta0set  = 0;
 dtheta0set = deg2rad(dtheta0set);
 
-gammaset = [-50:10:50]; % [deg]
-% gammaset = 0; % [deg]
+% gammaset = [0:10:30]; % [deg]
+gammaset = 0; % [deg]
 gammaset = deg2rad(gammaset);
 
 u_fixset = [];
@@ -55,62 +58,67 @@ n = 1;
 %% 探索
 fprintf('[  0.0 %%] ');
 figure
-for i_pitch = 1:length(dtheta0set)
-    dtheta0 = dtheta0set(i_pitch);
-    q_constants = [y0 phi0 dx0 dtheta0];
+for i_phi = 1:length(phi0set)
+    phi0 = phi0set(i_phi);
+    
+    for i_pitch = 1:length(dtheta0set)
+        dtheta0 = dtheta0set(i_pitch);
+        q_constants = [y0 dx0 dtheta0];
 
-    for i_gb = 1:length(gammaset)
-        gb_ini = gammaset(i_gb);
+        for i_gb = 1:length(gammaset)
+            gb_ini = gammaset(i_gb);
 
-        for i_gf = 1:length(gammaset)
-            gf_ini = gammaset(i_gf);
-            u_ini = [gb_ini gf_ini];
-            [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_constants);
+            for i_gf = 1:length(gammaset)
+                gf_ini = gammaset(i_gf);
+                u_ini = [gb_ini gf_ini phi0];
+                [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_constants);
 
-            if exitflag > 0
+                if exitflag > 0
 
-                if n == 1
-                    fprintf('*');
-                    u_fixset = u_fix;
-                    fixedPoint = logDat;
-                    n = n + 1;
-                else
-                    breakflag = false;
-
-                    for i_sol = 1:length(u_fixset(:,1))
-
-                        if abs(u_fix(1) - u_fixset(i_sol, 1)) < 1e-3 && abs(u_fix(2) - u_fixset(i_sol, 2)) < 1e-3
-                            breakflag = true;
-                            break
-                        end
-
-                    end
-
-                    if breakflag == false
+                    if n == 1
                         fprintf('*');
-                        % データの保存
-                        u_fixset = [u_fixset; u_fix];
-                        fixedPoint(n) = logDat;
+                        u_fixset = u_fix;
+                        fixedPoint = logDat;
                         n = n + 1;
                     else
-                        fprintf('-')
-                    end
+                        breakflag = false;
 
-                end % if n==1
+                        for i_sol = 1:length(u_fixset(:,1))
 
-            else
-                fprintf('.');
-            end % if exitflag
+                            if abs(u_fix(1) - u_fixset(i_sol, 1)) < 1e-3 && abs(u_fix(2) - u_fixset(i_sol, 2)) < 1e-3
+                                breakflag = true;
+                                break
+                            end
 
-        end % gf
+                        end
 
-        % 次のステップへ
-        fprintf('\n')
-        fprintf('[%5.1f %%]', ((i_pitch - 1) * length(gammaset) + i_gb) / (length(dtheta0set) * length(gammaset)) * 100);
-        fprintf(' ');
-    end % gb
+                        if breakflag == false
+                            fprintf('*');
+                            % データの保存
+                            u_fixset = [u_fixset; u_fix];
+                            fixedPoint(n) = logDat;
+                            n = n + 1;
+                        else
+                            fprintf('-')
+                        end
 
-end
+                    end % if n==1
+
+                else
+                    fprintf('.');
+                end % if exitflag
+
+            end % gf
+
+            
+        end % gb
+
+    end % dtheta0
+    % 次のステップへ
+    fprintf('\n')
+    fprintf('[%5.1f %%]', ((i_phi - 1) * length(dtheta0set) + i_gb) / (length(phi0set) * length(dtheta0set)) * 100);
+    fprintf(' ');
+end % phi0
 
 fprintf('\n')
 
@@ -122,8 +130,9 @@ figure
 hold on
 
 for i = 1:length(fixedPoint)
-    plot(rad2deg(fixedPoint(i).q_constants(4)), rad2deg(fixedPoint(i).u_fix(1)), 'd', 'markerfacecolor', 'b', 'markeredgecolor', 'none');
-    plot(rad2deg(fixedPoint(i).q_constants(4)), rad2deg(fixedPoint(i).u_fix(2)), 'o', 'markerfacecolor', 'none', 'markeredgecolor', 'r');
+    plot(rad2deg(fixedPoint(i).q_constants(3)), rad2deg(fixedPoint(i).u_fix(1)), 'd', 'markerfacecolor', 'b', 'markeredgecolor', 'none');
+    plot(rad2deg(fixedPoint(i).q_constants(3)), rad2deg(fixedPoint(i).u_fix(2)), 'o', 'markerfacecolor', 'none', 'markeredgecolor', 'r');
+    plot(rad2deg(fixedPoint(i).q_constants(3)), rad2deg(fixedPoint(i).u_fix(3)), 's', 'markerfacecolor', 'r', 'markeredgecolor', 'r');
 end
 
 xlabel("pitch rate [deg/s]")
