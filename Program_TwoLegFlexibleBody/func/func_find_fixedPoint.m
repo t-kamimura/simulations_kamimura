@@ -62,7 +62,7 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
         model.init
         model.bound(q_ini, u_ini)
 
-        fprintf('*')
+        % fprintf('*')
 %         model.plot(false) % debug
 
 
@@ -71,10 +71,9 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
         if maxError > 1e-5
             %たまに不動点でない点が見つかってしまう
             % logDat.error.zmax
-            disp('invalid fsolve! this is not fixed point...')
+            % disp('invalid fsolve! this is not fixed point...')
+            fprintf('x')
             model.eveflg = 100;
-            
-
         end
 
         if model.eveflg == 1
@@ -93,10 +92,12 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
             logDat.trajectory.tout = model.tout;
             logDat.trajectory.qout = model.qout;
 
-
             logDat.event.teout = model.teout;
             logDat.event.qeout = model.qeout;
             logDat.event.ieout = model.ieout;
+
+            logDat.error.q_err = model.q_err;
+            logDat.error.q_err_max = model.q_err_max;
 
             logDat.GRF = GRF;
             logDat.p = p;

@@ -17,7 +17,7 @@ function model = Accumulate01(t, q, te, qe, ie, model)
                 % disp('fore leg touch down @phase1')
                 model.eveflg = 4;   % next phase: fore leg stance
             elseif ie(1) == 3
-                disp('fall down @phase1')
+                % disp('fall down @phase1')
                 model.eveflg = 30;
             else
                 % disp('unknown error @phase1')
