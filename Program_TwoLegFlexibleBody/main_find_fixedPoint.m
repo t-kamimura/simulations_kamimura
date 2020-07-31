@@ -38,7 +38,7 @@ addpath(pwd, 'fig')
 model = Twoleg;
 
 %% 定数の決定
-dx0 =5;
+dx0 =5.0;
 y0 = 0.68;
 
 phi0set = [0:1:10];
@@ -60,7 +60,7 @@ fprintf('[  0.0 %%] ');
 figure
 for i_phi = 1:length(phi0set)
     phi0 = phi0set(i_phi);
-    
+
     for i_pitch = 1:length(dtheta0set)
         dtheta0 = dtheta0set(i_pitch);
         q_constants = [y0 dx0 dtheta0];
@@ -110,13 +110,13 @@ for i_phi = 1:length(phi0set)
 
             end % gf
 
-            
-        end % gb
 
+        end % gb
+        % 次のステップへ
+        fprintf('\n')
+        fprintf('[%5.1f %%]', ((i_phi- 1) * length(dtheta0set) + i_pitch) / (length(phi0set) * length(dtheta0set)) * 100);
     end % dtheta0
-    % 次のステップへ
-    fprintf('\n')
-    fprintf('[%5.1f %%]', ((i_phi - 1) * length(dtheta0set) + i_gb) / (length(phi0set) * length(dtheta0set)) * 100);
+
     fprintf(' ');
 end % phi0
 
