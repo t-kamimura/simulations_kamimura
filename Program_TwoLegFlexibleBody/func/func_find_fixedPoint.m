@@ -72,6 +72,9 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
             %たまに不動点でない点が見つかってしまう
             % logDat.error.zmax
             disp('invalid fsolve! this is not fixed point...')
+            model.eveflg = 100;
+            
+
         end
 
         if model.eveflg == 1

@@ -19,15 +19,17 @@ function [z_new] = func_poincreMapBound(u, model, q_constants)
     q_ini = [x0 y0 theta0 phi0 dx0 dy0 dtheta0 dphi0];
     u_ini = [gb_ini gf_ini];
 
+    x_joint = x0 - model.L * cos(phi0) * cos(theta0) + model.L * cos(theta0 - phi0);   %ジョイント部
+    y_joint = y0 - model.L * cos(phi0) * sin(theta0) + model.L * sin(theta0 - phi0);
     head.x = x0 + model.L * cos(theta0) * cos(phi0) + model.D * cos(theta0 + phi0);
     head.y = y0 + model.L * cos(phi0) * sin(theta0) + model.D * sin(theta0 + phi0);
     hip.x = x0 - model.L * cos(theta0) * cos(phi0) - model.D * cos(theta0 - phi0);
     hip.y = y0 - model.L * cos(phi0) * sin(theta0) - model.D * sin(theta0 - phi0);
 
-    toe_b.x = x0- model.L * cos(theta0) * cos(phi0) - model.D * cos(theta0 - phi0) + model.l3 * sin(gb_ini);
-    toe_b.y = y0 - model.L * cos(phi0) * sin(theta0) - model.D * sin(theta0 - phi0) - model.l3 * cos(gb_ini);
-    toe_f.x = x0 + model.L * cos(theta0) * cos(phi0) + model.D * cos(theta0 + phi0) + model.l4 * sin(gf_ini);
-    toe_f.y = y0 + model.L * cos(phi0) * sin(theta0) + model.D * sin(theta0 + phi0) - model.l4 * cos(gf_ini);
+    % toe_b.x = x0- model.L * cos(theta0) * cos(phi0) - model.D * cos(theta0 - phi0) + model.l3 * sin(gb_ini);
+    % toe_b.y = y0 - model.L * cos(phi0) * sin(theta0) - model.D * sin(theta0 - phi0) - model.l3 * cos(gb_ini);
+    % toe_f.x = x0 + model.L * cos(theta0) * cos(phi0) + model.D * cos(theta0 + phi0) + model.l4 * sin(gf_ini);
+    % toe_f.y = y0 + model.L * cos(phi0) * sin(theta0) + model.D * sin(theta0 + phi0) - model.l4 * cos(gf_ini);
 
     toe_b.x = hip.x + model.l3*sin(gb_ini);
     toe_b.y = hip.y - model.l3*cos(gb_ini);
@@ -35,9 +37,10 @@ function [z_new] = func_poincreMapBound(u, model, q_constants)
     toe_f.y = head.y - model.l4*cos(gf_ini);
 
     cla
-    line([head.x hip.x],[head.y, hip.y],'color','k')
-    line([hip.x toe_b.x],[hip.y toe_b.y])
-    line([head.x toe_f.x],[head.y toe_f.y])
+    body1 = line([head.x, x_joint],[head.y, y_joint],'color','k');
+    body2 = line([x_joint, hip.x],[y_joint, hip.y],'color','k');
+    hindLeg = line([hip.x toe_b.x],[hip.y toe_b.y]);
+    foreLeg = line([head.x toe_f.x],[head.y toe_f.y]);
     xlim([-0.8 0.8])
     ylim([-0.2 1.5])
     drawnow

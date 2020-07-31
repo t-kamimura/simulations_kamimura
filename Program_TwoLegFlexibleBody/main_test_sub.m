@@ -11,7 +11,22 @@ set(0, 'defaultTextFontSize', 16);
 set(0, 'defaultTextFontName', 'times');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%Construct a questdlg with three options
+choice = questdlg('Do you want to save the result(s)?', ...
+    'Saving opptions', ...
+    'Yes', 'No', 'Yes');
+% Handle response
 saveflag = false;
+
+switch choice
+    case 'Yes'
+        saveflag = true;
+    case 'No'
+        saveflag = false;
+end
+
+
+% saveflag = false;
 
 % path追加
 addpath(pwd, 'class')
@@ -24,9 +39,9 @@ addpath(pwd, 'fig')
 
 model = Twoleg;
 
-load('fixedPoints_for_y0=0.68_dx0=0.mat')
+load('fixedPoints_for_y0=0.68_dx0=5.mat')
 
-i= 2;
+i=31;
 q_ini = fixedPoint(i).q_ini;
 u_ini = fixedPoint(i).u_fix;
 % x_ini = fixedPoint(7).q_ini(1);
@@ -49,4 +64,4 @@ model.init
 model.bound(q_ini, u_ini)
 
 model.plot(saveflag)
-model.anime(0.05, false);
+model.anime(0.05, saveflag);

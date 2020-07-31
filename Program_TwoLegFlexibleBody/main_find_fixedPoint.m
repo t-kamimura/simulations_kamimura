@@ -38,18 +38,18 @@ addpath(pwd, 'fig')
 model = Twoleg;
 
 %% 定数の決定
-dx0 =0.0;
+dx0 =5;
 y0 = 0.68;
 
 phi0set = [0:1:10];
 phi0set = deg2rad(phi0set);
 
-% dtheta0set = [0:10:20]; % [deg/s]
-dtheta0set  = 0;
+dtheta0set = [0:10:100]; % [deg/s]
+%dtheta0set  = 0;
 dtheta0set = deg2rad(dtheta0set);
 
-% gammaset = [0:10:30]; % [deg]
-gammaset = 0; % [deg]
+gammaset = [-50:10:50]; % [deg]
+%gammaset = 0; % [deg]
 gammaset = deg2rad(gammaset);
 
 u_fixset = [];
