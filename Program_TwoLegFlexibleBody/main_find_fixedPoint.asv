@@ -39,9 +39,9 @@ model = Twoleg;
 
 %% 定数の決定
 dx0 = 7.0; % [m/s]
-y0 = 0.68; % [m]
+y0 = 0.68;  
 
-phi0set = [-20:20:20]; % [deg]
+phi0set = [0:2:10];
 phi0set = deg2rad(phi0set);
 
 dtheta0set = [0:10:100]; % [deg/s]
