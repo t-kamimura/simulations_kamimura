@@ -39,9 +39,9 @@ addpath(pwd, 'fig')
 
 model = Twoleg;
 
-load('fixedPoints_for_y0=0.68_dx0=5.mat')
+load('fixedPoints_for_y0=0.68_dx0=11.111.mat')
 
-i=31;
+i=16;
 q_ini = fixedPoint(i).q_ini;
 u_ini = fixedPoint(i).u_fix;
 % x_ini = fixedPoint(7).q_ini(1);

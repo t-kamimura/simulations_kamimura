@@ -1,0 +1,55 @@
+% fileName: main_test.m
+% initDate:　2020/8/4
+% Object:main_checkstability
+
+clear
+close all
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+set(0, 'defaultAxesFontSize', 12);
+set(0, 'defaultAxesFontName', 'times');
+set(0, 'defaultTextFontSize', 16);
+set(0, 'defaultTextFontName', 'times');
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% path追加
+addpath(pwd, 'class')
+addpath(pwd, 'symbolic')
+addpath(pwd, 'eom')
+addpath(pwd, 'event')
+addpath(pwd, 'func')
+addpath(pwd, 'data')
+addpath(pwd, 'fig')
+
+model = Twoleg;
+
+load('fixedPoints_for_y0=0.68_dx0=5.mat')
+
+% for i = 1 
+i = 1
+ q_fix = fixedPoint(i).q_ini;
+ u_fix(1) = fixedPoint(i).u_fix(1);
+ u_fix(2) = fixedPoint(i).u_fix(2);
+   
+ [eigenValues, eivenVectors, jacobi] = calc_eigenvalue(model, q_fix, u_fix);
+ 
+ diagonal  = diag(eigenValues);
+
+ logdata(i).eigenValue = eigenValues
+ 
+ logdata(i).eivenVectors = eivenVectors
+ 
+ logdata(i).jacobi = jacobi
+
+ logdata(i).diagonal = diagonal;
+ 
+% end
+
+figure 
+hold on
+
+% for i = 1: length(eigenValues)
+    plot(diagonal,'o')
+% end
+
+xlabel ("Imaginary")
+ylabel ("Real")
