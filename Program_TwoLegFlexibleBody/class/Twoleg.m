@@ -85,9 +85,9 @@ classdef Twoleg < handle
         % ode45　のリトライ回数？？
         refine = 4;
         % 相対誤差
-        relval = 1e-6; %(この値でないと同時接地を見抜けない)
+        relval = 1e-12;
         % 絶対誤差
-        absval = 1e-6;
+        absval = 1e-12;
         % シミュレーション最大時間(ｓ)
         tfinal = 10;
     end

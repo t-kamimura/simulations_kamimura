@@ -24,52 +24,39 @@ model = Twoleg;
 
 load('fixedPoints_for_y0=0.68_dx0=5.mat')
 
-i_ = 5
-% for i_ = 1 : length(fixedPoint)
+for i_sol = 1:length(fixedPoint)
 
- q_fix = fixedPoint(i_).q_ini;
- u_fix(1) = fixedPoint(i_).u_fix(1);
- u_fix(2) = fixedPoint(i_).u_fix(2);
-   
- [eigenValues, eivenVectors, jacobi] = calc_eigenvalue(model, q_fix, u_fix);
- 
- logdata(i_).eigenValue = eigenValues
- 
- logdata(i_).eivenVectors = eivenVectors
- 
- logdata(i_).jacobi = jacobi
+    q_fix = fixedPoint(i_sol).q_ini;
+    u_fix(1) = fixedPoint(i_sol).u_fix(1);
+    u_fix(2) = fixedPoint(i_sol).u_fix(2);
 
- diagonal(:,i_)  = diag(eigenValues);
+    [eigenValues, eivenVectors, jacobi] = calc_eigenvalue(model, q_fix, u_fix);
 
- logdata(i_).diagonal = diagonal;
- 
-% end
+    diagonal = diag(eigenValues);
+    logdata(i_sol).eigenValue = diagonal;
+    logdata(i_sol).eivenVectors = eivenVectors;
+    logdata(i_sol).jacobi = jacobi;
 
+end
 
 %グラフをプロット
 
-figure 
+figure
 hold on
 
-t=0:10:360;
-% x=cosd(t);y=i*sind(t);
-% figure(1)
-z=cosd(t) + i * sind(t);
+t = 0:1e-2:2 * pi;
+z = cos(t) + i * sin(t);
 plot(z)
-axis square
+axis equal
 
+% 全部プロットする場合
+for i_sol = 1:length(fixedPoint)
+    plot(real(logdata(i_sol).eigenValue), imag(logdata(i_sol).eigenValue), 'o')
+end
 
-i_ = 1
-% for i_ = 1: length(fixedPoint)
-plot(diagonal(:,i_),'o')
+% % 指定したものだけプロットする場合
+% i_sol = 10;
+% plot(real(logdata(i_sol).eigenValue), imag(logdata(i_sol).eigenValue), 'o')
 
-% figure
-% cx = 1; cy = 1; % 中心
-% r = 0.5;           % 半径
-% plot(r*sin(t)+cx,r*cos(t)+cy)
-% axis([-2,2,-2,2])
-% axis square
-% end
-
-xlabel ("Real")
-ylabel ("Imaginary")
+xlabel("Real")
+ylabel("Imaginary")

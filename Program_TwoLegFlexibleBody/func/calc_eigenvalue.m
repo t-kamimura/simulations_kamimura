@@ -1,8 +1,6 @@
 function [eigenValues, eivenVectors, jacobi] = calc_eigenvalue(model, q_fix, u_fix)
-    dz = 1e-6;
 
-    % q_fix = [];
-    % u_fix = [];
+    dz = 1e-6;
 
     x_fix = q_fix(1);
     y_fix = q_fix(2);
@@ -13,16 +11,9 @@ function [eigenValues, eivenVectors, jacobi] = calc_eigenvalue(model, q_fix, u_f
     dtheta_fix = q_fix(7);
     dphi_fix = q_fix(8);
 
-    % z_fix = [y_fix dx_fix dtheta_fix];
     z_fix = [y_fix theta_fix phi_fix dx_fix dtheta_fix dphi_fix];
 
-    % 摂動がない場合の計算
-    model.init;
-    model.bound(q_fix, u_fix);
-    q_err = model.q_err;
-    y_err_max = max(abs(model.qout(end, 2) - q_fix(2)));
-
-    jacobian = zeros(6, 6);
+    jacobi = zeros(6, 6);
 
     for i_z = 1:6
         % 摂動を足す場合の計算
@@ -40,7 +31,7 @@ function [eigenValues, eivenVectors, jacobi] = calc_eigenvalue(model, q_fix, u_f
 
         % 摂動を引く場合の計算
         z_fix_minus = z_fix;
-        z_fix_minus(i_z) = z_fix_plus(i_z) - dz;
+        z_fix_minus(i_z) = z_fix_minus(i_z) - dz;
         q_fix_minus = [x_fix, z_fix_minus(1), z_fix_minus(2), z_fix_minus(3), z_fix_minus(4), dy_fix, z_fix_minus(5) z_fix_minus(6)];
         model.init;
         model.bound(q_fix_minus, u_fix);
@@ -54,6 +45,5 @@ function [eigenValues, eivenVectors, jacobi] = calc_eigenvalue(model, q_fix, u_f
         % 中央差分でヤコビアンを近似
         jacobi(:, i_z) = 0.5 * (zend_plus - zend_minus)' / dz;
     end
-
     [eivenVectors, eigenValues] = eig(jacobi);
 end
