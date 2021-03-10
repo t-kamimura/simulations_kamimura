@@ -30,8 +30,8 @@ classdef Twoleg < handle
         m = 18.8;
 
         % ばね定数k_leg [N / m]
-        kh= 8000; %後脚のバネ定数
-        kf = 8000; %前脚のバネ定数
+        kh = 20000; %後脚のバネ定数
+        kf = 20000; %前脚のバネ定数
         kt = 98; %ジョイント部分バネ定数
 
         % 減衰定数 [Ns / m]
@@ -322,6 +322,7 @@ classdef Twoleg < handle
 
                 % エネルギーの計算
                 self.Eout = calc_Energy(self);
+                self.E = self.Eout(1,end);
                 % T1 = 0.5 * self.m * (dx^2 + dy^2);
                 % T2 = 0.5 * self.J * dth^2;
                 % V = self.m * self.g * y;
@@ -377,6 +378,7 @@ classdef Twoleg < handle
                 % self.q_err_max = max(self.q_err);
                 % エネルギーの計算
                 self.Eout = calc_Energy(self);
+                self.E = self.Eout(1,end);
                 % T1 = 0.5 * self.m * (dx^2 + dy^2);
                 % T2 = 0.5 * self.J * dth^2;
                 % V = self.m * self.g * y;
@@ -388,31 +390,39 @@ classdef Twoleg < handle
         function plot(self, saveflag)
 
             % -----------------------------------------------------------------
-            qlabelset = {'$$x_g$$', '$$y_g$$', '$$\theta$$', '$$\phi$$'...
-                '$$\dot{x}_g$$', '$$\dot{y}_g$$', '$$\dot\theta$$', '$$\dot\phi$$'};
+            qlabelset = {'$$x$$', '$$y$$', '$$\theta$$', '$$\phi$$', '$$\dot{x}$$', '$$\dot{y}$$', '$$\dot\theta$$', '$$\dot\phi$$'};
             % -----------------------------------------------------------------
             % 座標変換
-            qout_(:, 1) = self.qout(:, 1);
-            qout_(:, 2) = self.qout(:, 2);
-            qout_(:, 3) = self.qout(:, 3) * 180 / pi; %degに変換
-            qout_(:, 4) = self.qout(:, 4) * 180 / pi;
-            qout_(:, 5) = self.qout(:, 5);
-            qout_(:, 6) = self.qout(:, 6);
-            qout_(:, 7) = self.qout(:, 7) * 180 / pi; %degに変換;
-            qout_(:, 8) = self.qout(:, 8) * 180 / pi;
+            % qout_(:, 1) = self.qout(:, 1);
+            % qout_(:, 2) = self.qout(:, 2);
+            qout_(:, 1) = self.qout(:, 1)/self.l3;
+            qout_(:, 2) = self.qout(:, 2)/self.l3;
+            % qout_(:, 3) = self.qout(:, 3) * 180 / pi; %degに変換
+            % qout_(:, 4) = self.qout(:, 4) * 180 / pi;
+            qout_(:, 3) = self.qout(:, 3); %radのまま
+            qout_(:, 4) = self.qout(:, 4);
+            % qout_(:, 5) = self.qout(:, 5);
+            % qout_(:, 6) = self.qout(:, 6);
+            qout_(:, 5) = self.qout(:, 5)/sqrt(self.g*self.l3);
+            qout_(:, 6) = self.qout(:, 6)/sqrt(self.g*self.l3);
+            % qout_(:, 7) = self.qout(:, 7) * 180 / pi; %degに変換;
+            % qout_(:, 8) = self.qout(:, 8) * 180 / pi;
+            qout_(:, 7) = self.qout(:, 7); %radのまま
+            qout_(:, 8) = self.qout(:, 8);
 
             tend = self.tout(end);
-            tout_ = self.tout;
+            % tout_ = self.tout;
+            tout_ = 100*self.tout/tend;
 
             %% 状態量のグラフ
             %figure
-            figure('outerposition', [50, 200, 1200, 500])
+            figure('outerposition', [50, 200, 800, 400])
 
             for pp = 1:8
                 subplot(2, 4, pp)
                 plot(tout_, qout_(:, pp));
                 hold on
-                xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
+                xlabel('Gait cycle [%]', 'Fontsize', 14);
                 ylabel(qlabelset{pp}, 'interpreter', 'latex', 'Fontsize', 14);
                 xlim([0, max(tout_)]);
             end
@@ -421,7 +431,7 @@ classdef Twoleg < handle
                 figname = [date, 'variable1'];
                 saveas(gcf, figname, 'fig')
                 saveas(gcf, figname, 'png')
-                saveas(gcf, figname, 'epsc')
+                saveas(gcf, figname, 'pdf')
             end
 
             %% 状態変数以外
@@ -430,7 +440,7 @@ classdef Twoleg < handle
             plot(tout_, self.lout(:, 1));
             hold on
             plot(tout_, self.lout(:, 2), '--');
-            xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
+            xlabel('Gait cycle [%]', 'Fontsize', 14);
             ylabel('$$l_{\rm h},l_{\rm f}$$', 'interpreter', 'latex', 'Fontsize', 14);
             xlim([0, max(tout_)]);
             ylim([min(self.lout(:, 1)) - 0.01, max(self.lout(:, 1))]);
@@ -450,7 +460,7 @@ classdef Twoleg < handle
             hold on
             plot(tout_, self.gout(:, 2), '--r');
             xlim([0, max(tout_)]);
-            xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
+            xlabel('Gait cycle [%]', 'Fontsize', 14);
             ylabel('$$\gamma_{\rm h},\gamma_{\rm f}$$', 'interpreter', 'latex', 'Fontsize', 14);
             legend({'hind leg', 'fore leg'}, 'Location', 'best')
 
@@ -463,13 +473,13 @@ classdef Twoleg < handle
 
             % エネルギーのグラフ
             figure
-            Eout_ = [self.Eout(:, 1), self.Eout(:, 2), self.Eout(:, 3), self.Eout(:, 4), self.Eout(:, 5), self.Eout(:,6)];
+            Eout_ = [self.Eout(:, 1)+self.Eout(:, 2), self.Eout(:, 3)+self.Eout(:, 4), self.Eout(:, 5), self.Eout(:,6), self.Eout(:,7), self.Eout(:,8)];
             area(tout_, Eout_)
-            xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
+            xlabel('Gait cycle [%]', 'Fontsize', 14);
             ylabel('Energy', 'interpreter', 'latex', 'Fontsize', 14);
             legend('trans.', 'rot.', 'grav.', 'hind leg', 'fore leg', 'torso')
-            xlim([0, self.tout(end)])
-            ylim([0, max(self.Eout(:, 7))])
+            xlim([0, max(tout_)])
+            ylim([0, max(self.Eout(:, end))])
 
             if saveflag == 1
                 figname = [date, 'variable4'];
@@ -515,7 +525,7 @@ classdef Twoleg < handle
                 y_hip(i) = y - self.L * cos(ph) * sin(th) - self.L * sin(th - ph);
                 x_head(i) = x + self.L * cos(th) * cos(ph) + self.L * cos(th + ph);
                 y_head(i) = y + self.L * cos(ph) * sin(th) + self.L * sin(th + ph);
-                
+
                 x_hipjoint(i) = x - self.L * cos(th) * cos(ph) - self.D * cos(th - ph);    %関節
                 y_hipjoint(i) = y - self.L * cos(ph) * sin(th) - self.D * sin(th - ph);
                 x_headjoint(i) = x + self.L * cos(th) * cos(ph) + self.D * cos(th + ph);
@@ -574,7 +584,7 @@ classdef Twoleg < handle
             % line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
 
             F = [];
-            
+
             for i_t = 10:1:anim_num - 10
                 body1.XData = [x_hip(i_t), x_joint(i_t)];
                 body1.YData = [y_hip(i_t), y_joint(i_t)];

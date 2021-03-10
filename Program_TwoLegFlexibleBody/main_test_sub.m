@@ -39,9 +39,12 @@ addpath(pwd, 'fig')
 
 model = Twoleg;
 
-load('fixedPoints_for_y0=0.68_dx0=11.111.mat')
+% load('fixedPoints_for_y0=0.68_dx0=2.6.mat')
+% load('fixedPoints_for_E0=383_dx0=2.6.mat')
+% load('fixedPoints_for_E0=763.352_dx0=5.2.mat')
+load('fixedPoints_for_E0=255_dx0=0.mat')
 
-i=16;
+i=4;
 q_ini = fixedPoint(i).q_ini;
 u_ini = fixedPoint(i).u_fix;
 % x_ini = fixedPoint(7).q_ini(1);
@@ -65,3 +68,5 @@ model.bound(q_ini, u_ini)
 
 model.plot(saveflag)
 model.anime(0.05, saveflag);
+
+Fr = model.qout(end,1)/(model.tout(end)*sqrt(model.g*model.l3));
