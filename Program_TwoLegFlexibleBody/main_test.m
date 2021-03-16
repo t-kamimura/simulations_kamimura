@@ -1,6 +1,6 @@
 % fileName: main_test.m
 % initDate:　2020/7/13
-% Object:   Twolegflexible
+% Object: 状態変数を指定してアニメーションと各状態変数の時間遷移をプロット
 
 clear
 close all
@@ -24,11 +24,11 @@ addpath(pwd, 'fig')
 
 model = Twoleg;
 
-x_ini = f;
+x_ini = 0;
 y_ini = 1.0;
 theta_ini = 0;
 phi_ini = deg2rad(10);
-dx_ini = 2.5;
+dx_ini = 3;
 dy_ini = 0;
 dtheta_ini = deg2rad(0);
 dphi_ini = 0;

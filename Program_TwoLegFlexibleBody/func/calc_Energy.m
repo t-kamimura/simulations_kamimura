@@ -25,9 +25,13 @@ function Eout = calc_Energy(model)
 
 
     % 運動エネルギー
-    T1out = 0.5 * model.m * (dxh.^2 + dyh.^2) + 0.5 * model.m * (dxf.^2 + dyf.^2);
-    T2out = model.J * (dthout.^2 + dphout.^2);
-    Tout = T1out + T2out;
+    %T1out = 0.5 * model.m * (dxh.^2 + dyh.^2) + 0.5 * model.m * (dxf.^2 + dyf.^2);
+    T1out_x = 0.5 * model.m * dxh.^2 + 0.5 * model.m * dxf.^2;
+    T1out_y = 0.5 * model.m * dyh.^2 + 0.5 * model.m * dyf.^2;
+    % T2out = model.J * (dthout.^2 + dphout.^2);
+    T2out_theta = model.J * dthout.^2;
+    T2out_phi = model.J * dphout.^2;
+    Tout = T1out_x + T1out_y + T2out_theta + T2out_phi;
 
     V1out = 2 * model.m * model.g * yout;
     V2out = 0.5 * model.kh * (model.l3 - model.lout(:, 1)).^2;
@@ -35,5 +39,23 @@ function Eout = calc_Energy(model)
     V4out = 0.5 * model.kt * (2 * phout).^2;
     Vout = V1out + V2out + V3out + V4out;
     %Total Energy
-    Eout = [T1out, T2out, V1out, V2out, V3out, V4out, Tout + Vout];
+    % Eout = [T1out, T2out, V1out, V2out, V3out, V4out, Tout + Vout];
+    Eout = [T1out_x, T1out_y, T2out_theta, T2out_phi, V1out, V2out, V3out, V4out, Tout + Vout];
+
+
+    % 運動エネルギー
+    % T1out = 0.5 * model.m * (dxh.^2 + dyh.^2) + 0.5 * model.m * (dxf.^2 + dyf.^2);
+    % T2out = model.J * (dthout.^2 + dphout.^2);
+    % Tout = T1out + T2out;
+
+    % V1out = 2 * model.m * model.g * yout;
+    % V2out = 0.5 * model.kh * (model.l3 - model.lout(:, 1)).^2;
+    % V3out = 0.5 * model.kf * (model.l4 - model.lout(:, 2)).^2;
+    % V4out = 0.5 * model.kt * (2 * phout).^2;
+    % Vout = V1out + V2out + V3out + V4out;
+    % %Total Energy
+    % Eout = [T1out, T2out, V1out, V2out, V3out, V4out, Tout + Vout];
+
+
+
 end

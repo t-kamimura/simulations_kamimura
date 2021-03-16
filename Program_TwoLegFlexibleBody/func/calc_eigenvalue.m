@@ -29,6 +29,7 @@ function [eigenValues, eivenVectors, jacobi] = calc_eigenvalue(model, q_fix, u_f
         zend_plus(5) = model.qout(end, 7); % dtheta
         zend_plus(6) = model.qout(end, 8); % dphi
 
+
         % 摂動を引く場合の計算
         z_fix_minus = z_fix;
         z_fix_minus(i_z) = z_fix_minus(i_z) - dz;

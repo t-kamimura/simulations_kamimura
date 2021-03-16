@@ -1,5 +1,5 @@
 % fileName: main_find_fixedPoint.m
-% initDate: 20200722
+% initDate: 2020/07/22
 % Object:  TwoLegFlexibleの固定点探索
 
 clear
@@ -38,17 +38,18 @@ addpath(pwd, 'fig')
 model = Twoleg;
 
 %% 定数の決定
-dx0 = 11.111; % [m/s]
-y0 = 0.68; % [m]
+dx0 = 13; % [m/s]
+y0 = 0.62; % [m]
 
-phi0set = [-20:20:20]; % [deg]
+phi0set = [-40:40:40]; % [deg]
 phi0set = deg2rad(phi0set);
 
-dtheta0set = [0:10:100]; % [deg/s]
+dtheta0set = [-200:10:200]; % [deg/s]
+%dtheta0set = [-200:20:200]; % [deg/s] %急いでる時用
 %dtheta0set  = 0;
 dtheta0set = deg2rad(dtheta0set);
 
-gammaset = [-50:10:50]; % [deg]
+gammaset = [-60:10:60]; % [deg]
 %gammaset = 0; % [deg]
 gammaset = deg2rad(gammaset);
 
@@ -127,7 +128,7 @@ end % phi0
 fprintf('\n')
 
 % 保存
-filename = ['data/fixedPoints_for_y0=', num2str(y0), '_dx0=', num2str(dx0), '.mat'];
+filename = ['data/fixedPoints_for_y0=_', num2str(y0), '_dx0=', num2str(dx0), '.mat'];
 save(filename, 'fixedPoint');
 
 figure

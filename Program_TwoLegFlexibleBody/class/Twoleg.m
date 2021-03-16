@@ -13,7 +13,7 @@ classdef Twoleg < handle
     %=====================================================================%
     % bound
     % バウンドしてくれます．
-    %=====================================================================%
+    %=========================dx==========================================%
     % plot
     % データをプロットする
     %=====================================================================%
@@ -30,16 +30,20 @@ classdef Twoleg < handle
         m = 18.8;
 
         % ばね定数k_leg [N / m]
-        kh= 8000; %後脚のバネ定数
+        kh= 8000; %後脚のバネ定数dx
+        %kh= 20000; %後脚のバネ定数
         kf = 8000; %前脚のバネ定数
-        kt = 98; %ジョイント部分バネ定数
-
+        %kf = 20000; %前脚のバネ定数
+        %kt = 98; %ジョイント部分バネ定数
+        kt = 220;
+        
         % 減衰定数 [Ns / m]
         c = 0;
 
         %  胴体の長さl[m](脚の付根から重心まで)
         L = 0.29;
         D = 0.06; %仮　%脚の付け根までの長さ
+        %D = -0.06;
 
         % 足のばねの自然帳l_0[m]
         l3 = 0.67; %後脚の長さ
@@ -65,12 +69,13 @@ classdef Twoleg < handle
         qout = [];
         lout = [];
         gout = [];
+        eveflgout = [];
 
 
         teout = [];
         qeout = [];
         ieout = [];
-        eveflgout = [];
+        eeout = [];
 
         Hipout = [];
         Toeout = [];
@@ -85,9 +90,13 @@ classdef Twoleg < handle
         % ode45　のリトライ回数？？
         refine = 4;
         % 相対誤差
-        relval = 1e-12;
+        %relval = 1e-12;
+        relval = 1e-7;
+        %relval = 1e-8;
         % 絶対誤差
-        absval = 1e-12;
+        %absval = 1e-12;
+        absval = 1e-7;
+        %absval = 1e-8;
         % シミュレーション最大時間(ｓ)
         tfinal = 10;
     end
@@ -107,6 +116,7 @@ classdef Twoleg < handle
             self.qeout = [];
             self.ieout = [];
             self.eveflgout = [];
+            self.eeout = [];
 
             self.Hipout = [];
             self.Toeout = [];
@@ -131,7 +141,7 @@ classdef Twoleg < handle
             end
 
             liftOffFlag.hind = false;
-            liftOffFlag.fore = false;
+            liftOffFlag.fore = false;                                                                                                                                                                                                                                                           
 
             for i_phase = 1:6
 
@@ -388,8 +398,8 @@ classdef Twoleg < handle
         function plot(self, saveflag)
 
             % -----------------------------------------------------------------
-            qlabelset = {'$$x_g$$', '$$y_g$$', '$$\theta$$', '$$\phi$$'...
-                '$$\dot{x}_g$$', '$$\dot{y}_g$$', '$$\dot\theta$$', '$$\dot\phi$$'};
+            qlabelset = {'$$x$$ [m]', '$$y$$ [m]', '$$\theta$$ [deg]', '$$\phi$$ [deg]'...
+                '$$\dot{x}$$ [m/s]', '$$\dot{y}$$ [m/s]' , '$$\dot\theta$$ [deg/s]', '$$\dot\phi$$ [deg/s]' };
             % -----------------------------------------------------------------
             % 座標変換
             qout_(:, 1) = self.qout(:, 1);
@@ -404,8 +414,8 @@ classdef Twoleg < handle
             tend = self.tout(end);
             tout_ = self.tout;
 
-            %% 状態量のグラフ
-            %figure
+            % 状態量のグラフ
+            % figure
             figure('outerposition', [50, 200, 1200, 500])
 
             for pp = 1:8
@@ -415,16 +425,19 @@ classdef Twoleg < handle
                 xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
                 ylabel(qlabelset{pp}, 'interpreter', 'latex', 'Fontsize', 14);
                 xlim([0, max(tout_)]);
+            
+        
             end
 
             if saveflag == 1
                 figname = [date, 'variable1'];
-                saveas(gcf, figname, 'fig')
-                saveas(gcf, figname, 'png')
+                %saveas(gcf, figname, 'fig')
+                %saveas(gcf, figname, 'png')
                 saveas(gcf, figname, 'epsc')
+                %saveas(gcf, figname, 'pdf')
             end
 
-            %% 状態変数以外
+            % 状態変数以外
             % 脚長さのグラフ
             figure
             plot(tout_, self.lout(:, 1));
@@ -442,6 +455,7 @@ classdef Twoleg < handle
                 saveas(gcf, figname, 'fig')
                 saveas(gcf, figname, 'png')
                 saveas(gcf, figname, 'epsc')
+                %saveas(gcf, figname, 'pdf')
             end
 
             % 脚角度のグラフ
@@ -459,24 +473,25 @@ classdef Twoleg < handle
                 saveas(gcf, figname, 'fig')
                 saveas(gcf, figname, 'png')
                 saveas(gcf, figname, 'epsc')
+                %saveas(gcf, figname, 'pdf')
             end
 
-            % エネルギーのグラフ
-            figure
-            Eout_ = [self.Eout(:, 1), self.Eout(:, 2), self.Eout(:, 3), self.Eout(:, 4), self.Eout(:, 5), self.Eout(:,6)];
-            area(tout_, Eout_)
-            xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
-            ylabel('Energy', 'interpreter', 'latex', 'Fontsize', 14);
-            legend('trans.', 'rot.', 'grav.', 'hind leg', 'fore leg', 'torso')
-            xlim([0, self.tout(end)])
-            ylim([0, max(self.Eout(:, 7))])
+            % エネルギーのグラフ sub_Energyで出力する
+            % figure
+            % Eout_ = [self.Eout(:, 1) + self.Eout(:, 2), self.Eout(:, 3) + self.Eout(:, 4), self.Eout(:, 5), self.Eout(:,6), self.Eout(:,7), self.Eout(:,8)];
+            % area(tout_, Eout_)
+            % xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
+            % ylabel('Energy', 'interpreter', 'latex', 'Fontsize', 14);
+            % legend('trans.', 'rot.', 'grav.', 'hind leg', 'fore leg', 'torso')
+            % xlim([0, self.tout(end)])
+            % ylim([0, max(self.Eout(:, 9))])
 
-            if saveflag == 1
-                figname = [date, 'variable4'];
-                saveas(gcf, figname, 'fig')
-                saveas(gcf, figname, 'png')
-                saveas(gcf, figname, 'epsc')
-            end
+            % if saveflag == 1
+            %     figname = [date, 'variable4'];
+            %     saveas(gcf, figname, 'fig')
+            %     saveas(gcf, figname, 'png')
+            %     saveas(gcf, figname, 'epsc')
+            % end
 
         end % plot
 
@@ -545,33 +560,10 @@ classdef Twoleg < handle
             foreLeg = line([x_headjoint(1), x_foot_f(1)], [y_headjoint(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
             line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
 
-            %もともと
-            % body1 = line([x_hip(1), qout_(1, 1)], [y_hip(1), qout_(1, 2)], 'color', 'k', 'LineWidth', 3);
-            % body2 = line([qout_(1, 1), x_head(1)], [qout_(1, 2), y_head(1)], 'color', 'k', 'LineWidth', 3);
-            % hindLeg = line([x_hipjoint(1), x_foot_b(1)], [y_hipjoint(1), y_foot_b(1)], 'color', 'r', 'LineWidth', 3);
-            % foreLeg = line([x_headjoint(1), x_foot_f(1)], [y_headjoint(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
-            % line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
-
-
-            %体バラしてみたかった
-            % body1 = line([x_hip(1), x_hipjoint(1)], [y_hip(1), y_hipjoint(1)], 'color', 'k', 'LineWidth', 3);
-            % body2 = line([x_hipjoint(1), qout_(1, 1)], [y_hipjoint(1), qout_(1, 2)], 'color', 'k', 'LineWidth', 3);
-            % body3 = line([qout_(1, 1), x_headjoint(1)], [qout_(1, 2), y_headjoint(1)], 'color', 'k', 'LineWidth', 3);
-            % body4 = line([x_headjoint(1), x_head(1)], [y_headjoint(1), y_head(1)], 'color', 'k', 'LineWidth', 3);
-            % hindLeg = line([x_hipjoint(1), x_foot_b(1)], [y_hipjoint(1), y_foot_b(1)], 'color', 'r', 'LineWidth', 3);
-            % foreLeg = line([x_headjoint(1), x_foot_f(1)], [y_headjoint(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
-            % line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
-
             strng = [num2str(0, '%.2f'), ' s'];
             t = text(0, -0.1, strng, 'color', 'k', 'fontsize', 16);
             strng2 = ['x', num2str(speed, '%.2f')];
             t2 = text(max(x_head) - 0.1, -0.1, strng2, 'color', 'k', 'fontsize', 16);
-            % xlim([-0.5 max(x_head) + 0.2])
-            % ylim([-0.2 1.3])
-            % body = line([x_hip(1), x_head(1)], [y_hip(1), y_head(1)], 'color', 'k', 'LineWidth', 3);
-            % hindLeg = line([x_hip(1), x_foot_b(1)], [y_hip(1), y_foot_b(1)], 'color', 'r', 'LineWidth', 3);
-            % foreLeg = line([x_head(1), x_foot_f(1)], [y_head(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
-            % line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
 
             F = [];
             

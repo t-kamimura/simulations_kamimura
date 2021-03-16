@@ -95,6 +95,7 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
             logDat.event.teout = model.teout;
             logDat.event.qeout = model.qeout;
             logDat.event.ieout = model.ieout;
+            logDat.event.eeout = model.eeout;
 
             logDat.error.q_err = model.q_err;
             logDat.error.q_err_max = model.q_err_max;
