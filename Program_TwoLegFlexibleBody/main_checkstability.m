@@ -17,12 +17,12 @@ addpath(pwd, 'symbolic')
 addpath(pwd, 'eom')
 addpath(pwd, 'event')
 addpath(pwd, 'func')
-addpath(pwd, 'data')
+% addpath(pwd, 'data')
 addpath(pwd, 'fig')
 
 model = Twoleg;
 
-load('fixedPoints_for_y0=0.68_dx0=5.mat')
+load('fixedPoints_for_y0=0.66_dx0=13.mat')
 
 for i_sol = 1:length(fixedPoint)
 
@@ -45,7 +45,7 @@ figure
 hold on
 
 t = 0:1e-2:2 * pi;
-z = cos(t) + i * sin(t);
+z = cos(t) + 1i * sin(t);
 plot(z)
 axis equal
 
@@ -58,5 +58,5 @@ end
 % i_sol = 10;
 % plot(real(logdata(i_sol).eigenValue), imag(logdata(i_sol).eigenValue), 'o')
 
-xlabel("Real")
-ylabel("Imaginary")
+xlabel("Re")
+ylabel("Im")
