@@ -24,195 +24,216 @@ switch choice
         saveflag = false;
 end
 
-
-
 % path追加
 addpath(pwd, 'class')
 addpath(pwd, 'symbolic')
 addpath(pwd, 'eom')
 addpath(pwd, 'event')
 addpath(pwd, 'func')
-addpath(pwd, 'data')
+% addpath(pwd, 'data')
 addpath(pwd, 'fig')
 
 model = Twoleg;
 
-load('main_fixedPoints_for_y0=0.62_dx0=13,D=0.06,kt=220.mat')
+dx0 = 13;
+y0 = 0.66;
+% load('main_fixedPoints_for_y0=0.62_dx0=13,D=0.06,kt=220.mat')
+load(['fixedPoints_for_y0=', num2str(y0), '_dx0=', num2str(dx0), '.mat'])
 
-for i = 1: length(fixedPoint)
+for i = 1:length(fixedPoint)
 
     q_fix = fixedPoint(i).q_ini;
     u_fix(1) = fixedPoint(i).u_fix(1);
     u_fix(2) = fixedPoint(i).u_fix(2);
-    
+
     [eigenValues, eivenVectors, jacobi] = calc_eigenvalue(model, q_fix, u_fix);
-    
+
     diagonal = diag(eigenValues);
     logdata(i).eigenValue = diagonal;
     logdata(i).eivenVectors = eivenVectors;
     logdata(i).jacobi = jacobi;
     logdata(i).eeout = model.eeout;
-    % logdata(i).trans = model.Eout(:,1) + model.Eout(:,2);
-    % logdata(i).rot = model.Eout(:,3) + model.Eout(:,4);
-    % logdata(i).grav = model.Eout(:,5);
-    logdata(i).kh = model.Eout(:,6);
-    logdata(i).kf = model.Eout(:,7);
-    % logdata(i).kt = model.Eout(:,8);
 
-    % logdata(i).compare = horzcat(logdata(i).kh, logdata(i).kf);
-    % logdata(i).max = max(logdata(i).compare, [], 2);
-    % logdata(i).MAX = max(logdata(i).max);
-    
-    % minus = (model.l3 - min(model.lout(:, 1))).^2 - (model.l4 - min(model.lout(:, 2))).^2
-   
-    logdata(i).hind_max = 0.5 * model.kh * (model.l3 - min(model.lout(:, 1))).^2;
-    logdata(i).fore_max = 0.5 * model.kf * (model.l4 - min(model.lout(:, 2))).^2;
-    logdata(i).horzcat = horzcat(logdata(i).hind_max, logdata(i).fore_max);
-    logdata(i).MAX_ki = max(logdata(i).horzcat, [], 2);
+    logdata(i).kh = model.Eout(:, 4);
+    logdata(i).kf = model.Eout(:, 5);
 
-    logdata(i).sum = model.Eout(:,9);
-    logdata(i).rate = max(abs((logdata(i).MAX_ki)/(logdata(i).sum)));
+    max_ki = max(max(logdata(i).kf), max(logdata(i).kh));
+
+    logdata(i).sum = model.Eout(:, 7);
+    logdata(i).rate = max(abs((max_ki) / (logdata(i).sum)));
 
 end
 
+figure
 
+markerset = ['o', 'd', '^'];
 
-figure  
+% おしゃれカラー
+colors.green   =[76,175,80]./255;
+colors.red     =[244,67,54]./255;
+colors.blue    =[33,150,243]./255;
+colors.orange  =[255,87,34]./255;
+colors.yellow  =[253,216,53]./255;
+colors.Dred    =[136,14,79]./255; % ダークレッド
+colors.Dblue   =[26,35,126]./255; % ダークブルー
+colors.Lorange =[255,204,188]./255; % ライトオレンジ
+
+large = 6;
+small = 4;
+
+for i = 1:length(fixedPoint)
+
+    i_middle = round(length(fixedPoint(i).trajectory.tout) / 2);
+
+    if logdata(i).eeout(3) == 1
+        % double leg stance がない歩容
+
+        if fixedPoint(i).u_fix(3) > 0 && fixedPoint(i).trajectory.qout(i_middle, 4) > 0
+            % EE
+            gaitMarker = markerset(1);
+            markerColor = colors.Dblue;
+            markerSize = small;
+
+            % if fixedPoint(i).q_constants(3) > 0
+            %     % 後肢から接地
+            %     plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')
+            %     hold on
+            % elseif fixedPoint(i).q_constants(3) < 0
+            %     % 前肢から接地
+            %     plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')
+            %     hold on
+            % end
+
+        elseif fixedPoint(i).u_fix(3) < 0 && fixedPoint(i).trajectory.qout(i_middle, 4) < 0
+            % GG
+            gaitMarker = markerset(1);
+            markerColor = colors.Dred;
+            markerSize = small;
+            % if fixedPoint(i).q_constants(3) > 0
+            %     % 後肢から接地
+            %     plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')
+            %     hold on
+
+            % elseif fixedPoint(i).q_constants(3) < 0
+            %     % 前肢から接地
+            %     plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')
+            %     hold on
+
+            % end
+
+        elseif (fixedPoint(i).u_fix(3)) > 0 && (fixedPoint(i).trajectory.qout(i_middle, 4)) < 0
+            % EG
+            if fixedPoint(i).q_constants(3) > 0
+                % 後肢から接地
+                gaitMarker = markerset(1);
+                markerColor = colors.blue;
+                markerSize = small;
+                % plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')
+                % hold on
+            elseif fixedPoint(i).q_constants(3) < 0
+                % 前肢から接地
+                gaitMarker = markerset(2);
+                markerColor = colors.red;
+                markerSize = large;
+                % plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'd', 'markerfacecolor', 'r', 'markeredgecolor', 'r')
+                % hold on
+            end
+
+        elseif (fixedPoint(i).u_fix(3)) < 0 && (fixedPoint(i).trajectory.qout(i_middle, 4)) > 0
+            % GE
+            if fixedPoint(i).q_constants(3) > 0
+                % 前肢から接地
+                gaitMarker = markerset(2);
+                markerColor = colors.red;
+                markerSize = large;
+                % plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'd', 'markerfacecolor', 'r', 'markeredgecolor', 'r')
+                % hold on
+            elseif fixedPoint(i).q_constants(3) < 0
+                % 後肢から接地
+                gaitMarker = markerset(1);
+                markerColor = colors.blue;
+                markerSize = small;
+                % plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')
+                % hold on
+            end
+
+        end % if gait
+
+    elseif logdata(i).eeout(3) == 3
+        % double leg stanceがあるとき(double leg flightが一回だけ)
+        if fixedPoint(i).u_fix(3) > 0
+            % E
+            if fixedPoint(i).q_constants(3) > 0
+                % 後肢から接地
+                gaitMarker = markerset(1);
+                markerColor = colors.blue;
+                markerSize = small;
+                % plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')
+                % hold on
+
+                %前脚から
+            elseif fixedPoint(i).q_constants(3) < 0
+                % 前肢から接地
+                gaitMarker = markerset(1);
+                markerColor = colors.blue;
+                markerSize = small;
+                % plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')
+                % hold on
+
+            elseif fixedPoint(i).q_constants(3) == 0
+                % プロンク
+                gaitMarker = markerset(1);
+                markerColor = colors.blue;
+                markerSize = small;
+                % plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')
+                % hold on
+            end
+
+        elseif fixedPoint(i).u_fix(3) < 0
+            % G
+
+            if fixedPoint(i).q_constants(3) > 0
+                % 後肢から接地
+                gaitMarker = markerset(1);
+                markerColor = colors.blue;
+                markerSize = small;
+                % plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')
+                % hold on
+
+                %前脚から
+            elseif fixedPoint(i).q_constants(3) < 0
+                % 前肢から接地
+                gaitMarker = markerset(1);
+                markerColor = colors.blue;
+                markerSize = small;
+                % plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')
+                % hold on
+
+            elseif fixedPoint(i).q_constants(3) == 0
+                % プロンク
+                gaitMarker = markerset(1);
+                markerColor = colors.blue;
+                markerSize = small;
+                % plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')
+                % hold on
+            end
+
+        end
+
+    end % ifexist double leg stance
+
+    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'marker',gaitMarker, 'markerfacecolor', markerColor, 'markeredgecolor', 'none','markersize',markerSize);
+    hold on
+
+end % for fixedPoint
+
 xlabel('$$\dot{\theta}$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
-%ylabel('\phi_0 [deg]')
-zlabel('maxUi', 'interpreter', 'latex', 'Fontsize', 14);
-
-for i = 1: length(fixedPoint)
-
-
-    i_middle = round(length(fixedPoint(i).trajectory.tout)/2);   
-
-
-    %double leg flightが二回ある歩容
-    if logdata(i).eeout(3) ==1                                                                      
-
-        %EE
-        if fixedPoint(i).u_fix(3) > 0  &&  fixedPoint(i).trajectory.qout(i_middle, 4) > 0          
-
-            %後脚から着地
-            if fixedPoint(i).q_constants(3) > 0                                                           
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o','markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')  
-                    hold on    
-
-            %前脚から接地
-            elseif fixedPoint(i).q_constants(3) < 0                           
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')    
-                    hold on  
-            end
-
-        
-        %GG
-        elseif fixedPoint(i).u_fix(3)  < 0  && fixedPoint(i).trajectory.qout(i_middle, 4) < 0      
-
-            %後脚から接地
-            if fixedPoint(i).q_constants(3) > 0    
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o', 'markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')      
-                    hold on
-
-            %前脚から接地
-            elseif fixedPoint(i).q_constants(3) < 0   
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o','markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')      
-                    hold on
-
-            end
-
-        
-        %EG
-        elseif (fixedPoint(i).u_fix(3)) > 0 && (fixedPoint(i).trajectory.qout(i_middle, 4)) < 0            
-
-            %後脚から接地
-            if fixedPoint(i).q_constants(3) > 0    
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o','markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')      
-                    hold on
-
-            %前脚から接地
-            elseif fixedPoint(i).q_constants(3) < 0   
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'd', 'markerfacecolor', 'r', 'markeredgecolor', 'r')     
-                    hold on 
-            end 
-
-        
-
-        %GE
-        elseif (fixedPoint(i).u_fix(3)) < 0 && (fixedPoint(i).trajectory.qout(i_middle, 4)) > 0             
-
-            if fixedPoint(i).q_constants(3) > 0   
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'd', 'markerfacecolor', 'r', 'markeredgecolor', 'r')      
-                    hold on
-
-            elseif fixedPoint(i).q_constants(3) < 0   
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o','markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')      
-                    hold on
-            end 
-
-        end
-
-
-
-    
-
-    %double leg stanceがあるとき(double leg flightが一回だけ)
-    elseif  logdata(i).eeout(3) == 3
-
-        %E
-        if fixedPoint(i).u_fix(3) > 0 
-
-            %後脚から
-            if fixedPoint(i).q_constants(3) > 0                                                           
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o','markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')     
-                    hold on
-
-            %前脚から
-            elseif fixedPoint(i).q_constants(3) < 0                          
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o','markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')   
-                    hold on
-            
-            %プロンク
-            elseif fixedPoint(i).q_constants(3) == 0
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o','markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')      
-                    hold on
-            end
-
-
-        %G
-        elseif fixedPoint(i).u_fix(3)  < 0 
-
-            %後脚から
-            if fixedPoint(i).q_constants(3) > 0    
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o','markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')      
-                    hold on
-
-            %前脚から
-             elseif fixedPoint(i).q_constants(3) < 0   
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o','markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')  
-                    hold on
- 
-            %プロンク
-            elseif fixedPoint(i).q_constants(3) == 0
-                    plot(rad2deg(fixedPoint(i).q_constants(3)), logdata(i).rate, 'o','markerfacecolor', '#4DBEEE', 'markeredgecolor', '#4DBEEE')    
-                    hold on
-                
-
-            end
-
-        end
-
-
-
-    end
-
-end
-
+ylabel('$$\beta$$', 'interpreter', 'latex', 'Fontsize', 14);
 
 if saveflag == true
-        
-    figname = ['swarm_rate_Energy'];
-    saveas(gcf, figname, 'pdf')
-    saveas(gcf, figname, 'fig')
+    figname = ['fig/GRFratio_y0=', num2str(y0), '_dx0=', num2str(dx0), '.png'];
+    saveas(gcf, figname)
+    figname = ['fig/GRFratio_y0=', num2str(y0), '_dx0=', num2str(dx0), '.fig'];
+    saveas(gcf, figname)
     disp('save finish!')
 end

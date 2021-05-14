@@ -1,5 +1,8 @@
 function [model] = Accumulate02(t, q, te, qe, ie, model)
 
+    nt = length(t);
+    model.eveflgout = [model.eveflgout; ones(nt - 1, 1) * model.eveflg];
+    model.eeout = [model.eeout; model.eveflg];
 
     % どのイベントが起こったか？
     % value = [fore_toeHight; lb_length; yg];
@@ -39,8 +42,6 @@ function [model] = Accumulate02(t, q, te, qe, ie, model)
     end
 
     % *outを更新
-    nt = length(t);
-    model.eveflgout = [model.eveflgout; ones(nt - 1, 1) * model.eveflg];
     model.tout = [model.tout; t(2:nt)];
     model.qout = [model.qout; q(2:nt, :)];
 

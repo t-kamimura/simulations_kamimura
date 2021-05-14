@@ -70,6 +70,7 @@ classdef Twoleg < handle
         teout = [];
         qeout = [];
         ieout = [];
+        eeout = [];
         eveflgout = [];
 
         Hipout = [];
@@ -106,6 +107,7 @@ classdef Twoleg < handle
             self.teout = [];
             self.qeout = [];
             self.ieout = [];
+            self.eeout = [];
             self.eveflgout = [];
 
             self.Hipout = [];

@@ -39,7 +39,10 @@ addpath(pwd, 'fig')
 
 model = Twoleg;
 
-load('main_fixedPoints_for_y0=0.62_dx0=13,D=0.06,kt=220.mat')
+dx0 = 13;
+y0 = 0.66;
+% load('main_fixedPoints_for_y0=0.62_dx0=13,D=0.06,kt=220.mat')
+load(['fixedPoints_for_y0=',num2str(y0),'_dx0=',num2str(dx0),'.mat'])
 
 i = 63;
 

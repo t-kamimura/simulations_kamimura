@@ -2,6 +2,8 @@ function [model] = Accumulate05(t,q,te,qe,ie,model)
 
 nt = length(t);
 model.eveflgout = [model.eveflgout;ones(nt-1,1)*model.eveflg]; 
+model.eeout = [model.eeout; model.eveflg];
+
 if isempty(ie)
     % disp('ie is empty event did not occured @phase5')
     model.eveflg = 20;

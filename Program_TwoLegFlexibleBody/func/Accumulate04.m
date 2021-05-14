@@ -1,6 +1,7 @@
 function [model] = Accumulate04(t, q, te, qe, ie, model)
     nt = length(t);
     model.eveflgout = [model.eveflgout; ones(nt - 1, 1) * model.eveflg];
+    model.eeout = [model.eeout; model.eveflg];
 
     % どのイベントが起こったか？
     % value = [hind_toeHight; lf_length; yg];
