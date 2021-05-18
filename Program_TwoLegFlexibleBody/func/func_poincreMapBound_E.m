@@ -15,10 +15,9 @@ function [F_new] = func_poincreMapBound_E(model, z, u)
 
     % エネルギーから初期速度を求める
     M2 = 2 * model.m;
-    M3 = 2 * model.J + 2 * model.m * model.L * (cos(phi0))^2;
-    % M4 = 2 * model.J + 2 * model.m * model.L * (1-(cos(phi0))^2);
+    M3 = 2 * model.J + 2 * model.m * model.L^2 * (cos(phi0))^2;
     T = 0.5  * (M2*dy0^2 + M3*dtheta0^2);
-    U = 2 * model.m * model.g * y0 + 0.5 * model.kt * phi0^2;
+    U = 2 * model.m * model.g * y0 + 0.5 * model.kt * (2*phi0)^2;
 
     dx0 = sqrt((u(3) - T - U)/model.m);
 
@@ -50,8 +49,9 @@ function [F_new] = func_poincreMapBound_E(model, z, u)
     % drawnow
 
     model.init
-    try
+    % try
         model.bound(q_ini, tdAngle)
+        model.Eout(1,9)
         % model.plot(false)   %debug
         %% 誤差確認
         if model.eveflg == 1
@@ -66,10 +66,10 @@ function [F_new] = func_poincreMapBound_E(model, z, u)
             % エラー起きたらとりあえず　全てに１を入れておく
             F_new = [1 1 1 1 1 1];
         end
-    catch
-        % エラー起きたらとりあえず　全てに１を入れておく
-        F_new = [1 1 1 1 1 1];
-    end
+    % catch
+    %     % エラー起きたらとりあえず　全てに１を入れておく
+    %     F_new = [1 1 1 1 1 1];
+    % end
 
 % return;
 end

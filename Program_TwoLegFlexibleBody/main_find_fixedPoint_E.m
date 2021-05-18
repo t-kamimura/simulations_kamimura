@@ -38,8 +38,6 @@ addpath(pwd, 'fig')
 model = Twoleg;
 
 %% 定数の決定
-% dx0 = 11; % [m/s]
-% y0 = 0.67; % [m]
 E0 = 3500; % [J]
 
 y0set = 0.66:0.005:0.68;

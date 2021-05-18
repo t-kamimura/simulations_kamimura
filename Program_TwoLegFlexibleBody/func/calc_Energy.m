@@ -10,25 +10,33 @@ function Eout = calc_Energy(model)
 
     % param = [model.m model.J model.kh model.kf model.kt model.xf_toe model.xh_toe model.gamma_h_td model.gamma_f_td model.L model.l3 model.l4 model.D model.g];
 
-    xh = xout - model.L .* cos(phout) .* cos(thout);
-    yh = yout - model.L .* cos(phout) .* sin(thout);
-    xf = xout + model.L .* cos(phout) .* cos(thout);
-    yf = yout + model.L .* cos(phout) .* sin(thout);
-    % dxh = dxout + (dthout).^2 .* model.L .* sin(thout) .* cos(phout) + (dphout).^2 .* model.L .* sin(phout) .* cos(thout);
-    % dyh = dyout - (dthout).^2 .* model.L .* cos(phout) .* cos(thout) + (dphout).^2 .* model.L .* sin(phout) .* sin(thout);
-    % dxf = dxout - (dthout).^2 .* model.L .* sin(thout) .* cos(phout) - (dphout).^2 .* model.L .* sin(phout) .* cos(thout);
-    % dyf = dyout + (dthout).^2 .* model.L .* cos(phout) .* cos(thout) - (dphout).^2 .* model.L .* sin(phout) .* sin(thout);
-    dxh = dxout + dthout .* model.L .* sin(thout) .* cos(phout) + dphout .* model.L .* cos(thout) .* sin(phout);
-    dyh = dyout - dthout .* model.L .* cos(thout) .* cos(phout) + dphout .* model.L .* sin(thout) .* sin(phout);
-    dxf = dxout - dthout .* model.L .* sin(thout) .* cos(phout) - dphout .* model.L .* cos(thout) .* sin(phout);
-    dyf = dyout + dthout .* model.L .* cos(thout) .* cos(phout) - dphout .* model.L .* sin(thout) .* sin(phout);
+    % xh = xout - model.L .* cos(phout) .* cos(thout);
+    % yh = yout - model.L .* cos(phout) .* sin(thout);
+    % xf = xout + model.L .* cos(phout) .* cos(thout);
+    % yf = yout + model.L .* cos(phout) .* sin(thout);
+    % % dxh = dxout + (dthout).^2 .* model.L .* sin(thout) .* cos(phout) + (dphout).^2 .* model.L .* sin(phout) .* cos(thout);
+    % % dyh = dyout - (dthout).^2 .* model.L .* cos(phout) .* cos(thout) + (dphout).^2 .* model.L .* sin(phout) .* sin(thout);
+    % % dxf = dxout - (dthout).^2 .* model.L .* sin(thout) .* cos(phout) - (dphout).^2 .* model.L .* sin(phout) .* cos(thout);
+    % % dyf = dyout + (dthout).^2 .* model.L .* cos(phout) .* cos(thout) - (dphout).^2 .* model.L .* sin(phout) .* sin(thout);
+    % dxh = dxout + dthout .* model.L .* sin(thout) .* cos(phout) + dphout .* model.L .* cos(thout) .* sin(phout);
+    % dyh = dyout - dthout .* model.L .* cos(thout) .* cos(phout) + dphout .* model.L .* sin(thout) .* sin(phout);
+    % dxf = dxout - dthout .* model.L .* sin(thout) .* cos(phout) - dphout .* model.L .* cos(thout) .* sin(phout);
+    % dyf = dyout + dthout .* model.L .* cos(thout) .* cos(phout) - dphout .* model.L .* sin(thout) .* sin(phout);
 
+    M1 = 2 * model.m;
+    M2 = 2 * model.m;
+    M3 = 2 * model.J + 2 * model.m * model.L^2 * (cos(phout)).^2;
+    M4 = 2 * model.J + 2 * model.m * model.L^2 * (sin(phout)).^2;
 
     % 運動エネルギー
-    T1out = 0.5 * model.m * (dxh.^2) + 0.5 * model.m * (dxf.^2);
-    T2out = 0.5 * model.m * (dyh.^2) + 0.5 * model.m * (dyf.^2);
-    T3out = model.J * (dthout.^2);
-    T4out = model.J * (dphout.^2);
+    % T1out = 0.5 * model.m * (dxh.^2) + 0.5 * model.m * (dxf.^2);
+    % T2out = 0.5 * model.m * (dyh.^2) + 0.5 * model.m * (dyf.^2);
+    % T3out = model.J * (dthout.^2);
+    % T4out = model.J * (dphout.^2);
+    T1out = 0.5 * M1 * (dxout.^2);
+    T2out = 0.5 * M2 * (dyout.^2);
+    T3out = 0.5 * M3 .* (dthout.^2);
+    T4out = 0.5 * M4 .* (dphout.^2);
     Tout = T1out + T2out + T3out + T4out;
 
     V1out = 0.5 * model.kh * (model.l3 - model.lout(:, 1)).^2;
