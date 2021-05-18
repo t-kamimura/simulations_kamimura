@@ -16,9 +16,9 @@ function [F_new] = func_poincreMapBound_E(model, z, u)
     % エネルギーから初期速度を求める
     M2 = 2 * model.m;
     M3 = 2 * model.J + 2 * model.m * model.L * (cos(phi0))^2;
-    M4 = 2 * model.J + 2 * model.m * model.L * (1-(cos(phi0))^2);
-    T = 0.5  * (M2*dy0^2 + M3*dtheta0^2 + M4*dphi0^2);
-    U = 2 * model.m * y0 + 0.5 * model.kt * phi0^2;
+    % M4 = 2 * model.J + 2 * model.m * model.L * (1-(cos(phi0))^2);
+    T = 0.5  * (M2*dy0^2 + M3*dtheta0^2);
+    U = 2 * model.m * model.g * y0 + 0.5 * model.kt * phi0^2;
 
     dx0 = sqrt((u(3) - T - U)/model.m);
 
@@ -28,31 +28,26 @@ function [F_new] = func_poincreMapBound_E(model, z, u)
     q_ini = [x0 y0 theta0 phi0 dx0 dy0 dtheta0 dphi0];
     tdAngle = [gb_ini gf_ini];
 
-    x_joint = x0 - model.L * cos(phi0) * cos(theta0) + model.L * cos(theta0 - phi0);   %ジョイント部
-    y_joint = y0 - model.L * cos(phi0) * sin(theta0) + model.L * sin(theta0 - phi0);
-    head.x = x0 + model.L * cos(theta0) * cos(phi0) + model.D * cos(theta0 + phi0);
-    head.y = y0 + model.L * cos(phi0) * sin(theta0) + model.D * sin(theta0 + phi0);
-    hip.x = x0 - model.L * cos(theta0) * cos(phi0) - model.D * cos(theta0 - phi0);
-    hip.y = y0 - model.L * cos(phi0) * sin(theta0) - model.D * sin(theta0 - phi0);
+    % x_joint = x0 - model.L * cos(phi0) * cos(theta0) + model.L * cos(theta0 - phi0);   %ジョイント部
+    % y_joint = y0 - model.L * cos(phi0) * sin(theta0) + model.L * sin(theta0 - phi0);
+    % head.x = x0 + model.L * cos(theta0) * cos(phi0) + model.D * cos(theta0 + phi0);
+    % head.y = y0 + model.L * cos(phi0) * sin(theta0) + model.D * sin(theta0 + phi0);
+    % hip.x = x0 - model.L * cos(theta0) * cos(phi0) - model.D * cos(theta0 - phi0);
+    % hip.y = y0 - model.L * cos(phi0) * sin(theta0) - model.D * sin(theta0 - phi0);
 
-    % toe_b.x = x0- model.L * cos(theta0) * cos(phi0) - model.D * cos(theta0 - phi0) + model.l3 * sin(gb_ini);
-    % toe_b.y = y0 - model.L * cos(phi0) * sin(theta0) - model.D * sin(theta0 - phi0) - model.l3 * cos(gb_ini);
-    % toe_f.x = x0 + model.L * cos(theta0) * cos(phi0) + model.D * cos(theta0 + phi0) + model.l4 * sin(gf_ini);
-    % toe_f.y = y0 + model.L * cos(phi0) * sin(theta0) + model.D * sin(theta0 + phi0) - model.l4 * cos(gf_ini);
+    % toe_b.x = hip.x + model.l3*sin(gb_ini);
+    % toe_b.y = hip.y - model.l3*cos(gb_ini);
+    % toe_f.x = head.x + model.l4*sin(gf_ini);
+    % toe_f.y = head.y - model.l4*cos(gf_ini);
 
-    toe_b.x = hip.x + model.l3*sin(gb_ini);
-    toe_b.y = hip.y - model.l3*cos(gb_ini);
-    toe_f.x = head.x + model.l4*sin(gf_ini);
-    toe_f.y = head.y - model.l4*cos(gf_ini);
-
-    cla
-    body1 = line([head.x, x_joint],[head.y, y_joint],'color','k');
-    body2 = line([x_joint, hip.x],[y_joint, hip.y],'color','k');
-    hindLeg = line([hip.x toe_b.x],[hip.y toe_b.y]);
-    foreLeg = line([head.x toe_f.x],[head.y toe_f.y]);
-    xlim([-0.8 0.8])
-    ylim([-0.2 1.5])
-    drawnow
+    % cla
+    % body1 = line([head.x, x_joint],[head.y, y_joint],'color','k');
+    % body2 = line([x_joint, hip.x],[y_joint, hip.y],'color','k');
+    % hindLeg = line([hip.x toe_b.x],[hip.y toe_b.y]);
+    % foreLeg = line([head.x toe_f.x],[head.y toe_f.y]);
+    % xlim([-0.8 0.8])
+    % ylim([-0.2 1.5])
+    % drawnow
 
     model.init
     try

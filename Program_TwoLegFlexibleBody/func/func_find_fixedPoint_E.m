@@ -16,7 +16,7 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint_E(model, z_ini, u_ini)
 
     % Newton法実行
 %     options = optimset('Algorithm','levenberg-marquardt','Display','iter'); %debug
-    options = optimset('Algorithm','levenberg-marquardt','Display','none');
+    options = optimset('Algorithm','levenberg-marquardt','Display','none','UseParallel',true);
     [z_fix, fval, exitflag, output, jacobi] = fsolve(myNewtonFunc, z_ini, options);
 
     % logDatの初期化
@@ -41,6 +41,7 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint_E(model, z_ini, u_ini)
 
     logDat.GRF = 0;
     logDat.p = 0;
+    logDat.E = u_ini(3);
 
     % logDataを得るために一度バウンド実行
     % disp('make Logdata')
@@ -62,9 +63,9 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint_E(model, z_ini, u_ini)
         % M1 = 2 * model.m;
         M2 = 2 * model.m;
         M3 = 2 * model.J + 2 * model.m * model.L * (cos(phi0))^2;
-        M4 = 2 * model.J + 2 * model.m * model.L * (1-(cos(phi0))^2);
-        T = 0.5  * (M2*dy0^2 + M3*dtheta0^2 + M4*dphi0^2);
-        U = 2 * model.m * y0 + 0.5 * model.kt * phi0^2;
+        % M4 = 2 * model.J + 2 * model.m * model.L * (sin(phi0))^2;
+        T = 0.5  * (M2*dy0^2 + M3*dtheta0^2);
+        U = 2 * model.m * model.g* y0 + 0.5 * model.kt * phi0^2;
 
         dx0 = sqrt((u_ini(3) - T - U)/model.m);
 
@@ -116,6 +117,7 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint_E(model, z_ini, u_ini)
 
             logDat.GRF = GRF;
             logDat.p = p;
+            logDat.E = model.Eout(1,9);
         else
             exitflag = -10; % エラー起きたらとりあえず　exitFlag = -10 入れておく
         end

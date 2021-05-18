@@ -5,7 +5,7 @@
 clear
 close all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-set(0, 'defaultAxesFontSize', 12);
+set(0, 'defaultAxesFontSize', 16);
 set(0, 'defaultAxesFontName', 'times');
 set(0, 'defaultTextFontSize', 16);
 set(0, 'defaultTextFontName', 'times');
@@ -42,12 +42,12 @@ model = Twoleg;
 % y0 = 0.67; % [m]
 E0 = 3500; % [J]
 
-y0set = 0.66:0.01:0.68;
+y0set = 0.66:0.005:0.68;
 
 phi0set = [-20:20:20]; % [deg]
 phi0set = deg2rad(phi0set);
 
-dtheta0set = [-100:50:100]; % [deg/s]
+dtheta0set = [-100:25:100]; % [deg/s]
 dtheta0set = deg2rad(dtheta0set);
 
 gammaset = [-50:10:50]; % [deg]
@@ -132,7 +132,7 @@ end % for y0
 fprintf('\n')
 
 % 保存
-filename = ['data/fixedPoints_for_E0=', num2str(E0), '_y0=', num2str(y0), '.mat'];
+filename = ['data/fixedPoints_for_E0=', num2str(E0), '.mat'];
 save(filename, 'fixedPoint');
 
 %% 解の描画
@@ -162,7 +162,7 @@ zlabel("$$\phi^*$$ [deg/s]", 'interpreter', 'latex')
 try
 
     if saveflag == true
-        figname0 = ['fig/fixedPoints_tdAngle_for_E0=', num2str(E0)];
+        figname0 = ['fig/fixedPoints_for_E0=', num2str(E0)];
         figname1 = [figname0, '.fig'];
         saveas(gcf, figname1, 'fig')
         figname2 = [figname0, '.png'];
@@ -174,27 +174,5 @@ catch
     disp('some error(s) occurred in saving process')
 end
 
-% figure
-% hold on
-% for i = 1:length(fixedPoint)
-%     plot(rad2deg(fixedPoint(i).q_constants(3)), rad2deg(fixedPoint(i).u_fix(3)), 's', 'markerfacecolor', 'r', 'markeredgecolor', 'r');
-% end
-% xlabel("$$\dot{\theta}$$ [deg/s]")
-% ylabel("$$\phi_0$$ [deg]",'Interpreter','latex')
-
-% try
-
-%     if saveflag == true
-%         figname0 = ['fig/fixedPoints_phi0_for_y0=', num2str(y0), '_dx0=', num2str(dx0)];
-%         figname1 = [figname0,'.fig'];
-%         saveas(gcf, figname1, 'fig')
-%         figname2 = [figname0,'.png'];
-%         saveas(gcf, figname2, 'png')
-%         disp('save finish!')
-%     end
-
-% catch
-%     disp('some error(s) occurred in saving process')
-% end
 
 h = msgbox('Caluculation finished !');
