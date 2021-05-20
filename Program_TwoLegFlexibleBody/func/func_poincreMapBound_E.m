@@ -51,7 +51,7 @@ function [F_new] = func_poincreMapBound_E(model, z, u)
     model.init
     try
         model.bound(q_ini, tdAngle)
-%         model.Eout(1,9)
+        % model.Eout(1,9)
         % model.plot(false)   %debug
         %% 誤差確認
         if model.eveflg == 1

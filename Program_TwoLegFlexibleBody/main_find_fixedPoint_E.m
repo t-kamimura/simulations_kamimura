@@ -41,7 +41,7 @@ E0 = 3500; % [J]
 
 y0set = 0.67:0.001:0.68;
 
-phi0set = [-20:20:20]; % [deg]
+phi0set = [-30:15:30]; % [deg]
 phi0set = deg2rad(phi0set);
 
 dtheta0set = [-150:15:150]; % [deg/s]
@@ -59,7 +59,7 @@ fprintf('[  0.0 %%] ');
 
 for i_y = 1:length(y0set)
     y0 = y0set(i_y);
-
+    fixedPoint = [];
     for i_phi = 1:length(phi0set)
         phi0 = phi0set(i_phi);
 
@@ -88,7 +88,12 @@ for i_y = 1:length(y0set)
 
                             for i_sol = 1:length(z_fixset(:, 1))
 
-                                if abs(z_fix(3) - z_fixset(i_sol, 3)) < 1e-3 && abs(z_fix(1) - z_fixset(i_sol, 1)) < 1e-3 && abs(z_fix(2) - z_fixset(i_sol, 2)) < 1e-3 && abs(z_fix(3) - z_fixset(i_sol, 3))
+                                % if abs(z_fix(1) - z_fixset(i_sol, 1)) < 1e-3 && abs(z_fix(2) - z_fixset(i_sol, 2)) < 1e-3 && abs(z_fix(3) - z_fixset(i_sol, 3))
+                                %     % すでに見つかっているのと同じ固定点
+                                %     breakflag = true;
+                                %     break
+                                % end
+                                if max(abs(z_fix - z_fixset(i_sol, :))) < 1e-3 && max(abs(u_ini - u_fixset(i_sol, :))) < 1e-3
                                     % すでに見つかっているのと同じ固定点
                                     breakflag = true;
                                     break
@@ -110,27 +115,29 @@ for i_y = 1:length(y0set)
                         end % if n==1
 
                     else
-                        fprintf('.');
+                        % fprintf('.');
                     end % if exitflag
 
                 end % gf
 
             end % gb
 
-            % 次のステップへ
-            fprintf('\n')
-            fprintf('[%5.1f %%] ', ((i_phi - 1) * length(dtheta0set) + i_pitch) / (length(phi0set) * length(dtheta0set)) * 100);
+            % % 次のステップへ
+            % fprintf('\n')
+            % fprintf('[%5.1f %%] ', ((i_phi - 1) * length(dtheta0set) + i_pitch) / (length(phi0set) * length(dtheta0set)) * 100);
         end % for dtheta0
-
+        % 次のステップへ
+        fprintf('\n')
+        fprintf('[%5.1f %%] ', ((i_y - 1) * length(phi0set) + i_phi) / (length(y0set) * length(y0set)) * 100);
     end % for phi0
-
+    % 保存
+    filename = ['data/fixedPoints_for_E0=', num2str(E0),'y0=',num2str(y0), '.mat'];
+    save(filename, 'fixedPoint');
 end % for y0
 
 fprintf('\n')
 
-% 保存
-filename = ['data/fixedPoints_for_E0=', num2str(E0), '.mat'];
-save(filename, 'fixedPoint');
+
 
 %% 解の描画
 figure
