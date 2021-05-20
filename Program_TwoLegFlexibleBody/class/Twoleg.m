@@ -465,13 +465,13 @@ classdef Twoleg < handle
 
             % エネルギーのグラフ
             figure
-            Eout_ = [self.Eout(:, 1), self.Eout(:, 2), self.Eout(:, 3), self.Eout(:, 4), self.Eout(:, 5), self.Eout(:,6)];
+            Eout_ = [self.Eout(:, 1), self.Eout(:, 2), self.Eout(:, 3), self.Eout(:, 4), self.Eout(:, 5), self.Eout(:,6), self.Eout(:,7), self.Eout(:,8)];
             area(tout_, Eout_)
             xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
             ylabel('Energy', 'interpreter', 'latex', 'Fontsize', 14);
-            legend('trans.', 'rot.', 'grav.', 'hind leg', 'fore leg', 'torso')
+            legend({'trans(x)', 'trans(y)', 'rot($$\theta$$)','trans($$\phi$$)', 'grav.', 'hind leg', 'fore leg', 'torso'},'Interpreter','latex','Location','best')
             xlim([0, self.tout(end)])
-            ylim([0, max(self.Eout(:, 7))])
+%             ylim([0, max(self.Eout(:, 9))])
 
             if saveflag == 1
                 figname = [date, 'variable4'];

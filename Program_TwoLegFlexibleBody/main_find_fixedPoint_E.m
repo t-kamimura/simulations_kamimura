@@ -37,15 +37,14 @@ addpath(pwd, 'fig')
 %% 定数の決定
 model = Twoleg;
 
-%% 定数の決定
 E0 = 3500; % [J]
 
-y0set = 0.66:0.005:0.68;
+y0set = 0.67:0.001:0.68;
 
 phi0set = [-20:20:20]; % [deg]
 phi0set = deg2rad(phi0set);
 
-dtheta0set = [-100:25:100]; % [deg/s]
+dtheta0set = [-150:15:150]; % [deg/s]
 dtheta0set = deg2rad(dtheta0set);
 
 gammaset = [-50:10:50]; % [deg]
@@ -56,7 +55,7 @@ n = 1;
 
 %% 探索
 fprintf('[  0.0 %%] ');
-figure
+% figure
 
 for i_y = 1:length(y0set)
     y0 = y0set(i_y);
@@ -153,9 +152,9 @@ for i = 1:length(fixedPoint)
     hold on
 end
 
-xlabel("$$y^*$$ [deg/s]", 'interpreter', 'latex')
-ylabel("$$\dot{\theta}^*$$ [deg/s]", 'interpreter', 'latex')
-zlabel("$$\phi^*$$ [deg/s]", 'interpreter', 'latex')
+xlabel("$$y^*$$ [m]", 'interpreter', 'latex')
+ylabel("$$\dot{\theta}^*$$ [rad/s]", 'interpreter', 'latex')
+zlabel("$$\phi^*$$ [rad]", 'interpreter', 'latex')
 
 try
 
@@ -172,5 +171,28 @@ catch
     disp('some error(s) occurred in saving process')
 end
 
+%%
+for i_y = 1:length(y0set)
+    figure
+    for i = 1:length(fixedPoint)
+        if fixedPoint(i).u_fix(1) == y0set(i_y)
+            plot(fixedPoint(i).u_fix(2), fixedPoint(i).z_fix(1), 'o', 'markerfacecolor', 'b', 'markeredgecolor', 'none');
+            hold on
+        end
+    end
+    ylim([-1 1])
+    titlestr = ['y=',num2str(y0set(i_y))];
+    title(titlestr)
+    xlabel("$$\dot{\theta}^*$$ [rad/s]", 'interpreter', 'latex')
+    ylabel("$$\phi^*$$ [rad]", 'interpreter', 'latex')
+    if saveflag == true
+        figname0 = ['fig/fixedPoints_for_E0=', num2str(E0),'y0=',num2str(y0set(i_y))];
+        figname1 = [figname0, '.fig'];
+        saveas(gcf, figname1, 'fig')
+        figname2 = [figname0, '.png'];
+        saveas(gcf, figname2, 'png')
+        disp('save finish!')
+    end
+end
 
 h = msgbox('Caluculation finished !');
