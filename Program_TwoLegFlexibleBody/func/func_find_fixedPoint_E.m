@@ -88,7 +88,7 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint_E(model, z_ini, u_ini)
             %たまに不動点でない点が見つかってしまう
             % logDat.error.zmax
             % disp('invalid fsolve! this is not fixed point...')
-            fprintf('x')
+            % fprintf('x')
             model.eveflg = 100;
         end
 

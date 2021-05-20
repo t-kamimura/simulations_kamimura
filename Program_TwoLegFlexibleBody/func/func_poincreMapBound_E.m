@@ -49,9 +49,9 @@ function [F_new] = func_poincreMapBound_E(model, z, u)
     % drawnow
 
     model.init
-    % try
+    try
         model.bound(q_ini, tdAngle)
-        model.Eout(1,9)
+        % model.Eout(1,9)
         % model.plot(false)   %debug
         %% 誤差確認
         if model.eveflg == 1
@@ -66,10 +66,10 @@ function [F_new] = func_poincreMapBound_E(model, z, u)
             % エラー起きたらとりあえず　全てに１を入れておく
             F_new = [1 1 1 1 1 1];
         end
-    % catch
-    %     % エラー起きたらとりあえず　全てに１を入れておく
-    %     F_new = [1 1 1 1 1 1];
-    % end
+    catch
+        % エラー起きたらとりあえず　全てに１を入れておく
+        F_new = [1 1 1 1 1 1];
+    end
 
 % return;
 end
