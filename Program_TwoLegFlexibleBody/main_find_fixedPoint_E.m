@@ -39,7 +39,7 @@ model = Twoleg;
 
 E0 = 3500; % [J]
 
-y0set = 0.67:0.001:0.68;
+y0set = 0.671:0.001:0.675;
 
 phi0set = [-30:15:30]; % [deg]
 phi0set = deg2rad(phi0set);
@@ -59,7 +59,7 @@ fprintf('[  0.0 %%] ');
 
 for i_y = 1:length(y0set)
     y0 = y0set(i_y);
-    fixedPoint = [];
+    % fixedPoint = [];
     for i_phi = 1:length(phi0set)
         phi0 = phi0set(i_phi);
 
@@ -131,8 +131,9 @@ for i_y = 1:length(y0set)
         fprintf('[%5.1f %%] ', ((i_y - 1) * length(phi0set) + i_phi) / (length(y0set) * length(y0set)) * 100);
     end % for phi0
     % 保存
-    filename = ['data/fixedPoints_for_E0=', num2str(E0),'y0=',num2str(y0), '.mat'];
+    filename = ['data/fixedPoints_for_E0=', num2str(E0),'_y0=',num2str(y0), '.mat'];
     save(filename, 'fixedPoint');
+    clearvars fixedPoint
 end % for y0
 
 fprintf('\n')
@@ -140,66 +141,66 @@ fprintf('\n')
 
 
 %% 解の描画
-figure
-% u_ini = [y0 dtheta0 E0];    % 今回のループで求める周期解の定数（固定）部分
-% z_fix = [phi0 gb_ini gf_ini];   % 今回のループで求める周期解の探索部分
-clrs = 0.75 * parula(length(y0set));
+% figure
+% % u_ini = [y0 dtheta0 E0];    % 今回のループで求める周期解の定数（固定）部分
+% % z_fix = [phi0 gb_ini gf_ini];   % 今回のループで求める周期解の探索部分
+% clrs = 0.75 * parula(length(y0set));
 
-for i = 1:length(fixedPoint)
+% for i = 1:length(fixedPoint)
 
-    for i_y = 1:length(y0set)
+%     for i_y = 1:length(y0set)
 
-        if y0set(i_y) == fixedPoint(i).u_fix(1)
-            break
-        end
+%         if y0set(i_y) == fixedPoint(i).u_fix(1)
+%             break
+%         end
 
-    end
+%     end
 
-    plot3(fixedPoint(i).u_fix(1), fixedPoint(i).u_fix(2), fixedPoint(i).z_fix(1), 'o', 'markerfacecolor', clrs(i_y, :), 'markeredgecolor', 'none');
-    hold on
-end
+%     plot3(fixedPoint(i).u_fix(1), fixedPoint(i).u_fix(2), fixedPoint(i).z_fix(1), 'o', 'markerfacecolor', clrs(i_y, :), 'markeredgecolor', 'none');
+%     hold on
+% end
 
-xlabel("$$y^*$$ [m]", 'interpreter', 'latex')
-ylabel("$$\dot{\theta}^*$$ [rad/s]", 'interpreter', 'latex')
-zlabel("$$\phi^*$$ [rad]", 'interpreter', 'latex')
+% xlabel("$$y^*$$ [m]", 'interpreter', 'latex')
+% ylabel("$$\dot{\theta}^*$$ [rad/s]", 'interpreter', 'latex')
+% zlabel("$$\phi^*$$ [rad]", 'interpreter', 'latex')
 
-try
+% try
 
-    if saveflag == true
-        figname0 = ['fig/fixedPoints_for_E0=', num2str(E0)];
-        figname1 = [figname0, '.fig'];
-        saveas(gcf, figname1, 'fig')
-        figname2 = [figname0, '.png'];
-        saveas(gcf, figname2, 'png')
-        disp('save finish!')
-    end
+%     if saveflag == true
+%         figname0 = ['fig/fixedPoints_for_E0=', num2str(E0)];
+%         figname1 = [figname0, '.fig'];
+%         saveas(gcf, figname1, 'fig')
+%         figname2 = [figname0, '.png'];
+%         saveas(gcf, figname2, 'png')
+%         disp('save finish!')
+%     end
 
-catch
-    disp('some error(s) occurred in saving process')
-end
+% catch
+%     disp('some error(s) occurred in saving process')
+% end
 
-%%
-for i_y = 1:length(y0set)
-    figure
-    for i = 1:length(fixedPoint)
-        if fixedPoint(i).u_fix(1) == y0set(i_y)
-            plot(fixedPoint(i).u_fix(2), fixedPoint(i).z_fix(1), 'o', 'markerfacecolor', 'b', 'markeredgecolor', 'none');
-            hold on
-        end
-    end
-    ylim([-1 1])
-    titlestr = ['y=',num2str(y0set(i_y))];
-    title(titlestr)
-    xlabel("$$\dot{\theta}^*$$ [rad/s]", 'interpreter', 'latex')
-    ylabel("$$\phi^*$$ [rad]", 'interpreter', 'latex')
-    if saveflag == true
-        figname0 = ['fig/fixedPoints_for_E0=', num2str(E0),'y0=',num2str(y0set(i_y))];
-        figname1 = [figname0, '.fig'];
-        saveas(gcf, figname1, 'fig')
-        figname2 = [figname0, '.png'];
-        saveas(gcf, figname2, 'png')
-        disp('save finish!')
-    end
-end
+% %%
+% for i_y = 1:length(y0set)
+%     figure
+%     for i = 1:length(fixedPoint)
+%         if fixedPoint(i).u_fix(1) == y0set(i_y)
+%             plot(fixedPoint(i).u_fix(2), fixedPoint(i).z_fix(1), 'o', 'markerfacecolor', 'b', 'markeredgecolor', 'none');
+%             hold on
+%         end
+%     end
+%     ylim([-1 1])
+%     titlestr = ['y=',num2str(y0set(i_y))];
+%     title(titlestr)
+%     xlabel("$$\dot{\theta}^*$$ [rad/s]", 'interpreter', 'latex')
+%     ylabel("$$\phi^*$$ [rad]", 'interpreter', 'latex')
+%     if saveflag == true
+%         figname0 = ['fig/fixedPoints_for_E0=', num2str(E0),'y0=',num2str(y0set(i_y))];
+%         figname1 = [figname0, '.fig'];
+%         saveas(gcf, figname1, 'fig')
+%         figname2 = [figname0, '.png'];
+%         saveas(gcf, figname2, 'png')
+%         disp('save finish!')
+%     end
+% end
 
 h = msgbox('Caluculation finished !');
