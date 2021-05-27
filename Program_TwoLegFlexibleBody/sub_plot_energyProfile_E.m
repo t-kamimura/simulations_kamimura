@@ -39,11 +39,11 @@ addpath(pwd, 'fig')
 
 model = Twoleg;
 
+y0 = 0.674;
 E0 = 3500;
-% load('main_fixedPoints_for_y0=0.62_dx0=13,D=0.06,kt=220.mat')
-load(['fixedPoints_for_E0=',num2str(E0),'.mat'])
+load(['fixedPoints_for_E0=',num2str(E0),'_y0=',num2str(y0),'.mat'])
 
-i = 2;
+i = 170;
 
 q_fix = fixedPoint(i).q_ini;
 u_fix(1) = fixedPoint(i).z_fix(2);
@@ -56,7 +56,7 @@ model.init
 model.bound(q_fix, u_fix)
 
 model.plot(saveflag)
-model.anime(0.1, false);
+model.anime(0.1, saveflag);
 
 % エネルギーのグラフ
 figure
@@ -77,7 +77,7 @@ xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
 ylabel('Energy', 'interpreter', 'latex', 'Fontsize', 14);
 legend({'trans:x','trans:y', 'rot:theta', 'rot:phi', 'kh','kf','torso','grav'},'location','best')
 xlim([0, model.tout(end)])
-ylim([88, 95])
+ylim([86, 95])
 
 
 if saveflag == 1

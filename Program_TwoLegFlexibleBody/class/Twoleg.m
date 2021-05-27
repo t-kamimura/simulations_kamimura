@@ -539,7 +539,8 @@ classdef Twoleg < handle
             set(h1, 'DoubleBuffer', 'off');
 
             axis equal
-            xlim([-0.5 max(x_head) + 0.2])
+%             xlim([-0.5 max(x_head) + 0.2])
+            xlim([x_joint(1) - 1, x_joint(1)+ 1])
             ylim([-0.2 1.3])
             body1 = line([x_hip(1), x_joint(1)], [y_hip(1), y_joint(1)], 'color', 'k', 'LineWidth', 3);
             body2 = line([x_joint(1), x_head(1)], [y_joint(1), y_head(1)], 'color', 'k', 'LineWidth', 3);
@@ -588,6 +589,8 @@ classdef Twoleg < handle
                 foreLeg.YData = [y_headjoint(i_t), y_foot_f(i_t)];
                 strng = [num2str(teq(i_t), '%.3f'), ' s'];
                 t.String = strng;
+                
+                xlim([x_joint(i_t) - 1, x_joint(i_t)+ 1])
                 drawnow
 
                 if rec == true
