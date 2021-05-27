@@ -39,7 +39,7 @@ model = Twoleg;
 
 E0 = 3500; % [J]
 
-y0set = 0.671:0.001:0.675;
+y0set = 0.65:0.001:0.68;
 
 phi0set = [-30:15:30]; % [deg]
 phi0set = deg2rad(phi0set);
@@ -51,7 +51,7 @@ gammaset = [-50:10:50]; % [deg]
 gammaset = deg2rad(gammaset);
 
 u_fixset = [];
-n = 1;
+
 
 %% 探索
 fprintf('[  0.0 %%] ');
@@ -59,7 +59,7 @@ fprintf('[  0.0 %%] ');
 
 for i_y = 1:length(y0set)
     y0 = y0set(i_y);
-    % fixedPoint = [];
+    n = 1;
     for i_phi = 1:length(phi0set)
         phi0 = phi0set(i_phi);
 
