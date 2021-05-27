@@ -37,13 +37,14 @@ addpath(pwd, 'func')
 addpath(pwd, 'data')
 addpath(pwd, 'fig')
 
+%%
 model = Twoleg;
 
 y0 = 0.674;
 E0 = 3500;
-load(['fixedPoints_for_E0=',num2str(E0),'_y0=',num2str(y0),'.mat'])
+load(['data/identical_energy/fixedPoints_for_E0=',num2str(E0),'_y0=',num2str(y0),'.mat'])
 
-i = 170;
+i = 150;
 
 q_fix = fixedPoint(i).q_ini;
 u_fix(1) = fixedPoint(i).z_fix(2);
@@ -58,7 +59,7 @@ model.bound(q_fix, u_fix)
 model.plot(saveflag)
 model.anime(0.1, saveflag);
 
-% エネルギーのグラフ
+%% エネルギーのグラフ
 figure
 % Eout_ = [(model.Eout(:, 1)./model.Eout(1,9)).*100, (model.Eout(:, 2)./model.Eout(1,9)).*100, (model.Eout(:, 3)./model.Eout(1,9)).*100, (model.Eout(:, 4)./model.Eout(1,9)).*100, (model.Eout(:, 6)./model.Eout(1,9)).*100, (model.Eout(:, 7)./model.Eout(1,9)).*100, (model.Eout(:, 8)./model.Eout(1,9)).*100, (model.Eout(:, 5)./model.Eout(1,9)).*100];
 totalE = model.Eout(1,9);

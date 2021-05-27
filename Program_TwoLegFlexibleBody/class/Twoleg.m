@@ -396,15 +396,20 @@ classdef Twoleg < handle
             % 座標変換
             qout_(:, 1) = self.qout(:, 1);
             qout_(:, 2) = self.qout(:, 2);
-            qout_(:, 3) = self.qout(:, 3) * 180 / pi; %degに変換
-            qout_(:, 4) = self.qout(:, 4) * 180 / pi;
+            qout_(:, 3) = self.qout(:, 3); %degに変換
+            qout_(:, 4) = self.qout(:, 4);
+%             qout_(:, 3) = self.qout(:, 3) * 180 / pi; %degに変換
+%             qout_(:, 4) = self.qout(:, 4) * 180 / pi;
             qout_(:, 5) = self.qout(:, 5);
             qout_(:, 6) = self.qout(:, 6);
-            qout_(:, 7) = self.qout(:, 7) * 180 / pi; %degに変換;
-            qout_(:, 8) = self.qout(:, 8) * 180 / pi;
+%             qout_(:, 7) = self.qout(:, 7) * 180 / pi; %degに変換;
+%             qout_(:, 8) = self.qout(:, 8) * 180 / pi;
+            qout_(:, 7) = self.qout(:, 7); %degに変換;
+            qout_(:, 8) = self.qout(:, 8);
 
             tend = self.tout(end);
             tout_ = self.tout;
+            teout_ = self.teout;
 
             %% 状態量のグラフ
             %figure
@@ -412,18 +417,21 @@ classdef Twoleg < handle
 
             for pp = 1:8
                 subplot(2, 4, pp)
-                plot(tout_, qout_(:, pp));
+                plot(tout_, qout_(:, pp),'LineWidth',1);
                 hold on
+                for i = 1:length(teout_)
+                    line([teout_(i),teout_(i)],[min(qout_(:,pp)) max(qout_(:,pp))],'color','k','LineStyle',':')
+                end
                 xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
                 ylabel(qlabelset{pp}, 'interpreter', 'latex', 'Fontsize', 14);
-                xlim([0, max(tout_)]);
+                xlim([0, tend]);
             end
 
             if saveflag == 1
                 figname = [date, 'variable1'];
                 saveas(gcf, figname, 'fig')
                 saveas(gcf, figname, 'png')
-                saveas(gcf, figname, 'epsc')
+                saveas(gcf, figname, 'pdf')
             end
 
             %% 状態変数以外
@@ -443,7 +451,7 @@ classdef Twoleg < handle
                 figname = [date, 'variable2'];
                 saveas(gcf, figname, 'fig')
                 saveas(gcf, figname, 'png')
-                saveas(gcf, figname, 'epsc')
+                saveas(gcf, figname, 'pdf')
             end
 
             % 脚角度のグラフ
@@ -460,7 +468,7 @@ classdef Twoleg < handle
                 figname = [date, 'variable3'];
                 saveas(gcf, figname, 'fig')
                 saveas(gcf, figname, 'png')
-                saveas(gcf, figname, 'epsc')
+                saveas(gcf, figname, 'pdf')
             end
 
             % エネルギーのグラフ
@@ -477,7 +485,7 @@ classdef Twoleg < handle
                 figname = [date, 'variable4'];
                 saveas(gcf, figname, 'fig')
                 saveas(gcf, figname, 'png')
-                saveas(gcf, figname, 'epsc')
+                saveas(gcf, figname, 'pdf')
             end
 
         end % plot
@@ -567,8 +575,8 @@ classdef Twoleg < handle
 
             strng = [num2str(0, '%.2f'), ' s'];
             t = text(0, -0.1, strng, 'color', 'k', 'fontsize', 16);
-            strng2 = ['x', num2str(speed, '%.2f')];
-            t2 = text(max(x_head) - 0.1, -0.1, strng2, 'color', 'k', 'fontsize', 16);
+%             strng2 = ['x', num2str(speed, '%.2f')];
+%             t2 = text(max(x_head) - 0.1, -0.1, strng2, 'color', 'k', 'fontsize', 16);
             % xlim([-0.5 max(x_head) + 0.2])
             % ylim([-0.2 1.3])
             % body = line([x_hip(1), x_head(1)], [y_hip(1), y_head(1)], 'color', 'k', 'LineWidth', 3);
@@ -588,6 +596,7 @@ classdef Twoleg < handle
                 foreLeg.XData = [x_headjoint(i_t), x_foot_f(i_t)];
                 foreLeg.YData = [y_headjoint(i_t), y_foot_f(i_t)];
                 strng = [num2str(teq(i_t), '%.3f'), ' s'];
+                t.Position = [x_joint(i_t) -0.1 0];
                 t.String = strng;
                 
                 xlim([x_joint(i_t) - 1, x_joint(i_t)+ 1])

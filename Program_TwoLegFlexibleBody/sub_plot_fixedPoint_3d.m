@@ -111,7 +111,7 @@ end
 % end
 % filename = ['data/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
 % save(filename, 'fixedPoints');
-filename = ['data/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
+filename = ['data/identical_energy/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
 load(filename)
 %% 3次元空間にプロット
 
