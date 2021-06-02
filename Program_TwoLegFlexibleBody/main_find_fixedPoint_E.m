@@ -39,33 +39,38 @@ model = Twoleg;
 
 E0 = 3500; % [J]
 
-y0set = 0.66:0.001:0.669;
+y0set = 0.65:0.001:0.68;
 
-phi0set = [-30:15:30]; % [deg]
-phi0set = deg2rad(phi0set);
+% phi0set = [-30:15:30]; % [deg]
+% phi0set = deg2rad(phi0set);
 
-dtheta0set = [-119:1:-104]; % [deg/s]
-dtheta0set = deg2rad(dtheta0set);
+% dtheta0set = [-119:1:-104]; % [deg/s]
+% dtheta0set = deg2rad(dtheta0set);
+
+phi0set = [-1:0.25:0.5]; % [rad]
+
+dtheta0set = [-2:0.2:0]; % [rad/s]
 
 gammaset = [-50:10:50]; % [deg]
 gammaset = deg2rad(gammaset);
 
 u_fixset = [];
 
-
 %% 探索
 fprintf('[  0.0 %%] ');
 % figure
 
-for i_y = 1:length(y0set)
-    y0 = y0set(i_y);
-    n = 1;
-    for i_phi = 1:length(phi0set)
-        phi0 = phi0set(i_phi);
+n = 1;
 
-        for i_pitch = 1:length(dtheta0set)
-            dtheta0 = dtheta0set(i_pitch);
-            u_ini = [y0 dtheta0 E0]; % 今回のループで求める周期解の定数（固定）部分
+for i_pitch = 1:length(dtheta0set)
+    dtheta0 = dtheta0set(i_pitch);
+
+    for i_y = 1:length(y0set)
+        y0 = y0set(i_y);
+        u_ini = [y0 dtheta0 E0]; % 今回のループで求める周期解の定数（固定）部分
+
+        for i_phi = 1:length(phi0set)
+            phi0 = phi0set(i_phi);
 
             for i_gb = 1:length(gammaset)
                 gb_ini = gammaset(i_gb);
@@ -88,11 +93,6 @@ for i_y = 1:length(y0set)
 
                             for i_sol = 1:length(z_fixset(:, 1))
 
-                                % if abs(z_fix(1) - z_fixset(i_sol, 1)) < 1e-3 && abs(z_fix(2) - z_fixset(i_sol, 2)) < 1e-3 && abs(z_fix(3) - z_fixset(i_sol, 3))
-                                %     % すでに見つかっているのと同じ固定点
-                                %     breakflag = true;
-                                %     break
-                                % end
                                 if max(abs(z_fix - z_fixset(i_sol, :))) < 1e-3 && max(abs(u_ini - u_fixset(i_sol, :))) < 1e-3
                                     % すでに見つかっているのと同じ固定点
                                     breakflag = true;
@@ -122,23 +122,23 @@ for i_y = 1:length(y0set)
 
             end % gb
 
-            % % 次のステップへ
-            % fprintf('\n')
-            % fprintf('[%5.1f %%] ', ((i_phi - 1) * length(dtheta0set) + i_pitch) / (length(phi0set) * length(dtheta0set)) * 100);
-        end % for dtheta0
+            
+        end % for phi0
         % 次のステップへ
         fprintf('\n')
-        fprintf('[%5.1f %%] ', ((i_y - 1) * length(phi0set) + i_phi) / (length(y0set) * length(y0set)) * 100);
-    end % for phi0
+        fprintf('[%5.1f %%] ', ((i_pitch - 1) * length(y0set) + i_y) / (length(y0set) * length(dtheta0set)) * 100);
+        
+    end % for y0
+
     % 保存
-    filename = ['data/fixedPoints_for_E0=', num2str(E0),'_y0=',num2str(y0), '.mat'];
+    filename = ['data/fixedPoints_for_E0=', num2str(E0), '_dtheta0=', num2str(dtheta0), '.mat'];
     save(filename, 'fixedPoint');
     clearvars fixedPoint
-end % for y0
+    n = 1;
+end % for dtheta0
+
 
 fprintf('\n')
-
-
 
 %% 解の描画
 % figure
