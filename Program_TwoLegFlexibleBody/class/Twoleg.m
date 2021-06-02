@@ -390,8 +390,8 @@ classdef Twoleg < handle
         function plot(self, saveflag)
 
             % -----------------------------------------------------------------
-            qlabelset = {'$$x_g$$', '$$y_g$$', '$$\theta$$', '$$\phi$$'...
-                '$$\dot{x}_g$$', '$$\dot{y}_g$$', '$$\dot\theta$$', '$$\dot\phi$$'};
+            qlabelset = {'$$x$$', '$$y$$', '$$\theta$$', '$$\phi$$'...
+                '$$\dot{x}$$', '$$\dot{y}$$', '$$\dot\theta$$', '$$\dot\phi$$'};
             % -----------------------------------------------------------------
             % 座標変換
             qout_(:, 1) = self.qout(:, 1);
@@ -410,6 +410,7 @@ classdef Twoleg < handle
             tend = self.tout(end);
             tout_ = self.tout;
             teout_ = self.teout;
+            qeout_ = self.qeout;
 
             %% 状態量のグラフ
             %figure
@@ -429,6 +430,28 @@ classdef Twoleg < handle
 
             if saveflag == 1
                 figname = [date, 'variable1'];
+                saveas(gcf, figname, 'fig')
+                saveas(gcf, figname, 'png')
+                saveas(gcf, figname, 'pdf')
+            end
+
+            %% 状態量を位相平面に
+            figure('outerposition', [50, 200, 800, 600])
+
+            for pp = 1:4
+                subplot(2, 2, pp)
+                plot(qout_(:, pp), qout_(:, pp + 4),'LineWidth',1);
+                hold on
+                for i = 1:length(teout_)-1
+                    plot(qeout_(i,pp),qeout_(i,pp+4),'o','MarkerSize',4,'Markerfacecolor','b','markerEdgeColor','none')
+                end
+                xlabel(qlabelset{pp}, 'interpreter', 'latex', 'Fontsize', 14);
+                ylabel(qlabelset{pp+4}, 'interpreter', 'latex', 'Fontsize', 14);
+                % xlim([0, tend]);
+            end
+
+            if saveflag == 1
+                figname = [date, 'variable_phasePlane'];
                 saveas(gcf, figname, 'fig')
                 saveas(gcf, figname, 'png')
                 saveas(gcf, figname, 'pdf')
@@ -525,7 +548,7 @@ classdef Twoleg < handle
                 y_hip(i) = y - self.L * cos(ph) * sin(th) - self.L * sin(th - ph);
                 x_head(i) = x + self.L * cos(th) * cos(ph) + self.L * cos(th + ph);
                 y_head(i) = y + self.L * cos(ph) * sin(th) + self.L * sin(th + ph);
-                
+
                 x_hipjoint(i) = x - self.L * cos(th) * cos(ph) - self.D * cos(th - ph);    %関節
                 y_hipjoint(i) = y - self.L * cos(ph) * sin(th) - self.D * sin(th - ph);
                 x_headjoint(i) = x + self.L * cos(th) * cos(ph) + self.D * cos(th + ph);
@@ -585,7 +608,7 @@ classdef Twoleg < handle
             % line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
 
             F = [];
-            
+
             for i_t = 10:1:anim_num - 10
                 body1.XData = [x_hip(i_t), x_joint(i_t)];
                 body1.YData = [y_hip(i_t), y_joint(i_t)];
@@ -598,7 +621,7 @@ classdef Twoleg < handle
                 strng = [num2str(teq(i_t), '%.3f'), ' s'];
                 t.Position = [x_joint(i_t) -0.1 0];
                 t.String = strng;
-                
+
                 xlim([x_joint(i_t) - 1, x_joint(i_t)+ 1])
                 drawnow
 

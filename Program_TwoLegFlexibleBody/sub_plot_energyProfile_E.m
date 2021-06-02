@@ -37,18 +37,19 @@ addpath(pwd, 'func')
 addpath(pwd, 'data')
 addpath(pwd, 'fig')
 
-%%
+
 model = Twoleg;
 
-y0 = 0.674;
+y0 = 0.654;
 E0 = 3500;
-load(['data/identical_energy/fixedPoints_for_E0=',num2str(E0),'_y0=',num2str(y0),'.mat'])
-
-i = 150;
+% load(['data/identical_energy/fixedPoints_for_E0=',num2str(E0),'_y0=',num2str(y0),'.mat'])
+load(['data/identical_energy/smalldthetaRange/fixedPoints_for_E0=',num2str(E0),'_y0=',num2str(y0),'.mat'])
+%%
+i = 2;
 
 q_fix = fixedPoint(i).q_ini;
-u_fix(1) = fixedPoint(i).z_fix(2);
-u_fix(2) = fixedPoint(i).z_fix(3);
+u_fix(1) = rem(fixedPoint(i).z_fix(2),2*pi);
+u_fix(2) = rem(fixedPoint(i).z_fix(3),2*pi);
 
 % q_ini = [q_fix(1) q_fix(2) q_fix(3) q_fix(4) q_fix(5) q_fix(6) q_fix(7) q_fix(8)];
 % u_ini = [u_fix(1) u_fix(2)];
