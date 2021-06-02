@@ -146,15 +146,15 @@ n = length(fixedPoints);
 
 h1 = figure;
 for i = 1:n
-%     plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
-%     hold on
-    if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
-        plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
-        hold on
-    else
-        plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',blue,'MarkerEdgeColor','none')
-        hold on
-    end
+    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+    hold on
+%     if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
+%         plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
+%         hold on
+%     else
+%         plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',blue,'MarkerEdgeColor','none')
+%         hold on
+%     end
 end
 xlabel('$$y^*$$ [m]','interpreter','latex')
 ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
@@ -171,7 +171,7 @@ if saveflag == true
     saveas(gcf, figname_fig)
     disp('save finish!')
 end
-
+%%
 set(h1, 'DoubleBuffer', 'off');
 angle = 45;
 F = [];
@@ -183,7 +183,7 @@ for i = 1:720
 end
 
 if saveflag == true
-    videoobj = VideoWriter([date, 'solutions.mp4'], 'MPEG-4');
+    videoobj = VideoWriter('fig/solutions_3d.mp4', 'MPEG-4');
 %     videoobj.FrameRate = FPS;
     fprintf('video saving...')
     open(videoobj);
@@ -197,17 +197,17 @@ for i_dtheta = 1:length(dtheta0set)
     dtheta = dtheta0set(i_dtheta);
     for i=1:n
         if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
-%             plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
-%             hold on
-            if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
-                plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
-                hold on
-            else
-                plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',blue,'MarkerEdgeColor','none')
-                hold on
-            end
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+            hold on
+%             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
+%                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
+%                 hold on
+%             else
+%                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',blue,'MarkerEdgeColor','none')
+%                 hold on
+%             end
         end
-        
+
     end
     figtitle = ['$$\dot{\theta}=$$',num2str(dtheta)];
     title(figtitle,'interpreter','latex')
@@ -232,17 +232,17 @@ for i_y = 1:length(y0set)
     y = y0set(i_y);
     for i=1:n
         if abs(y - fixedPoints(i).fixedPoint(1)) < 1e-3
-%             plot(fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
-%             hold on
-            if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
-                plot(fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
-                hold on
-            else
-                plot(fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',blue,'MarkerEdgeColor','none')
-                hold on
-            end
+            plot(fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+            hold on
+%             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
+%                 plot(fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
+%                 hold on
+%             else
+%                 plot(fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',blue,'MarkerEdgeColor','none')
+%                 hold on
+%             end
         end
-        
+
     end
     figtitle = ['$$y=$$',num2str(y)];
     title(figtitle,'interpreter','latex')
@@ -259,4 +259,61 @@ for i_y = 1:length(y0set)
         disp('save finish!')
         close(h)
     end
+end
+
+%%
+h2 = figure;
+for i = 1:n
+    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).u(1),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+    hold on
+%     if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
+%         plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
+%         hold on
+%     else
+%         plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',blue,'MarkerEdgeColor','none')
+%         hold on
+%     end
+end
+xlabel('$$y^*$$ [m]','interpreter','latex')
+ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
+zlabel('$$\gamma^*_1$$ [rad]','interpreter','latex')
+xlim([y0set(1) y0set(end)])
+ylim([dtheta0set(1) dtheta0set(end)])
+zlim([0.2 0.6])
+grid on
+
+if saveflag == true
+    figname_png = ['fig/fixedPoints_E0=',num2str(E0),'.png'];
+    figname_fig = ['fig/fixedPoints_E0=',num2str(E0),'.fig'];
+    saveas(gcf, figname_png)
+    saveas(gcf, figname_fig)
+    disp('save finish!')
+end
+%%
+h3 = figure;
+for i = 1:n
+    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).u(2),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+    hold on
+%     if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
+%         plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
+%         hold on
+%     else
+%         plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',blue,'MarkerEdgeColor','none')
+%         hold on
+%     end
+end
+xlabel('$$y^*$$ [m]','interpreter','latex')
+ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
+zlabel('$$\gamma^*_2$$ [rad]','interpreter','latex')
+xlim([y0set(1) y0set(end)])
+ylim([dtheta0set(1) dtheta0set(end)])
+zlim([0.2 0.6])
+grid on
+
+if saveflag == true
+    figname_png = ['fig/fixedPoints_E0=',num2str(E0),'.png'];
+    figname_fig = ['fig/fixedPoints_E0=',num2str(E0),'.fig'];
+    saveas(gcf, figname_png)
+    saveas(gcf, figname_fig)
+    disp('save finish!')
 end
