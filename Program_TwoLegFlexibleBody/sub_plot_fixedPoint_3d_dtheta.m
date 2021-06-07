@@ -39,18 +39,13 @@ model = Twoleg;
 
 E0 = 3500; % [J]
 
-% y0set = 0.65:0.001:0.68;
-% dtheta0set = [-150:15:150]; % [deg/s]
+y0set = 0.65:0.001:0.68;
+dtheta0set = [-3:0.2:3]; % [rad/s]
 
-y0set = 0.65:0.001:0.669;
-dtheta0set = [-119:1:-104]; % [deg/s]
-
-dtheta0set = deg2rad(dtheta0set);
 %% データの抽出
-for i_y = 1:length(y0set)
-    load(['data/identical_energy/wideYrange/fixedPoints_for_E0=', num2str(E0),'_y0=',num2str(y0set(i_y)), '.mat'])
-%     load(['data/identical_energy/smalldthetaRange/fixedPoints_for_E0=', num2str(E0),'_y0=',num2str(y0set(i_y)), '.mat'])
-    if i_y == 1
+for i_dtheta = 1:length(dtheta0set)
+    load(['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_dtheta)), '.mat'])
+    if i_dtheta == 1
         fixedPoint_integrated = fixedPoint;
     else
         fixedPoint_integrated = [fixedPoint_integrated,fixedPoint];
@@ -58,68 +53,78 @@ for i_y = 1:length(y0set)
     clearvars fixedPoint
 end
 
-% n = 0;
-% for i = 1:length(fixedPoint_integrated)
-%     if abs(fixedPoint_integrated(i).E - 3500)<1e-3
-%         n = n + 1;
-%         y0 = fixedPoint_integrated(i).u_fix(1);
-%         dtheta0 = fixedPoint_integrated(i).u_fix(2);
-%         phi0 = fixedPoint_integrated(i).z_fix(1);
-%         q_ini = fixedPoint_integrated(i).q_ini;
-%         u_ini = [fixedPoint_integrated(i).z_fix(2), fixedPoint_integrated(i).z_fix(3)];
-%         model.init;
-%         model.bound(q_ini, u_ini);
-%         fixedPoints(n).fixedPoint = [y0, dtheta0, phi0];
-%         fixedPoints(n).u = u_ini;
-%         fixedPoints(n).tout = model.tout;
-%         fixedPoints(n).qout = model.qout;
-%         fixedPoints(n).eeout = model.eeout;
-%         fixedPoints(n).GRF = fixedPoint_integrated(i).GRF;
-%         fixedPoints(n).vel = model.qout(end,1)/model.tout(end);
-%         if fixedPoints(n).eeout(3) == 3
-%             % with DS
-%             if fixedPoints(n).fixedPoint(3) > 0
-%                 fixedPoints(n).soltype(1) = 1;    % E
-%             else
-%                 fixedPoints(n).soltype(1) = 2;    % G
-%             end
-%         elseif fixedPoints(n).eeout(3) == 1
-%             % with DS
-%             midtime = round(length(fixedPoints(n).tout)*0.5);
-%             if fixedPoints(n).fixedPoint(3) > 0
-%                 % E始まり
-%                 if fixedPoints(n).qout(midtime,4) > 0
-%                     fixedPoints(n).soltype(1) = 3; % EE
-%                 else
-%                     fixedPoints(n).soltype(1) = 5; % EG
-%                 end
-%             else
-%                 % G始まり
-%                 if fixedPoints(n).qout(midtime,4) > 0
-%                     fixedPoints(n).soltype(1) = 6; % GE
-%                 else
-%                     fixedPoints(n).soltype(1) = 4; % GG
-%                 end
-%             end
-%         else
-%             fixedPoints(n).soltype = 7;
-%         end
-%         if fixedPoints(n).eeout(2) == 2
-%             % Hind leg first
-%             fixedPoints(n).soltype(2) = 1;
-%         else
-%             % Fore leg first
-%             fixedPoints(n).soltype(2) = 2;
-%         end
-%     end % if solutionExit
-% end
-% filename = ['data/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
-% save(filename, 'fixedPoints');
+n = 0;
+for i = 1:length(fixedPoint_integrated)
+    if abs(fixedPoint_integrated(i).E - 3500)<1e-3
+        n = n + 1;
+        y0 = fixedPoint_integrated(i).u_fix(1);
+        dtheta0 = fixedPoint_integrated(i).u_fix(2);
+        phi0 = fixedPoint_integrated(i).z_fix(1);
+        q_ini = fixedPoint_integrated(i).q_ini;
+        u_ini = [fixedPoint_integrated(i).z_fix(2), fixedPoint_integrated(i).z_fix(3)];
+        model.init;
+        model.bound(q_ini, u_ini);
+        [eigenValues, eivenVectors, jacobi] = calc_eigenvalue(model, q_ini, u_ini);
+        diagonal = diag(eigenValues);
+        fixedPoints(n).fixedPoint = [y0, dtheta0, phi0];
+        fixedPoints(n).q_ini = q_ini;
+        fixedPoints(n).u_ini = u_ini;
+        fixedPoints(n).tout = model.tout;
+        fixedPoints(n).qout = model.qout;
+        fixedPoints(n).eeout = model.eeout;
+        fixedPoints(n).GRF = fixedPoint_integrated(i).GRF;
+        fixedPoints(n).vel = model.qout(end,1)/model.tout(end);
+        if (max(abs(diagonal)) - 1 ) < 1e-5
+            fixedPoints(n).isStable = true;
+        else
+            fixedPoints(n).isStable = false;
+        end
+        fixedPoints(n).eig.eigenValues = diagonal;
+        fixedPoints(n).eig.eivenVectors = eivenVectors;
+        fixedPoints(n).eig.jacobi = jacobi;
+        
+        if fixedPoints(n).eeout(3) == 3
+            % with DS
+            if fixedPoints(n).fixedPoint(3) > 0
+                fixedPoints(n).soltype(1) = 1;    % E
+            else
+                fixedPoints(n).soltype(1) = 2;    % G
+            end
+        elseif fixedPoints(n).eeout(3) == 1
+            % with DS
+            midtime = round(length(fixedPoints(n).tout)*0.5);
+            if fixedPoints(n).fixedPoint(3) > 0
+                % E始まり
+                if fixedPoints(n).qout(midtime,4) > 0
+                    fixedPoints(n).soltype(1) = 3; % EE
+                else
+                    fixedPoints(n).soltype(1) = 5; % EG
+                end
+            else
+                % G始まり
+                if fixedPoints(n).qout(midtime,4) > 0
+                    fixedPoints(n).soltype(1) = 6; % GE
+                else
+                    fixedPoints(n).soltype(1) = 4; % GG
+                end
+            end
+        else
+            fixedPoints(n).soltype = 7;
+        end
+        if fixedPoints(n).eeout(2) == 2
+            % Hind leg first
+            fixedPoints(n).soltype(2) = 1;
+        else
+            % Fore leg first
+            fixedPoints(n).soltype(2) = 2;
+        end
+    end % if solutionExit
+end
+filename = ['data/identical_energy_dtheta/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
+save(filename, 'fixedPoints');
 
 %% 読み込むだけならこっち
-% filename = ['data/identical_energy/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
-% load(filename)
-filename = ['data/identical_energy/smalldthetaRange/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
+filename = ['data/identical_energy_dtheta/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
 load(filename)
 n=length(fixedPoints);
 
@@ -150,8 +155,23 @@ n = length(fixedPoints);
 
 h1 = figure;
 for i = 1:n
-    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+
+%     % 全ての解をプロットする場合    
+%     plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+%     hold on
+    
+    % 安定な解を大きく描く場合
+    if fixedPoints(i).isStable == true
+        edgeClr = 'k';
+        size = 5;
+    else
+        edgeClr = 'none';
+        size = 1;
+    end
+    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr,'MarkerSize',size)
     hold on
+    
+    % チーターと同じシークエンスかどうかだけ気になる場合
 %     if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
 %         plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
 %         hold on
@@ -203,6 +223,18 @@ for i_dtheta = 1:length(dtheta0set)
         if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
             plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
             hold on
+            
+            % 安定な解を大きく描く場合
+            if fixedPoints(i).isStable == true
+                edgeClr = 'k';
+                size = 5;
+            else
+                edgeClr = 'none';
+                size = 3;
+            end
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr, 'MarkerSize',size)
+            hold on
+            
 %             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
 %                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
 %                 hold on
@@ -237,8 +269,20 @@ for i_y = 1:length(y0set)
     y = y0set(i_y);
     for i=1:n
         if abs(y - fixedPoints(i).fixedPoint(1)) < 1e-3
-            plot(fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+%             plot(fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+%             hold on
+            
+            % 安定な解を大きく描く場合
+            if fixedPoints(i).isStable == true
+                edgeClr = 'k';
+                size = 5;
+            else
+                edgeClr = 'none';
+                size = 3;
+            end
+            plot(fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr, 'MarkerSize',size)
             hold on
+            
 %             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
 %                 plot(fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
 %                 hold on
@@ -289,8 +333,8 @@ zlim([0.2 0.6])
 grid on
 
 if saveflag == true
-    figname_png = ['fig/fixedPoints_E0=',num2str(E0),'.png'];
-    figname_fig = ['fig/fixedPoints_E0=',num2str(E0),'.fig'];
+    figname_png = ['fig/fixedPoints_gamma1_E0=',num2str(E0),'.png'];
+    figname_fig = ['fig/fixedPoints_gamma1_E0=',num2str(E0),'.fig'];
     saveas(gcf, figname_png)
     saveas(gcf, figname_fig)
     disp('save finish!')
@@ -317,8 +361,8 @@ zlim([0.2 0.6])
 grid on
 
 if saveflag == true
-    figname_png = ['fig/fixedPoints_E0=',num2str(E0),'.png'];
-    figname_fig = ['fig/fixedPoints_E0=',num2str(E0),'.fig'];
+    figname_png = ['fig/fixedPoints_gamma2_E0=',num2str(E0),'.png'];
+    figname_fig = ['fig/fixedPoints_gamma2_E0=',num2str(E0),'.fig'];
     saveas(gcf, figname_png)
     saveas(gcf, figname_fig)
     disp('save finish!')

@@ -44,12 +44,20 @@ E0 = 3500;
 filename = ['data/identical_energy_dtheta/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
 load(filename)
 
-%%
-i = 182;
+n=0;
+for i = 1:length(fixedPoints)
+    if fixedPoints(i).isStable == true
+        n = n+1;
+        stableFixedPoints(n) = fixedPoints(i);
+    end
+end
 
-q_fix = fixedPoints(i).q_ini;
-u_fix(1) = rem(fixedPoints(i).u_ini(1),2*pi);
-u_fix(2) = rem(fixedPoints(i).u_ini(2),2*pi);
+%%
+i = 249;
+
+q_fix = stableFixedPoints(i).q_ini;
+u_fix(1) = rem(stableFixedPoints(i).u_ini(1),2*pi);
+u_fix(2) = rem(stableFixedPoints(i).u_ini(2),2*pi);
 
 model.init
 model.bound(q_fix, u_fix)

@@ -49,7 +49,7 @@ y0set = 0.65:0.001:0.68;
 
 phi0set = [-1:0.25:0.5]; % [rad]
 
-dtheta0set = [-2:0.2:0]; % [rad/s]
+dtheta0set = [2.2:0.2:3.0]; % [rad/s]
 
 gammaset = [-50:10:50]; % [deg]
 gammaset = deg2rad(gammaset);
