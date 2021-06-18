@@ -45,7 +45,7 @@ filename = ['data/identical_energy_dtheta/fixedPoints_rearranged_E0=', num2str(E
 load(filename)
 
 %%
-i = 182;
+i = 380;
 
 q_fix = fixedPoints(i).q_ini;
 u_fix(1) = rem(fixedPoints(i).u_ini(1),2*pi);

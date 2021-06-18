@@ -47,7 +47,7 @@ y0set = 0.60:0.01:0.80;
 % dtheta0set = [-119:1:-104]; % [deg/s]
 % dtheta0set = deg2rad(dtheta0set);
 
-phi0set = [-1:0.25:0.5]; % [rad]
+phi0set = [-1:0.25:1]; % [rad]
 
 dtheta0set = [-2:0.5:2]; % [rad/s]
 
