@@ -37,14 +37,20 @@ addpath(pwd, 'fig')
 %% 定数の設定
 model = Twoleg;
 
-E0 = 3500; % [J]
+% E0 = 3500; % [J]
+% 
+% y0set = 0.65:0.0025:0.68;
+% dtheta0set = [-2.5:0.25:2.5]; % [rad/s]
 
-y0set = 0.65:0.001:0.68;
-dtheta0set = [-3:0.2:3]; % [rad/s]
+E0 = 4500;
+y0set = 0.60:0.01:0.80;
+dtheta0set = [-2:0.5:2]; % [rad/s]
 
 %% データの抽出
 for i_dtheta = 1:length(dtheta0set)
-    load(['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_dtheta)), '.mat'])
+%     load(['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_dtheta)), '.mat'])
+%     load(['data/d_minus/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_dtheta)), '.mat'])
+    load(['data/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_dtheta)), '.mat'])
     if i_dtheta == 1
         fixedPoint_integrated = fixedPoint;
     else
@@ -52,10 +58,10 @@ for i_dtheta = 1:length(dtheta0set)
     end
     clearvars fixedPoint
 end
-
+%%
 n = 0;
 for i = 1:length(fixedPoint_integrated)
-    if abs(fixedPoint_integrated(i).E - 3500)<1e-3
+    if abs(fixedPoint_integrated(i).E - E0)<1e-3
         n = n + 1;
         y0 = fixedPoint_integrated(i).u_fix(1);
         dtheta0 = fixedPoint_integrated(i).u_fix(2);
@@ -120,13 +126,15 @@ for i = 1:length(fixedPoint_integrated)
         end
     end % if solutionExit
 end
-filename = ['data/identical_energy_dtheta/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
+% filename = ['data/identical_energy_dtheta/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
+filename = ['data/d_minus/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
 save(filename, 'fixedPoints');
 
-%% 読み込むだけならこっち
-filename = ['data/identical_energy_dtheta/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
-load(filename)
-n=length(fixedPoints);
+% %% 読み込むだけならこっち
+% % filename = ['data/identical_energy_dtheta/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
+% filename = ['data/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
+% load(filename)
+% n=length(fixedPoints);
 
 %% 3次元空間にプロット
 
@@ -166,7 +174,7 @@ for i = 1:n
         size = 5;
     else
         edgeClr = 'none';
-        size = 1;
+        size = 4;
     end
     plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr,'MarkerSize',size)
     hold on
@@ -314,7 +322,7 @@ end
 %% gamma1
 h2 = figure;
 for i = 1:n
-    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).u(1),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).u_ini(1),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
     hold on
 %     if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
 %         plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
@@ -342,7 +350,7 @@ end
 %% gamma2
 h3 = figure;
 for i = 1:n
-    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).u(2),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).u_ini(2),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
     hold on
 %     if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
 %         plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
