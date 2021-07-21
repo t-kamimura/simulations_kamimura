@@ -54,66 +54,67 @@ for i_y = 1:length(y0set)
 end
 
 %% 解の確認
-% n = 0;
-% for i = 1:length(fixedPoint_integrated)
-%     if abs(fixedPoint_integrated(i).E - 3500)<1e-3
-%         n = n + 1;
-%         y0 = fixedPoint_integrated(i).u_fix(1);
-%         dtheta0 = fixedPoint_integrated(i).u_fix(2);
-%         phi0 = fixedPoint_integrated(i).z_fix(1);
-%         q_ini = fixedPoint_integrated(i).q_ini;
-%         u_ini = [fixedPoint_integrated(i).z_fix(2), fixedPoint_integrated(i).z_fix(3)];
-%         model.init;
-%         model.bound(q_ini, u_ini);
-%         fixedPoints(n).fixedPoint = [y0, dtheta0, phi0];
-%         fixedPoints(n).u = u_ini;
-%         fixedPoints(n).tout = model.tout;
-%         fixedPoints(n).qout = model.qout;
-%         fixedPoints(n).eeout = model.eeout;
-%         fixedPoints(n).GRF = fixedPoint_integrated(i).GRF;
-%         fixedPoints(n).vel = model.qout(end,1)/model.tout(end);
-%         if fixedPoints(n).eeout(3) == 3
-%             % with DS
-%             if fixedPoints(n).fixedPoint(3) > 0
-%                 fixedPoints(n).soltype(1) = 1;    % E
-%             else
-%                 fixedPoints(n).soltype(1) = 2;    % G
-%             end
-%         elseif fixedPoints(n).eeout(3) == 1
-%             % with DS
-%             midtime = round(length(fixedPoints(n).tout)*0.5);
-%             if fixedPoints(n).fixedPoint(3) > 0
-%                 % E始まり
-%                 if fixedPoints(n).qout(midtime,4) > 0
-%                     fixedPoints(n).soltype(1) = 3; % EE
-%                 else
-%                     fixedPoints(n).soltype(1) = 5; % EG
-%                 end
-%             else
-%                 % G始まり
-%                 if fixedPoints(n).qout(midtime,4) > 0
-%                     fixedPoints(n).soltype(1) = 6; % GE
-%                 else
-%                     fixedPoints(n).soltype(1) = 4; % GG
-%                 end
-%             end
-%         else
-%             fixedPoints(n).soltype = 7;
-%         end
-%         if fixedPoints(n).eeout(2) == 2
-%             % Hind leg first
-%             fixedPoints(n).soltype(2) = 1;
-%         else
-%             % Fore leg first
-%             fixedPoints(n).soltype(2) = 2;
-%         end
-%     end % if solutionExit
-% end
-% filename = ['data/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
-% save(filename, 'fixedPoints');
+n = 0;
+for i = 1:length(fixedPoint_integrated)
+    if abs(fixedPoint_integrated(i).E - 3500)<1e-3
+        n = n + 1;
+        y0 = fixedPoint_integrated(i).u_fix(1);
+        dtheta0 = fixedPoint_integrated(i).u_fix(2);
+        phi0 = fixedPoint_integrated(i).z_fix(1);
+        q_ini = fixedPoint_integrated(i).q_ini;
+        u_ini = [fixedPoint_integrated(i).z_fix(2), fixedPoint_integrated(i).z_fix(3)];
+        model.init;
+        model.bound(q_ini, u_ini);
+        fixedPoints(n).fixedPoint = [y0, dtheta0, phi0];
+        fixedPoints(n).u = u_ini;
+        fixedPoints(n).tout = model.tout;
+        fixedPoints(n).qout = model.qout;
+        fixedPoints(n).eeout = model.eeout;
+        fixedPoints(n).GRF = fixedPoint_integrated(i).GRF;
+        fixedPoints(n).vel = model.qout(end,1)/model.tout(end);
+        if fixedPoints(n).eeout(3) == 3
+            % with DS
+            if fixedPoints(n).fixedPoint(3) > 0
+                fixedPoints(n).soltype(1) = 1;    % E
+            else
+                fixedPoints(n).soltype(1) = 2;    % G
+            end
+        elseif fixedPoints(n).eeout(3) == 1
+            % with DS
+            midtime = round(length(fixedPoints(n).tout)*0.5);
+            if fixedPoints(n).fixedPoint(3) > 0
+                % E始まり
+                if fixedPoints(n).qout(midtime,4) > 0
+                    fixedPoints(n).soltype(1) = 3; % EE
+                else
+                    fixedPoints(n).soltype(1) = 5; % EG
+                end
+            else
+                % G始まり
+                if fixedPoints(n).qout(midtime,4) > 0
+                    fixedPoints(n).soltype(1) = 6; % GE
+                else
+                    fixedPoints(n).soltype(1) = 4; % GG
+                end
+            end
+        else
+            fixedPoints(n).soltype = 7;
+        end
+        if fixedPoints(n).eeout(2) == 2
+            % Hind leg first
+            fixedPoints(n).soltype(2) = 1;
+        else
+            % Fore leg first
+            fixedPoints(n).soltype(2) = 2;
+        end
+    end % if solutionExit
+end
 filename = ['data/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
-load(filename)
-n = length(fixedPoints);
+save(filename, 'fixedPoints');
+
+% filename = ['data/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
+% load(filename)
+% n = length(fixedPoints);
 
 %% 3次元空間にプロット
 
