@@ -40,10 +40,10 @@ model = Twoleg;
 E0 = 4500; % [J]
 
 y0set = 0.6025:0.005:0.7975;
+dtheta0set = [0.125:0.25:2.875]; % [rad/s]
 
 phi0set = [-2:0.5:2]; % [rad]
 
-dtheta0set = [-2.875:0.25:0]; % [rad/s]
 
 gammaset = [-60:10:60]; % [deg]
 gammaset = deg2rad(gammaset);
@@ -116,12 +116,12 @@ for i_pitch = 1:length(dtheta0set)
 
             end % gb
 
-            
+
         end % for phi0
         % 次のステップへ
         fprintf('\n')
         fprintf('[%5.1f %%] ', ((i_pitch - 1) * length(y0set) + i_y) / (length(y0set) * length(dtheta0set)) * 100);
-        
+
     end % for y0
 
     % 保存
