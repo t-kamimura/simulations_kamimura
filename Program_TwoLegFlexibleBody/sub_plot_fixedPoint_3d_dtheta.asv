@@ -80,7 +80,7 @@ if calcflag == true
     fprintf('[  0.0 %%] ');
     for i = 1:length(fixedPoint_integrated)
         fprintf('\r')
-        fprintf('[%5.2f %%]', 100*(i/num));
+        fprintf('[%5.1f %%]', 100*(i/num);
         fprintf(' ');
         fprintf('\n')
         if abs(fixedPoint_integrated(i).E - E0)<1e-3
@@ -207,14 +207,14 @@ for i = 1:n
         edgeClr = 'none';
         size = 8;
         
-        dx = 0.0025;
-        dy = 0.125;
+        dx = 0.005;
+        dy = 0.25;
     else
         edgeClr = 'none';
         size = 2;
         
-        dx = 0.5*0.0025;
-        dy = 0.5*0.125;
+        dx = 0.5*0.005;
+        dy = 0.5*0.25;
     end
     % plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr,'MarkerSize',size)
     % hold on
