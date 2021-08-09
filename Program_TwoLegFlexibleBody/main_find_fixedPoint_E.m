@@ -117,12 +117,12 @@ for i_pitch = 1:length(dtheta0set)
 
             end % gb
 
-            
+
         end % for phi0
         % 次のステップへ
         fprintf('\n')
         fprintf('[%5.1f %%] ', ((i_pitch - 1) * length(y0set) + i_y) / (length(y0set) * length(dtheta0set)) * 100);
-        
+
     end % for y0
 
     % 保存

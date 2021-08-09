@@ -1,14 +1,10 @@
 clc
-fprintf('|')
-pause(0.1)
-for i = 1:10
-    fprintf('\b/')
-    pause(0.1)
-    fprintf('\b-')
-    pause(0.1)
-    fprintf('\b\\')
-    pause(0.1)
-    fprintf('\b|')
+num = 51;
+symbols = {'/','-','\\','|'};
+for i = 1:num
+    fprintf('\b\b\b\b\b\b\b\b\b\b\b\b')
+    fprintf('[%6.2f %%] ',100*i/num)
+    fprintf(cell2mat(symbols(1+rem(i,4))))
     pause(0.1)
 end
 fprintf('\n')
