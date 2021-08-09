@@ -39,11 +39,12 @@ model = Twoleg;
 
 E0 = 4500; % [J]
 
-y0set = 0.6025:0.005:0.7975;
-dtheta0set = [0.125:0.25:2.875]; % [rad/s]
+% y0set = 0.6025:0.005:0.7975;
+% dtheta0set = [0.125:0.25:2.875]; % [rad/s]
+y0set = 0.630:0.002:0.710;
+dtheta0set = [-1.5:0.05:-0.05]; % [rad/s]
 
-phi0set = [-2:0.5:2]; % [rad]
-
+phi0set = [-2:0.5:1]; % [rad]
 
 gammaset = [-60:10:60]; % [deg]
 gammaset = deg2rad(gammaset);

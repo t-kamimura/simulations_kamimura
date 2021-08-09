@@ -55,8 +55,10 @@ model = Twoleg;
 % y0set = 0.60:0.005:0.80;
 % dtheta0set = [-3:0.25:3];
 E0 = 4500;
-y0set = 0.60:0.0025:0.80;
-dtheta0set = [-3:0.125:3];
+% y0set = 0.60:0.0025:0.80;
+% dtheta0set = [-3:0.125:3];
+y0set = 0.620:0.001:0.710;
+dtheta0set = [-1.5:0.05:-0.05];
 
 %% データの抽出
 fixedPoint_integrated = [];
@@ -73,16 +75,14 @@ if calcflag == true
         catch
             disp('No data...skip')
         end
-        
+
     end
     n = 0;
     num = length(fixedPoint_integrated);
-    fprintf('[  0.0 %%] ');
+    symbols = {'/','-','\\','|'};
+    fprintf('\n[  0.0 %%] ');
     for i = 1:length(fixedPoint_integrated)
-        fprintf('\r')
-        fprintf('[%5.2f %%]', 100*(i/num));
-        fprintf(' ');
-        fprintf('\n')
+
         if abs(fixedPoint_integrated(i).E - E0)<1e-3
             n = n + 1;
             y0 = fixedPoint_integrated(i).u_fix(1);
@@ -112,62 +112,67 @@ if calcflag == true
             fixedPoints(n).eig.jacobi = jacobi;
 
             if fixedPoints(n).eeout(3) == 3
-                    % with DS
-                    if fixedPoints(n).fixedPoint(3) > 0
-                        fixedPoints(n).soltype(1) = 1;    % E
+                % with DS
+                if fixedPoints(n).fixedPoint(3) > 0
+                    fixedPoints(n).soltype(1) = 1;    % E
+                else
+                    fixedPoints(n).soltype(1) = 2;    % G
+                end
+            elseif fixedPoints(n).eeout(3) == 1
+                % without DS
+                midtime = round(length(fixedPoints(n).tout)*0.5);
+                if fixedPoints(n).fixedPoint(3) > 0
+                    % E始まり
+                    if fixedPoints(n).qout(midtime,4) > 0
+                        fixedPoints(n).soltype(1) = 3; % EE
                     else
-                        fixedPoints(n).soltype(1) = 2;    % G
-                    end
-                elseif fixedPoints(n).eeout(3) == 1
-                    % without DS
-                    midtime = round(length(fixedPoints(n).tout)*0.5);
-                    if fixedPoints(n).fixedPoint(3) > 0
-                        % E始まり
-                        if fixedPoints(n).qout(midtime,4) > 0
-                            fixedPoints(n).soltype(1) = 3; % EE
+                        % fixedPoints(n).soltype(1) = 5; % EG
+                        if fixedPoints(n).eeout(2) == 2
+                            % hind leg first
+                            fixedPoints(n).soltype(1) = 5; % EG
                         else
-    %                         fixedPoints(n).soltype(1) = 5; % EG
-                            if fixedPoints(n).eeout(2) == 2
-                                % hind leg first
-                                fixedPoints(n).soltype(1) = 5; % EG
-                            else
-                                fixedPoints(n).soltype(1) = 6; % EG
-                            end
-                        end
-                    else
-                        % G始まり
-                        if fixedPoints(n).qout(midtime,4) > 0
-    %                         fixedPoints(n).soltype(1) = 6; % GE
-                            if fixedPoints(n).eeout(2) == 2
-                                % hind leg first
-                                fixedPoints(n).soltype(1) = 6; % GE
-                            else
-                                fixedPoints(n).soltype(1) = 5; % EG
-                            end
-                        else
-                            fixedPoints(n).soltype(1) = 4; % GG
+                            fixedPoints(n).soltype(1) = 6; % EG
                         end
                     end
                 else
-                    fixedPoints(n).soltype = 7;
+                    % G始まり
+                    if fixedPoints(n).qout(midtime,4) > 0
+                        % fixedPoints(n).soltype(1) = 6; % GE
+                        if fixedPoints(n).eeout(2) == 2
+                            % hind leg first
+                            fixedPoints(n).soltype(1) = 6; % GE
+                        else
+                            fixedPoints(n).soltype(1) = 5; % EG
+                        end
+                    else
+                        fixedPoints(n).soltype(1) = 4; % GG
+                    end
                 end
-                if fixedPoints(n).eeout(2) == 2
-                    % Hind leg first
-                    fixedPoints(n).soltype(2) = 1;
-                else
-                    % Fore leg first
-                    fixedPoints(n).soltype(2) = 2;
-                end
-        end % if solutionExist
+            else
+                fixedPoints(n).soltype = 7;
+            end % if soltype
+
+            if fixedPoints(n).eeout(2) == 2
+                % Hind leg first
+                fixedPoints(n).soltype(2) = 1;
+            else
+                % Fore leg first
+                fixedPoints(n).soltype(2) = 2;
+            end
+        end % if solutionEnergy
+
+        fprintf('\b\b\b\b\b\b\b\b\b\b\b\b')
+        fprintf('[%6.2f %%] ',100*i/num)
+        fprintf(cell2mat(symbols(1+rem(i,4))))
     end
     filename = ['data/identical_energy_dtheta/fixedPoints_withStability_E0=', num2str(E0),'.mat'];
-    % filename = ['data/d_minus/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
     save(filename, 'fixedPoints');
 else
     filename = ['data/identical_energy_dtheta/fixedPoints_withStability_E0=', num2str(E0),'.mat'];
     load(filename)
     n = length(fixedPoints);
 end
+fprintf('\n');
 
 %% 3次元空間にプロット
 
@@ -190,39 +195,39 @@ Lred    =[255,171,0]    ./255;
 grey    =[158,158,158]  ./255;
 
 clr = [Dred;Dblue;red;blue;Lred;Lblue;grey];
-markerset = ['o','d'];
-% markerset = ['s','s'];
+% markerset = ['o','d'];
+markerset = ['o','o'];
 
 n = length(fixedPoints);
 
 h1 = figure;
 for i = 1:n
 
-%     % 全ての解をプロットする場合    
+%     % 全ての解をプロットする場合
 %     plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
 %     hold on
-    
+
     % 安定な解を大きく描く場合
     if fixedPoints(i).isStable == true
         edgeClr = 'none';
-        size = 8;
-        
-        dx = 0.0025;
+        size = 6;
+
+        dx = 0.005;
         dy = 0.125;
     else
         edgeClr = 'none';
-        size = 2;
-        
-        dx = 0.5*0.0025;
+        size = 4;
+
+        dx = 0.5*0.005;
         dy = 0.5*0.125;
     end
-    % plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr,'MarkerSize',size)
-    % hold on
-    % セルで表示する≈
-    xset = [fixedPoints(i).fixedPoint(1)-0.5*dx fixedPoints(i).fixedPoint(1)+0.5*dx fixedPoints(i).fixedPoint(1)+0.5*dx fixedPoints(i).fixedPoint(1)-0.5*dx];
-    yset = [fixedPoints(i).fixedPoint(2)-0.5*dy fixedPoints(i).fixedPoint(2)-0.5*dy fixedPoints(i).fixedPoint(2)+0.5*dy fixedPoints(i).fixedPoint(2)+0.5*dy];
-    zset = [fixedPoints(i).fixedPoint(3) fixedPoints(i).fixedPoint(3) fixedPoints(i).fixedPoint(3) fixedPoints(i).fixedPoint(3)];
-    patch(xset,yset,zset,clr(fixedPoints(i).soltype(1),:))
+    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr,'MarkerSize',size)
+    hold on
+%     % セルで表示する
+%     xset = [fixedPoints(i).fixedPoint(1)-0.5*dx fixedPoints(i).fixedPoint(1)+0.5*dx fixedPoints(i).fixedPoint(1)+0.5*dx fixedPoints(i).fixedPoint(1)-0.5*dx];
+%     yset = [fixedPoints(i).fixedPoint(2)-0.5*dy fixedPoints(i).fixedPoint(2)-0.5*dy fixedPoints(i).fixedPoint(2)+0.5*dy fixedPoints(i).fixedPoint(2)+0.5*dy];
+%     zset = [fixedPoints(i).fixedPoint(3) fixedPoints(i).fixedPoint(3) fixedPoints(i).fixedPoint(3) fixedPoints(i).fixedPoint(3)];
+%     patch(xset,yset,zset,clr(fixedPoints(i).soltype(1),:))
 
     % チーターと同じシークエンスかどうかだけ気になる場合
 %     if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
@@ -276,7 +281,7 @@ for i_dtheta = 1:length(dtheta0set)
         if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
             plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
             hold on
-            
+
             % 安定な解を大きく描く場合
             if fixedPoints(i).isStable == true
                 edgeClr = 'k';
@@ -287,7 +292,7 @@ for i_dtheta = 1:length(dtheta0set)
             end
             plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr, 'MarkerSize',size)
             hold on
-            
+
 %             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
 %                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
 %                 hold on
@@ -324,7 +329,7 @@ end
 %         if abs(y - fixedPoints(i).fixedPoint(1)) < 1e-3
 % %             plot(fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
 % %             hold on
-%             
+%
 %             % 安定な解を大きく描く場合
 %             if fixedPoints(i).isStable == true
 %                 edgeClr = 'k';
@@ -335,7 +340,7 @@ end
 %             end
 %             plot(fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr, 'MarkerSize',size)
 %             hold on
-%             
+%
 % %             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
 % %                 plot(fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
 % %                 hold on
@@ -344,7 +349,7 @@ end
 % %                 hold on
 % %             end
 %         end
-% 
+%
 %     end
 %     figtitle = ['$$y=$$',num2str(y)];
 %     title(figtitle,'interpreter','latex')
@@ -353,7 +358,7 @@ end
 %     xlim([dtheta0set(1) dtheta0set(end)])
 %     ylim([-1 1.2])
 %     grid on
-% 
+%
 %     if saveflag == true
 %         figname_png = ['fig/fixedPoints_E0=',num2str(E0),'_y0=',num2str(y),'.png'];
 %         figname_fig = ['fig/fixedPoints_E0=',num2str(E0),'_y0=',num2str(y),'.fig'];
@@ -402,7 +407,7 @@ for i_dtheta = 1:length(dtheta0set)
         if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
             plot(fixedPoints(i).fixedPoint(1),gamma1,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
             hold on
-            
+
             % 安定な解を大きく描く場合
             if fixedPoints(i).isStable == true
                 edgeClr = 'k';
@@ -413,7 +418,7 @@ for i_dtheta = 1:length(dtheta0set)
             end
             plot(fixedPoints(i).fixedPoint(1),gamma1,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr, 'MarkerSize',size)
             hold on
-            
+
 %             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
 %                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
 %                 hold on
@@ -481,7 +486,7 @@ for i_dtheta = 1:length(dtheta0set)
         if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
             plot(fixedPoints(i).fixedPoint(1),gamma2,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
             hold on
-            
+
             % 安定な解を大きく描く場合
             if fixedPoints(i).isStable == true
                 edgeClr = 'k';
@@ -492,7 +497,7 @@ for i_dtheta = 1:length(dtheta0set)
             end
             plot(fixedPoints(i).fixedPoint(1),gamma2,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr, 'MarkerSize',size)
             hold on
-            
+
 %             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
 %                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
 %                 hold on
