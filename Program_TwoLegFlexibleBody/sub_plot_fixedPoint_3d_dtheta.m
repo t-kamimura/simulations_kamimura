@@ -55,15 +55,16 @@ model = Twoleg;
 % y0set = 0.60:0.005:0.80;
 % dtheta0set = [-3:0.25:3];
 E0 = 4500;
-y0set = 0.60:0.0025:0.80;
-dtheta0set = [-3:0.125:3];
+y0set = 0.60:0.002:0.80;
+dtheta0set = [-1.5:0.05:1.5];
 
 %% データの抽出
 fixedPoint_integrated = [];
 if calcflag == true
     for i_dtheta = 1:length(dtheta0set)
         try
-            load(['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_dtheta)), '.mat'])
+            % load(['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_dtheta)), '.mat'])
+            load(['data/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_dtheta)), '.mat'])
             if i_dtheta == 1
                 fixedPoint_integrated = fixedPoint;
             else
