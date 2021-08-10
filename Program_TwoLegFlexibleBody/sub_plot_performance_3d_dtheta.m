@@ -52,13 +52,13 @@ addpath(pwd, 'fig')
 %% データの抽出
 model = Twoleg;
 
-E0 = 3500; % [J]
+E0 = 4500; % [J]
 
 % y0set = 0.67:0.001:0.68;
 % dtheta0set = [-3:0.5:3];
-dtheta0set = [-3:0.25:3];
+dtheta0set = [-1.5:0.5:1.5];
 
-y0set = 0.6:0.005:0.8;
+y0set = 0.63:0.005:0.71;
 % dtheta0set = [-2.5:0.5:2.5];
 
 for i_theta = 1:length(dtheta0set)
@@ -229,7 +229,7 @@ for i_dtheta = 1:length(dtheta0set)
     ylabel('GRF [N]','interpreter','latex')
     xlim([y0set(1) y0set(end)])
 %     ylim([1400 2400])
-    ylim([500 3500])
+    ylim([1000 3000])
 
     if saveflag == true
         figname_png = ['fig/GRF_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.png'];
@@ -264,9 +264,9 @@ for i_dtheta = 1:length(dtheta0set)
     title(figtitle,'interpreter','latex')
     xlabel('$$y^*$$ [m]','interpreter','latex')
     ylabel('$$\bar{v}$$ [m/s]','interpreter','latex')
-%     xlim([y0set(1) y0set(end)])
+    xlim([y0set(1) y0set(end)])
 %     ylim([12.5 13.2])
-    ylim([12 16])
+    ylim([14 15.5])
 
     if saveflag == true
         figname_png = ['fig/vel_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.png'];
