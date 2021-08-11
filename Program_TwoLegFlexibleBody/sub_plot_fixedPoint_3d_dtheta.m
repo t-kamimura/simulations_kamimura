@@ -57,8 +57,8 @@ model = Twoleg;
 E0 = 4500;
 % y0set = 0.60:0.0025:0.80;
 % dtheta0set = [-3:0.125:3];
-y0set = 0.620:0.001:0.710;
-dtheta0set = [-1.5:0.05:-0.05];
+y0set = 0.630:0.002:0.710;
+dtheta0set = [-1.5:0.25:1.5];
 
 %% データの抽出
 fixedPoint_integrated = [];
@@ -198,8 +198,10 @@ clr = [Dred;Dblue;red;blue;Lred;Lblue;grey];
 % markerset = ['o','d'];
 markerset = ['o','o'];
 
+
 n = length(fixedPoints);
 
+%%
 h1 = figure;
 for i = 1:n
 
@@ -210,24 +212,29 @@ for i = 1:n
     % 安定な解を大きく描く場合
     if fixedPoints(i).isStable == true
         edgeClr = 'none';
-        size = 6;
+        size = 3;
 
-        dx = 0.005;
-        dy = 0.125;
+        dx = 0.002;
+        dy = 0.05;
     else
         edgeClr = 'none';
-        size = 4;
+        size = 3;
 
-        dx = 0.5*0.005;
-        dy = 0.5*0.125;
+        dx = 0.5*0.002;
+        dy = 0.5*0.05;
     end
-    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr,'MarkerSize',size)
-    hold on
+    if fixedPoints(i).fixedPoint(3)>0
+%         plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr,'MarkerSize',size)
+%         hold on
+    elseif fixedPoints(i).fixedPoint(3)>-1.5
+        plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr,'MarkerSize',size)
+        hold on
+    end
 %     % セルで表示する
 %     xset = [fixedPoints(i).fixedPoint(1)-0.5*dx fixedPoints(i).fixedPoint(1)+0.5*dx fixedPoints(i).fixedPoint(1)+0.5*dx fixedPoints(i).fixedPoint(1)-0.5*dx];
 %     yset = [fixedPoints(i).fixedPoint(2)-0.5*dy fixedPoints(i).fixedPoint(2)-0.5*dy fixedPoints(i).fixedPoint(2)+0.5*dy fixedPoints(i).fixedPoint(2)+0.5*dy];
 %     zset = [fixedPoints(i).fixedPoint(3) fixedPoints(i).fixedPoint(3) fixedPoints(i).fixedPoint(3) fixedPoints(i).fixedPoint(3)];
-%     patch(xset,yset,zset,clr(fixedPoints(i).soltype(1),:))
+%     patch(xset,yset,zset,clr(fixedPoints(i).soltype(1),:),'EdgeColor','none')
 
     % チーターと同じシークエンスかどうかだけ気になる場合
 %     if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
@@ -243,8 +250,9 @@ ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
 zlabel('$$\phi^*$$ [rad]','interpreter','latex')
 xlim([y0set(1) y0set(end)])
 ylim([dtheta0set(1) dtheta0set(end)])
-% zlim([-1 0.7])
+zlim([-1.5 1.0])
 grid on
+
 
 if saveflag == true
     figname_png = ['fig/fixedPoints_E0=',num2str(E0),'.png'];
@@ -279,8 +287,8 @@ for i_dtheta = 1:length(dtheta0set)
     dtheta = dtheta0set(i_dtheta);
     for i=1:n
         if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
-            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
-            hold on
+%             plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+%             hold on
 
             % 安定な解を大きく描く場合
             if fixedPoints(i).isStable == true
@@ -290,9 +298,14 @@ for i_dtheta = 1:length(dtheta0set)
                 edgeClr = 'none';
                 size = 3;
             end
-            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr, 'MarkerSize',size)
+%             plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr, 'MarkerSize',size)
+%             hold on
+            % 3次元
+            plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr,'MarkerSize',size)
+            plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','*','MarkerEdgeColor','k','MarkerSize',size)
             hold on
-
+            
+            % チーターと同じのだけに興味がある場合
 %             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
 %                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
 %                 hold on
@@ -305,17 +318,29 @@ for i_dtheta = 1:length(dtheta0set)
     end
     figtitle = ['$$\dot{\theta}=$$',num2str(dtheta)];
     title(figtitle,'interpreter','latex')
+    
+    % 2次元
+%     xlabel('$$y^*$$ [m]','interpreter','latex')
+%     ylabel('$$\phi^*$$ [rad]','interpreter','latex')
+%     xlim([y0set(1) y0set(end)])
+%     ylim([-1 1.2])
+    
+    % 3次元
     xlabel('$$y^*$$ [m]','interpreter','latex')
-    ylabel('$$\phi^*$$ [rad]','interpreter','latex')
+    ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
+    zlabel('$$\phi^*$$ [rad]','interpreter','latex')
     xlim([y0set(1) y0set(end)])
-    ylim([-1 1.2])
+    ylim([dtheta0set(1) dtheta0set(end)])
+    zlim([-1.5 1.0])
     grid on
 
     if saveflag == true
         figname_png = ['fig/fixedPoints_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.png'];
         figname_fig = ['fig/fixedPoints_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.fig'];
+        figname_pdf = ['fig/fixedPoints_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.pdf'];
         saveas(h, figname_png)
         saveas(h, figname_fig)
+        saveas(h, figname_pdf)
         disp('save finish!')
         close(h)
     end

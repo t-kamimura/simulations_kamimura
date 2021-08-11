@@ -52,14 +52,10 @@ addpath(pwd, 'fig')
 %% データの抽出
 model = Twoleg;
 
-E0 = 3500; % [J]
+E0 = 4500; % [J]
 
-% y0set = 0.67:0.001:0.68;
-% dtheta0set = [-3:0.5:3];
-dtheta0set = [-3:0.25:3];
-
-y0set = 0.6:0.005:0.8;
-% dtheta0set = [-2.5:0.5:2.5];
+y0set = 0.630:0.002:0.710;
+dtheta0set = [-1.5:0.05:1.5];
 
 for i_theta = 1:length(dtheta0set)
     load(['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_theta)), '.mat'])
@@ -75,7 +71,7 @@ end
 if calcflag == true
     n = 0;
     for i = 1:length(fixedPoint_integrated)
-        if abs(fixedPoint_integrated(i).E - E0)<1e-3
+        if abs(fixedPoint_integrated(i).E - E0) < 1e-3
             n = n + 1;
             y0 = fixedPoint_integrated(i).u_fix(1);
             dtheta0 = fixedPoint_integrated(i).u_fix(2);
@@ -170,7 +166,7 @@ grey    =[158,158,158]  ./255;
 clr = [Dred;Dblue;red;blue;Lred;Lblue;grey];
 markerset = ['o','d'];
 
-%%
+%% y-theta-GRF
 figure
 for i = 1:n
     plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).GRF,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
@@ -188,7 +184,7 @@ if saveflag == true
     disp('save finish!')
 end
 
-%%
+%% y-theta-vel
 figure
 for i = 1:n
     plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).vel,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
@@ -203,6 +199,26 @@ if saveflag == true
     figname_fig = ['fig/vel_E0=',num2str(E0),'.fig'];
     saveas(gcf, figname_png)
     saveas(gcf, figname_fig)
+    disp('save finish!')
+end
+
+%% y-dtheta-period
+figure
+for i = 1:n
+    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).tout(end),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+    hold on
+end
+xlabel('$$y^*$$ [m]','interpreter','latex')
+ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
+zlabel('$$T$$ [s]','interpreter','latex')
+
+if saveflag == true
+    figname_png = ['fig/T_E0=',num2str(E0),'.png'];
+    figname_fig = ['fig/T_E0=',num2str(E0),'.fig'];
+    figname_pdf = ['fig/T_E0=',num2str(E0),'.pdf'];
+    saveas(gcf, figname_png)
+    saveas(gcf, figname_fig)
+    saveas(gcf, figname_pdf)
     disp('save finish!')
 end
 
