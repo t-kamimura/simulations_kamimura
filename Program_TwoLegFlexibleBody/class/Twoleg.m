@@ -394,8 +394,8 @@ classdef Twoleg < handle
         function plot(self, saveflag)
 
             % -----------------------------------------------------------------
-            qlabelset = {'$$x$$', '$$y$$', '$$\theta$$', '$$\phi$$'...
-                '$$\dot{x}$$', '$$\dot{y}$$', '$$\dot\theta$$', '$$\dot\phi$$'};
+            qlabelset = {'$$x$$ [m]', '$$y$$ [m]', '$$\theta$$ [rad]', '$$\phi$$ [rad]'...
+                '$$\dot{x}$$ [m/s]', '$$\dot{y}$$ [m/s]', '$$\dot\theta$$ [rad/s]', '$$\dot\phi$$ [rad/s]'};
             % -----------------------------------------------------------------
             % 座標変換
             qout_(:, 1) = self.qout(:, 1);
@@ -419,7 +419,14 @@ classdef Twoleg < handle
             %% 状態量のグラフ
             %figure
             figure('outerposition', [50, 200, 1200, 500])
-
+            ylimset =[  0 6;...
+                        0.55 0.7;...
+                        -0.1 0.1;...
+                        -1 1;...
+                        14.8 15.1;...
+                        -1.2 1.2;...
+                        -4.5 4.5;...
+                        -10 10];
             for pp = 1:8
                 subplot(2, 4, pp)
                 plot(tout_, qout_(:, pp),'LineWidth',1);
@@ -430,6 +437,8 @@ classdef Twoleg < handle
                 xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
                 ylabel(qlabelset{pp}, 'interpreter', 'latex', 'Fontsize', 14);
                 xlim([0, tend]);
+                % xlim([0, 0.35]);
+                ylim(ylimset(pp,:));
             end
 
             if saveflag == 1
@@ -468,7 +477,7 @@ classdef Twoleg < handle
             hold on
             plot(tout_, self.lout(:, 2), '--');
             xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
-            ylabel('$$l_{\rm h},l_{\rm f}$$', 'interpreter', 'latex', 'Fontsize', 14);
+            ylabel('$$l_{\rm h},l_{\rm f}$$ [m]', 'interpreter', 'latex', 'Fontsize', 14);
             xlim([0, max(tout_)]);
             ylim([min(self.lout(:, 1)) - 0.01, max(self.lout(:, 1))]);
             % ylim([min(self.lout(:, 1)) - 0.01, 0.37]);
@@ -488,7 +497,7 @@ classdef Twoleg < handle
             plot(tout_, self.gout(:, 2), '--r');
             xlim([0, max(tout_)]);
             xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
-            ylabel('$$\gamma_{\rm h},\gamma_{\rm f}$$', 'interpreter', 'latex', 'Fontsize', 14);
+            ylabel('$$\gamma_{\rm h},\gamma_{\rm f}$$ [rad]', 'interpreter', 'latex', 'Fontsize', 14);
             legend({'hind leg', 'fore leg'}, 'Location', 'best')
 
             if saveflag == 1
@@ -662,6 +671,126 @@ classdef Twoleg < handle
             end % save
 
         end % anime
+        
+        function stick(self, skip_num, saveflag)
+            
+            % % 時間を等間隔に修正
+            % tstart = self.tout(1);
+            % tfinal = self.tout(end);
+            % tspan = tfinal - tstart;
+            % teq = [tstart:dt:tfinal]';
+            % t_mid = 1e3 * 0.5 * (tfinal + tstart);
+            % qout_ = resample(self.qout, self.tout, 1 / dt); % signal processingの関数
+            % lout_ = resample(self.lout, self.tout, 1 / dt);
+            % gout_ = resample(self.gout, self.tout, 1 / dt);
+            % 時間を等間隔に修正
+            qout_ = self.qout;
+            lout_ = self.lout;
+            gout_ = self.gout;
+
+            x_max = 2 * max(qout_(:, 1));
+
+            x_ground_st = -0.2;
+            y_ground_st = 0;
+            x_ground_fn = x_max;
+            y_ground_fn = 0;
+            stick_num = length(qout_(:, 1));
+
+            %% 描画する各点を計算
+            for i = 1:stick_num
+                x = qout_(i, 1);   %質量中心
+                y = qout_(i, 2);
+                th = qout_(i, 3);
+                ph = qout_(i, 4);
+
+                x_joint(i) = x - self.L * cos(ph) * cos(th) + self.L * cos(th - ph);   %ジョイント部
+                y_joint(i) = y - self.L * cos(ph) * sin(th) + self.L * sin(th - ph);
+
+                x_hip(i) = x - self.L * cos(th) * cos(ph) - self.L * cos(th - ph);  %胴体
+                y_hip(i) = y - self.L * cos(ph) * sin(th) - self.L * sin(th - ph);
+                x_head(i) = x + self.L * cos(th) * cos(ph) + self.L * cos(th + ph);
+                y_head(i) = y + self.L * cos(ph) * sin(th) + self.L * sin(th + ph);
+
+                x_hipjoint(i) = x - self.L * cos(th) * cos(ph) - self.D * cos(th - ph);    %関節
+                y_hipjoint(i) = y - self.L * cos(ph) * sin(th) - self.D * sin(th - ph);
+                x_headjoint(i) = x + self.L * cos(th) * cos(ph) + self.D * cos(th + ph);
+                y_headjoint(i) = y + self.L * cos(ph) * sin(th) + self.D * sin(th + ph);
+
+                x_foot_b(i) = x_hipjoint(i) + lout_(i, 1) * sin(gout_(i, 1));     %脚先
+                y_foot_b(i) = y_hipjoint(i) - lout_(i, 1) * cos(gout_(i, 1));
+                x_foot_f(i) = x_headjoint(i) + lout_(i, 2) * sin(gout_(i, 2));
+                y_foot_f(i) = y_headjoint(i) - lout_(i, 2) * cos(gout_(i, 2));
+
+            end
+
+            set(gca, 'position', [0.10, 0.15, 0.8, 0.7])
+
+            %% 動画を描写
+
+            h1 = figure;
+            % h1.InnerPosition = [100, 50, 600, 600];
+            % set(h1, 'DoubleBuffer', 'off');
+
+            axis equal
+
+            clr = cool(stick_num);
+            for i_t = 1:skip_num:stick_num
+                line([x_hip(i_t), x_joint(i_t)], [y_hip(i_t), y_joint(i_t)], 'color', clr(i_t,:), 'LineWidth', 1);
+                line([x_joint(i_t), x_head(i_t)], [y_joint(i_t), y_head(i_t)], 'color', clr(i_t,:), 'LineWidth', 1);
+                line([x_hipjoint(i_t), x_foot_b(i_t)], [y_hipjoint(i_t), y_foot_b(i_t)], 'color', clr(i_t,:), 'LineWidth', 1);
+                line([x_headjoint(i_t), x_foot_f(i_t)], [y_headjoint(i_t), y_foot_f(i_t)], 'color', clr(i_t,:), 'LineWidth', 1);
+                drawnow
+                hold on
+            end
+            
+            line([min(x_joint) - 1, max(x_joint)+ 1], [0, 0], 'color', 'k', 'LineWidth', 1);
+
+            xlim([min(x_joint) - 1, max(x_joint)+ 1])
+            ylim([-0.2 1.3])
+
+            qeout_ = self.qeout;
+            event_num = length(self.teout);
+
+            for i = 1:event_num
+                x =  qeout_(i, 1);   %質量中心
+                y =  qeout_(i, 2);
+                th = qeout_(i, 3);
+                ph = qeout_(i, 4);
+
+                x_joint(i) = x - self.L * cos(ph) * cos(th) + self.L * cos(th - ph);   %ジョイント部
+                y_joint(i) = y - self.L * cos(ph) * sin(th) + self.L * sin(th - ph);
+
+                x_hip(i) = x - self.L * cos(th) * cos(ph) - self.L * cos(th - ph);  %胴体
+                y_hip(i) = y - self.L * cos(ph) * sin(th) - self.L * sin(th - ph);
+                x_head(i) = x + self.L * cos(th) * cos(ph) + self.L * cos(th + ph);
+                y_head(i) = y + self.L * cos(ph) * sin(th) + self.L * sin(th + ph);
+
+                x_hipjoint(i) = x - self.L * cos(th) * cos(ph) - self.D * cos(th - ph);    %関節
+                y_hipjoint(i) = y - self.L * cos(ph) * sin(th) - self.D * sin(th - ph);
+                x_headjoint(i) = x + self.L * cos(th) * cos(ph) + self.D * cos(th + ph);
+                y_headjoint(i) = y + self.L * cos(ph) * sin(th) + self.D * sin(th + ph);
+
+                x_foot_b(i) = x_hipjoint(i) + lout_(i, 1) * sin(gout_(i, 1));     %脚先
+                y_foot_b(i) = y_hipjoint(i) - lout_(i, 1) * cos(gout_(i, 1));
+                x_foot_f(i) = x_headjoint(i) + lout_(i, 2) * sin(gout_(i, 2));
+                y_foot_f(i) = y_headjoint(i) - lout_(i, 2) * cos(gout_(i, 2));
+
+                line([x_hip(i), x_joint(i)], [y_hip(i), y_joint(i)], 'color', 'k', 'LineWidth', 2);
+                line([x_joint(i), x_head(i)], [y_joint(i), y_head(i)], 'color', 'k', 'LineWidth', 2);
+                line([x_hipjoint(i), x_foot_b(i)], [y_hipjoint(i), y_foot_b(i)], 'color', 'k', 'LineWidth', 2);
+                line([x_headjoint(i), x_foot_f(i)], [y_headjoint(i), y_foot_f(i)], 'color', 'k', 'LineWidth', 2);
+                drawnow
+                hold on
+            end
+
+            if saveflag == 1
+                figname = [date, 'stickDiagram'];
+                saveas(gcf, figname, 'fig')
+                saveas(gcf, figname, 'png')
+                saveas(gcf, figname, 'pdf')
+            end
+
+        end % stick
 
     end % methods
 

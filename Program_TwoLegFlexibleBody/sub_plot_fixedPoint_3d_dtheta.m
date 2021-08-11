@@ -65,7 +65,8 @@ fixedPoint_integrated = [];
 if calcflag == true
     for i_dtheta = 1:length(dtheta0set)
         try
-            load(['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_dtheta)), '.mat'])
+            % load(['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_dtheta)), '.mat'])
+            load(['data/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_dtheta)), '.mat'])
             if i_dtheta == 1
                 fixedPoint_integrated = fixedPoint;
             else
@@ -200,9 +201,9 @@ markerset = ['o','o'];
 
 
 n = length(fixedPoints);
-
 %%
 h1 = figure;
+h1.Renderer = "painter";
 for i = 1:n
 
 %     % 全ての解をプロットする場合
@@ -250,15 +251,20 @@ ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
 zlabel('$$\phi^*$$ [rad]','interpreter','latex')
 xlim([y0set(1) y0set(end)])
 ylim([dtheta0set(1) dtheta0set(end)])
-zlim([-1.5 1.0])
+xlim([0.63 0.71])
+ylim([-1.5 1.5])
+zlim([-2 1])
+% zlim([0 1])
 grid on
 
 
 if saveflag == true
     figname_png = ['fig/fixedPoints_E0=',num2str(E0),'.png'];
     figname_fig = ['fig/fixedPoints_E0=',num2str(E0),'.fig'];
+    figname_pdf = ['fig/fixedPoints_E0=',num2str(E0),'.pdf'];
     saveas(gcf, figname_png)
     saveas(gcf, figname_fig)
+    saveas(gcf, figname_pdf)
     disp('save finish!')
 end
 %%
@@ -304,7 +310,7 @@ for i_dtheta = 1:length(dtheta0set)
             plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr,'MarkerSize',size)
             plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','*','MarkerEdgeColor','k','MarkerSize',size)
             hold on
-            
+
             % チーターと同じのだけに興味がある場合
 %             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
 %                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
@@ -318,13 +324,13 @@ for i_dtheta = 1:length(dtheta0set)
     end
     figtitle = ['$$\dot{\theta}=$$',num2str(dtheta)];
     title(figtitle,'interpreter','latex')
-    
+
     % 2次元
 %     xlabel('$$y^*$$ [m]','interpreter','latex')
 %     ylabel('$$\phi^*$$ [rad]','interpreter','latex')
 %     xlim([y0set(1) y0set(end)])
 %     ylim([-1 1.2])
-    
+
     % 3次元
     xlabel('$$y^*$$ [m]','interpreter','latex')
     ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
@@ -419,8 +425,10 @@ grid on
 if saveflag == true
     figname_png = ['fig/fixedPoints_gamma1_E0=',num2str(E0),'.png'];
     figname_fig = ['fig/fixedPoints_gamma1_E0=',num2str(E0),'.fig'];
+    figname_pdf = ['fig/fixedPoints_gamma1_E0=',num2str(E0),'.pdf'];
     saveas(gcf, figname_png)
     saveas(gcf, figname_fig)
+    saveas(gcf, figname_pdf)
     disp('save finish!')
 end
 %% dtheta-gamma1
