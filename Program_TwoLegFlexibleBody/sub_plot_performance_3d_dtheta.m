@@ -52,10 +52,14 @@ addpath(pwd, 'fig')
 %% データの抽出
 model = Twoleg;
 
-E0 = 4500; % [J]
+E0 = 4500;
+y0set = 0.60:0.01:0.75;
+% dtheta0set = -3:0.25:3;
+dtheta0set = -0.1;
 
-y0set = 0.630:0.002:0.710;
-dtheta0set = [-1.5:0.05:1.5];
+% E0 = 4500; % [J]
+% y0set = 0.630:0.002:0.710;
+% dtheta0set = [-1.5:0.05:1.5];
 
 for i_theta = 1:length(dtheta0set)
     load(['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_theta)), '.mat'])

@@ -51,8 +51,8 @@ addpath(pwd, 'fig')
 %% 定数の設定
 model = Twoleg;
 
-E0 = 4500;
-y0set = 0.60:0.01:0.75;
+E0 = 3500;
+y0set = 0.60:0.005:0.75;
 % dtheta0set = [-1.5:0.1:1.5];
 dtheta0set = -0.1;
 % E0 = 4500;
