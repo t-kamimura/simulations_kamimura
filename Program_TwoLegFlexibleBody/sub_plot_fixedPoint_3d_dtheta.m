@@ -55,8 +55,8 @@ model = Twoleg;
 % y0set = 0.60:0.005:0.80;
 % dtheta0set = [-3:0.25:3];
 E0 = 4500;
-y0set = 0.60:0.002:0.80;
-dtheta0set = [-1.5:0.05:1.5];
+y0set = 0.630:0.002:0.710;
+dtheta0set = [-1.5:0.05:1.5]; % [rad/s]
 
 %% データの抽出
 fixedPoint_integrated = [];
@@ -209,7 +209,7 @@ for i = 1:n
     % 安定な解を大きく描く場合
     if fixedPoints(i).isStable == true
         edgeClr = 'none';
-        size = 6;
+        size = 4;
 
         dx = 0.005;
         dy = 0.125;
@@ -220,8 +220,14 @@ for i = 1:n
         dx = 0.5*0.005;
         dy = 0.5*0.125;
     end
-    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr,'MarkerSize',size)
-    hold on
+    if fixedPoints(i).fixedPoint(3)>0
+        plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr,'MarkerSize',size)
+        hold on
+        plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker','*','MarkerEdgeColor',clr(fixedPoints(i).soltype(1),:),'MarkerSize',size)        
+    else
+%         plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor',edgeClr,'MarkerSize',size)
+%         hold on
+    end
 %     % セルで表示する
 %     xset = [fixedPoints(i).fixedPoint(1)-0.5*dx fixedPoints(i).fixedPoint(1)+0.5*dx fixedPoints(i).fixedPoint(1)+0.5*dx fixedPoints(i).fixedPoint(1)-0.5*dx];
 %     yset = [fixedPoints(i).fixedPoint(2)-0.5*dy fixedPoints(i).fixedPoint(2)-0.5*dy fixedPoints(i).fixedPoint(2)+0.5*dy fixedPoints(i).fixedPoint(2)+0.5*dy];
@@ -248,8 +254,10 @@ grid on
 if saveflag == true
     figname_png = ['fig/fixedPoints_E0=',num2str(E0),'.png'];
     figname_fig = ['fig/fixedPoints_E0=',num2str(E0),'.fig'];
+    figname_pdf = ['fig/fixedPoints_E0=',num2str(E0),'.pdf'];
     saveas(gcf, figname_png)
     saveas(gcf, figname_fig)
+    saveas(gcf, figname_pdf)
     disp('save finish!')
 end
 %%

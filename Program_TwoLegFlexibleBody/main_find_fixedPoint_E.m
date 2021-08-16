@@ -41,10 +41,11 @@ E0 = 4500; % [J]
 
 % y0set = 0.6025:0.005:0.7975;
 % dtheta0set = [0.125:0.25:2.875]; % [rad/s]
-y0set = 0.63:0.002:0.71;
-dtheta0set = [0:0.05:1.5]; % [rad/s]
+y0set = 0.635:0.001:0.655;
+dtheta0set = -0.25:-0.025:-0.75;
 
-phi0set = [-2:0.5:1]; % [rad]
+% phi0set = [-2:0.5:1]; % [rad]
+phi0set = 1; % [rad]
 
 gammaset = [-60:10:60]; % [deg]
 gammaset = deg2rad(gammaset);
