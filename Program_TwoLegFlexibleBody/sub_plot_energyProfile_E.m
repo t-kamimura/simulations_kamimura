@@ -1,4 +1,4 @@
-% fileName: sub_plot_energyProfile.m
+% fileName: sub_plot_energyProfile_E.m
 % initDate:　2020/9/24
 % Object:  エネルギーの割合の時間遷移図
 % 修正1: 2021/2/1 y軸をJ → %に変更
@@ -40,22 +40,25 @@ addpath(pwd, 'fig')
 
 model = Twoleg;
 
-E0 = 3500;
-filename = ['data/identical_energy_dtheta/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
+E0 = 4500;
+filename = ['data/identical_energy_dtheta/fixedPoints_withStability_E0=', num2str(E0),'.mat'];
 load(filename)
 
 %%
-i = 380;
+i = 639;
 
 q_fix = fixedPoints(i).q_ini;
-u_fix(1) = rem(fixedPoints(i).u_ini(1),2*pi);
-u_fix(2) = rem(fixedPoints(i).u_ini(2),2*pi);
+% u_fix(1) = rem(fixedPoints(i).u_ini(1),2*pi);
+% u_fix(2) = rem(fixedPoints(i).u_ini(2),2*pi);
+u_fix(1) = fixedPoints(i).u_ini(1);
+u_fix(2) = fixedPoints(i).u_ini(2);
 
 model.init
 model.bound(q_fix, u_fix)
 
 model.plot(saveflag)
-model.anime(0.1, saveflag);
+% model.anime(0.1, saveflag);
+% model.stick(50, saveflag);
 
 %% エネルギーのグラフ
 figure

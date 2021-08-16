@@ -37,7 +37,7 @@ addpath(pwd, 'fig')
 %% 定数の決定
 model = Twoleg;
 
-E0 = 4500; % [J]
+E0 = 3500; % [J]
 
 % y0set = 0.6025:0.005:0.7975;
 % dtheta0set = [0.125:0.25:2.875]; % [rad/s]
@@ -47,7 +47,7 @@ dtheta0set = -0.25:-0.025:-0.75;
 % phi0set = [-2:0.5:1]; % [rad]
 phi0set = 1; % [rad]
 
-gammaset = [-60:10:60]; % [deg]
+gammaset = -60:10:60; % [deg]
 gammaset = deg2rad(gammaset);
 
 u_fixset = [];
