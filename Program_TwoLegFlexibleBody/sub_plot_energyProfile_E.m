@@ -45,20 +45,75 @@ filename = ['data/identical_energy_dtheta/fixedPoints_withStability_E0=', num2st
 load(filename)
 
 %%
-i = 639;
+i_sol = 76;
+% i_sol = 77;
+% i_sol = 464;
 
-q_fix = fixedPoints(i).q_ini;
-% u_fix(1) = rem(fixedPoints(i).u_ini(1),2*pi);
-% u_fix(2) = rem(fixedPoints(i).u_ini(2),2*pi);
-u_fix(1) = fixedPoints(i).u_ini(1);
-u_fix(2) = fixedPoints(i).u_ini(2);
+q_fix = fixedPoints(i_sol).q_ini;
+% u_fix(1) = rem(fixedPoints(i_sol).u_ini(1),2*pi);
+% u_fix(2) = rem(fixedPoints(i_sol).u_ini(2),2*pi);
+u_fix(1) = fixedPoints(i_sol).u_ini(1);
+u_fix(2) = fixedPoints(i_sol).u_ini(2);
 
 model.init
 model.bound(q_fix, u_fix)
 
-model.plot(saveflag)
-% model.anime(0.1, saveflag);
+% model.plot(saveflag)
+model.anime(0.1, saveflag);
 % model.stick(50, saveflag);
+
+
+% -----------------------------------------------------------------
+qlabelset = {'$$x$$ [m]', '$$y$$ [m]', '$$\theta$$ [rad]', '$$\phi$$ [rad]','$$\dot{x}$$ [m/s]', '$$\dot{y}$$ [m/s]', '$$\dot\theta$$ [rad/s]', '$$\dot\phi$$ [rad/s]'};
+% -----------------------------------------------------------------
+tout_ = [];
+qout_ = [];
+teout_ = [];
+qeout_ = [];
+
+qout_(:, 1) = model.qout(:, 1);
+qout_(:, 2) = model.qout(:, 2);
+qout_(:, 3) = model.qout(:, 3);
+qout_(:, 4) = model.qout(:, 4);
+qout_(:, 5) = model.qout(:, 5);
+qout_(:, 6) = model.qout(:, 6);
+qout_(:, 7) = model.qout(:, 7);
+qout_(:, 8) = model.qout(:, 8);
+
+tend = model.tout(end);
+tout_ = model.tout;
+teout_ = model.teout;
+qeout_ = model.qeout;
+
+figure('outerposition', [50, 200, 1200, 500])
+ylimset =[  0 6;...
+            0.54 0.71;...
+            -0.22 0.22;...
+            -1.0 1.0;...
+            14.7 15.1;...
+            -1.6 1.6;...
+            -6 6;...
+            -12 12];
+for pp = 1:8
+    subplot(2, 4, pp)
+    plot(tout_, qout_(:, pp),'LineWidth',1);
+    hold on
+    for i = 1:length(teout_)
+        line([teout_(i),teout_(i)],[min(qout_(:,pp)) max(qout_(:,pp))],'color','k','LineStyle',':')
+    end
+    xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
+    ylabel(qlabelset{pp}, 'interpreter', 'latex', 'Fontsize', 14);
+    xlim([0, tend]);
+    % xlim([0, 0.35]);
+    ylim(ylimset(pp,:));
+end
+
+if saveflag == 1
+    figname = ['variable1_i=',num2str(i_sol)];
+    saveas(gcf, figname, 'fig')
+    saveas(gcf, figname, 'png')
+    saveas(gcf, figname, 'pdf')
+end
 
 %% エネルギーのグラフ
 figure
