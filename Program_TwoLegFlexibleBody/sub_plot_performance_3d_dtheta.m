@@ -54,8 +54,8 @@ model = Twoleg;
 
 E0 = 4500;
 y0set = 0.60:0.01:0.75;
-% dtheta0set = -3:0.25:3;
-dtheta0set = -0.1;
+dtheta0set = -2:0.25:2;
+% dtheta0set = -0.1;
 
 % E0 = 4500; % [J]
 % y0set = 0.630:0.002:0.710;
@@ -234,6 +234,7 @@ for i_dtheta = 1:length(dtheta0set)
         if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
             plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).GRF,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
             hold on
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).GRF,'marker','*','MarkerEdgeColor',clr(fixedPoints(i).soltype(1),:))
 %             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
 %                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).GRF,'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
 %                 hold on
@@ -271,6 +272,7 @@ for i_dtheta = 1:length(dtheta0set)
         if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
             plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).vel,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
             hold on
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).vel,'marker','*','MarkerEdgeColor',clr(fixedPoints(i).soltype(1),:))
 %             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
 %                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).vel,'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
 %                 hold on

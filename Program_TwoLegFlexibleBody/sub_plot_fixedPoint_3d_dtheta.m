@@ -53,8 +53,8 @@ model = Twoleg;
 
 E0 = 4500;
 y0set = 0.60:0.01:0.75;
-% dtheta0set = [-1.5:0.1:1.5];
-dtheta0set = -0.1;
+dtheta0set = -2.25:0.25:2.25;
+% dtheta0set = -0.1;
 % E0 = 4500;
 % % y0set = 0.60:0.0025:0.80;
 % % dtheta0set = [-3:0.125:3];
@@ -214,7 +214,7 @@ for i = 1:n
     % 安定な解を大きく描く場合
     if fixedPoints(i).isStable == true
         edgeClr = 'none';
-        size = 4;
+        size = 6;
 
         dx = 0.002;
         dy = 0.05;
@@ -260,8 +260,8 @@ ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
 zlabel('$$\phi^*$$ [rad]','interpreter','latex')
 xlim([y0set(1) y0set(end)])
 ylim([dtheta0set(1) dtheta0set(end)])
-xlim([0.63 0.71])
-ylim([-1.5 1.5])
+xlim([0.60 0.75])
+ylim([-2.25 2.25])
 zlim([-2 1])
 % zlim([0 1])
 grid on
