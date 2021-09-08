@@ -53,9 +53,10 @@ addpath(pwd, 'fig')
 model = Twoleg;
 
 E0 = 4500;
-y0set = 0.60:0.01:0.75;
-dtheta0set = -2:0.25:2;
-% dtheta0set = -0.1;
+y0set = 0.60:0.0025:0.75;
+dtheta0set = -2.5:0.0625:2.5;
+% y0set = 0.60:0.01:0.75;
+% dtheta0set = -2:0.25:2;
 
 % E0 = 4500; % [J]
 % y0set = 0.630:0.002:0.710;
