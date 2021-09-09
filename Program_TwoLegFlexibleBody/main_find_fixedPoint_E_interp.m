@@ -40,7 +40,7 @@ model = Twoleg;
 E0 = 4500; % [J]
 
 y0set = 0.75:-0.001:0.60;
-dtheta0set = -1.25:0.005:1.25;
+dtheta0set = 0:0.025:2.25;
 
 
 %% データの抜き出し
@@ -129,8 +129,9 @@ for i_y = 1:length(y0set)
     end
     fprintf('\n')
 end
+
 filename = ['data/fixedPoints_for_E0=', num2str(E0), '_interporated.mat'];
-save(filename, 'solset');
+save(filename, 'solset','y0set','dtheta0set','-v7.3');
 clearvars fixedPoint
 
 %% 解の描画
