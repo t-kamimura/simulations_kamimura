@@ -11,12 +11,12 @@ set(0, 'defaultTextFontSize', 16);
 set(0, 'defaultTextFontName', 'times');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% % Construct a questdlg with three options
-% choice = questdlg('Do you want to save the result(s)?', ...
-%     'Saving opptions', ...
-%     'Yes', 'No', 'Yes');
-% % Handle response
-% saveflag = false;
+% Construct a questdlg with three options
+choice = questdlg('Do you want to save the result(s)?', ...
+    'Saving opptions', ...
+    'Yes', 'No', 'Yes');
+% Handle response
+saveflag = false;
 
 % switch choice
 %     case 'Yes'
@@ -39,13 +39,10 @@ model = Twoleg;
 
 E0 = 4500; % [J]
 
-y0set = 0.75:-0.001:0.60;
-dtheta0set = 0:0.025:1.25;
-
 %% データの抜き出し
 
 filename = ['data/fixedPoints_for_E0=', num2str(E0), '_interporated.mat'];
-load(filename, 'solset');
+load(filename);
 
 % 安定性を求める
 for i_dtheta = 1:length(dtheta0set)
@@ -119,8 +116,9 @@ filename = ['data/fixedPoints_for_E0=', num2str(E0), '_interporated_withStabilit
 save(filename, 'solset','y0set','dtheta0set','-v7.3');
 
 %% 解の描画
-figure
-clr = jet(6);
+h1 = figure();
+h1.Renderer = "painters";
+clr = 0.75*jet(6);
 for i_y = 1:length(y0set)
     y0 = y0set(i_y);
     for i_dtheta = 1:length(dtheta0set)
@@ -129,18 +127,70 @@ for i_y = 1:length(y0set)
             fprintf('.')
         else
             if solset(i_y,i_dtheta).isStable == true
-                plotsize = 6;
+                plotsize = 3;
             else
                 plotsize = 3;
             end
-            plot3(y0,dtheta0,solset(i_y,i_dtheta).z_fix(1),'Marker','o','MarkerEdgeColor','none','MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
+%             plot3(y0,dtheta0,solset(i_y,i_dtheta).z_fix(1),'Marker','o','MarkerEdgeColor','none','MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
+            plot(y0,dtheta0,'Marker','x','MarkerEdgeColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
             hold on
         end
     end
 end
+fprintf('\n')
+xlabel('$$y$$','Interpreter','latex')
+ylabel('$$\dot{\theta}$$','Interpreter','latex')
+
+xlim([min(y0set),max(y0set)])
+ylim([-max(abs(dtheta0set)),max(abs(dtheta0set))])
+
+if saveflag == true
+    figname_png = ['fig/FixedPoints_E0=',num2str(E0),'.png'];
+    figname_fig = ['fig/FixedPoints_E0=',num2str(E0),'.fig'];
+    figname_pdf = ['fig/FixedPoints_E0=',num2str(E0),'.pdf'];
+    saveas(gcf, figname_png)
+    saveas(gcf, figname_fig)
+    saveas(gcf, figname_pdf)
+    disp('save finish!')
+end
+
+h2 = figure();
+h2.Renderer = "painters";
+
+for i_y = 1:length(y0set)
+    y0 = y0set(i_y);
+    for i_dtheta = 1:length(dtheta0set)
+        dtheta0 = dtheta0set(i_dtheta);
+        if isempty(solset(i_y,i_dtheta).q_ini)
+            fprintf('.')
+        else
+            if solset(i_y,i_dtheta).isStable == true
+                plotsize = 3;
+            else
+                plotsize = 1;
+            end
+%             plot3(y0,dtheta0,solset(i_y,i_dtheta).z_fix(1),'Marker','o','MarkerEdgeColor','none','MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
+            plot(y0,dtheta0,'Marker','x','MarkerEdgeColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
+            hold on
+        end
+    end
+end
+fprintf('\n')
 
 xlabel('$$y$$','Interpreter','latex')
 ylabel('$$\dot{\theta}$$','Interpreter','latex')
-zlabel('$$\phi$$','Interpreter','latex')
+
+xlim([min(y0set),max(y0set)])
+ylim([-max(abs(dtheta0set)),max(abs(dtheta0set))])
+
+if saveflag == true
+    figname_png = ['fig/stableSols_E0=',num2str(E0),'.png'];
+    figname_fig = ['fig/stableSols_E0=',num2str(E0),'.fig'];
+    figname_pdf = ['fig/stableSols_E0=',num2str(E0),'.pdf'];
+    saveas(gcf, figname_png)
+    saveas(gcf, figname_fig)
+    saveas(gcf, figname_pdf)
+    disp('save finish!')
+end
 
 h = msgbox('Caluculation finished !');
