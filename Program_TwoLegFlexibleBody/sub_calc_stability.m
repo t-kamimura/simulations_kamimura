@@ -154,6 +154,7 @@ if saveflag == true
     disp('save finish!')
 end
 
+%%
 h2 = figure();
 h2.Renderer = "painters";
 
@@ -166,12 +167,13 @@ for i_y = 1:length(y0set)
         else
             if solset(i_y,i_dtheta).isStable == true
                 plotsize = 3;
+                plot(y0,dtheta0,'Marker','x','MarkerEdgeColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
+                hold on
             else
                 plotsize = 1;
             end
 %             plot3(y0,dtheta0,solset(i_y,i_dtheta).z_fix(1),'Marker','o','MarkerEdgeColor','none','MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
-            plot(y0,dtheta0,'Marker','x','MarkerEdgeColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
-            hold on
+            
         end
     end
 end

@@ -40,7 +40,7 @@ model = Twoleg;
 E0 = 4500; % [J]
 
 y0set = 0.75:-0.0005:0.60;
-dtheta0set = 0:-0.025:-2.25;
+dtheta0set = 0.5:0.005:1;
 
 %% データの抜き出し
 for i_dtheta = 1:length(dtheta0set)
@@ -112,7 +112,7 @@ for i_dtheta = 1:length(dtheta0set)
         fprintf('\n')
     end
 end
-
+%%
 % 次に，dtheta方向に密にする
 for i_y = 1:length(y0set)
     y0 = y0set(i_y);
