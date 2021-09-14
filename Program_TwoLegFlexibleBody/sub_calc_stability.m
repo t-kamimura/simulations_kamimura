@@ -18,12 +18,12 @@ choice = questdlg('Do you want to save the result(s)?', ...
 % Handle response
 saveflag = false;
 
-% switch choice
-%     case 'Yes'
-%         saveflag = true;
-%     case 'No'
-%         saveflag = false;
-% end
+switch choice
+    case 'Yes'
+        saveflag = true;
+    case 'No'
+        saveflag = false;
+end
 
 % path追加
 addpath(pwd, 'class')
@@ -153,7 +153,6 @@ if saveflag == true
     saveas(gcf, figname_pdf)
     disp('save finish!')
 end
-
 %%
 h2 = figure();
 h2.Renderer = "painters";
@@ -173,7 +172,7 @@ for i_y = 1:length(y0set)
                 plotsize = 1;
             end
 %             plot3(y0,dtheta0,solset(i_y,i_dtheta).z_fix(1),'Marker','o','MarkerEdgeColor','none','MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
-            
+
         end
     end
 end
