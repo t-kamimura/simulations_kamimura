@@ -41,19 +41,20 @@ addpath(pwd, 'fig')
 model = Twoleg;
 
 E0 = 4500;
-filename = ['data/identical_energy_dtheta/fixedPoints_withStability_E0=', num2str(E0),'.mat'];
+dtheta0 = 1.5;
+filename = ['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0),'.mat'];
 load(filename)
 
 %%
-i_sol = 552;
-% i_sol = 77;
-% i_sol = 464;
+i_sol = 15;
 
-q_fix = fixedPoints(i_sol).q_ini;
-% u_fix(1) = rem(fixedPoints(i_sol).u_ini(1),2*pi);
-% u_fix(2) = rem(fixedPoints(i_sol).u_ini(2),2*pi);
-u_fix(1) = fixedPoints(i_sol).u_ini(1);
-u_fix(2) = fixedPoints(i_sol).u_ini(2);
+% q_fix = fixedPoints(i_sol).q_ini;
+% u_fix(1) = fixedPoints(i_sol).u_ini(1);
+% u_fix(2) = fixedPoints(i_sol).u_ini(2);
+
+q_fix = fixedPoint(i_sol).q_ini;
+u_fix(1) = fixedPoint(i_sol).z_fix(2);
+u_fix(2) = fixedPoint(i_sol).z_fix(3);
 
 model.init
 model.bound(q_fix, u_fix)
@@ -109,10 +110,12 @@ for pp = 1:8
 end
 
 if saveflag == 1
-    figname = ['variable1_i=',num2str(i_sol)];
-    saveas(gcf, figname, 'fig')
-    saveas(gcf, figname, 'png')
-    saveas(gcf, figname, 'pdf')
+    figname_fig = ['variable1_dtheta0=',num2str(dtheta0),'_i=',num2str(i_sol),'.fig'];
+    figname_pdf = ['variable1_dtheta0=',num2str(dtheta0),'_i=',num2str(i_sol),'.pdf'];
+    figname_png = ['variable1_dtheta0=',num2str(dtheta0),'_i=',num2str(i_sol),'.png'];
+    saveas(gcf, figname_fig, 'fig')
+    saveas(gcf, figname_png, 'png')
+    saveas(gcf, figname_pdf, 'pdf')
 end
 
 %%
@@ -143,7 +146,14 @@ ylabel('Torque on $$\phi$$ [Nm]', 'interpreter', 'latex', 'Fontsize', 14);
 xlim([0, tend]);
 % ylim(ylimset(pp,:);
 legend({'fore','hind','spring'})
-
+if saveflag == 1
+    figname_fig = ['torque_dtheta0=',num2str(dtheta0),'_i=',num2str(i_sol),'.fig'];
+    figname_png = ['torque_dtheta0=',num2str(dtheta0),'_i=',num2str(i_sol),'.png'];
+    figname_pdf = ['torque_dtheta0=',num2str(dtheta0),'_i=',num2str(i_sol),'.pdf'];    
+    saveas(gcf, figname_fig, 'fig')
+    saveas(gcf, figname_png, 'png')
+    saveas(gcf, figname_pdf, 'pdf')
+end
 
 %% エネルギーのグラフ
 figure
@@ -164,13 +174,13 @@ xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
 ylabel('Energy', 'interpreter', 'latex', 'Fontsize', 14);
 legend({'trans:x','trans:y', 'rot:theta', 'rot:phi', 'kh','kf','torso','grav'},'location','best')
 xlim([0, model.tout(end)])
-ylim([86, 95])
-
+ylim([90, 96])
 
 if saveflag == 1
-    figname = ['Energy_timeprofile'];
-    saveas(gcf, figname, 'fig')
-    saveas(gcf, figname, 'png')
-    % saveas(gcf, figname, 'pdf')
-    %saveas(gcf, figname, 'epsc')
+    figname_fig = ['energy_dtheta0=',num2str(dtheta0),'_i=',num2str(i_sol),'.fig'];
+    figname_png = ['energy_dtheta0=',num2str(dtheta0),'_i=',num2str(i_sol),'.png'];
+    figname_pdf = ['energy_dtheta0=',num2str(dtheta0),'_i=',num2str(i_sol),'.pdf'];    
+    saveas(gcf, figname_fig, 'fig')
+    saveas(gcf, figname_png, 'png')
+    saveas(gcf, figname_pdf, 'pdf')
 end
