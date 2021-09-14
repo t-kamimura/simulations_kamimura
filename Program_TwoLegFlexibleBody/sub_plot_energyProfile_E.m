@@ -45,7 +45,7 @@ filename = ['data/identical_energy_dtheta/fixedPoints_withStability_E0=', num2st
 load(filename)
 
 %%
-i_sol = 76;
+i_sol = 552;
 % i_sol = 77;
 % i_sol = 464;
 
@@ -114,6 +114,36 @@ if saveflag == 1
     saveas(gcf, figname, 'png')
     saveas(gcf, figname, 'pdf')
 end
+
+%%
+param = [model.m model.J model.kh model.kf model.kt model.xf_toe model.xh_toe model.gamma_h_td model.gamma_f_td model.L model.l3 model.l4 model.D model.g];
+    
+for i_t = 1:length(tout_)
+    q = [qout_(i_t,1) qout_(i_t,2) qout_(i_t,3) qout_(i_t,4)];
+    dq= [qout_(i_t,5) qout_(i_t,6) qout_(i_t,7) qout_(i_t,8)];
+    if (model.lout(i_t,1)-model.l3)<0
+        torque_GRF_hind_out(i_t,:) = torque_GRF_hind(q,dq,param);
+    else
+        torque_GRF_hind_out(i_t,:) = [0 0 0 0];
+    end
+    if (model.lout(i_t,2)-model.l3)<0
+        torque_GRF_fore_out(i_t,:) = torque_GRF_fore(q,dq,param);
+    else
+        torque_GRF_fore_out(i_t,:) = [0 0 0 0];
+    end
+    torque_spring_out(i_t,:) = torque_spring(q,dq,param);
+end
+figure
+plot(tout_, torque_GRF_hind_out(:,4))
+hold on
+plot(tout_, torque_GRF_fore_out(:,4))
+plot(tout_, torque_spring_out(:,4))
+xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
+ylabel('Torque on $$\phi$$ [Nm]', 'interpreter', 'latex', 'Fontsize', 14);
+xlim([0, tend]);
+% ylim(ylimset(pp,:);
+legend({'fore','hind','spring'})
+
 
 %% エネルギーのグラフ
 figure

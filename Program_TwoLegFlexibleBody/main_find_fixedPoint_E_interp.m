@@ -40,7 +40,7 @@ model = Twoleg;
 E0 = 4500; % [J]
 
 y0set = 0.75:-0.0005:0.60;
-dtheta0set = 0:-0.025:-2.25;
+dtheta0set = 0:0.025:2.25;
 
 %% データの抜き出し
 for i_dtheta = 1:length(dtheta0set)
