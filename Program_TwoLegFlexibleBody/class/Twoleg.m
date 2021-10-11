@@ -526,6 +526,7 @@ classdef Twoleg < handle
 
         end % plot
 
+
         function anime(self, speed, rec)
             FPS = 30;
             dt = speed / FPS; % [ms]
@@ -671,9 +672,9 @@ classdef Twoleg < handle
             end % save
 
         end % anime
-        
+
         function stick(self, skip_num, saveflag)
-            
+
             % % 時間を等間隔に修正
             % tstart = self.tout(1);
             % tfinal = self.tout(end);
@@ -733,29 +734,50 @@ classdef Twoleg < handle
 
             axis equal
 
-            clr = cool(stick_num);
-            for i_t = 1:skip_num:stick_num
-                line([x_hip(i_t), x_joint(i_t)], [y_hip(i_t), y_joint(i_t)], 'color', clr(i_t,:), 'LineWidth', 1);
-                line([x_joint(i_t), x_head(i_t)], [y_joint(i_t), y_head(i_t)], 'color', clr(i_t,:), 'LineWidth', 1);
-                line([x_hipjoint(i_t), x_foot_b(i_t)], [y_hipjoint(i_t), y_foot_b(i_t)], 'color', clr(i_t,:), 'LineWidth', 1);
-                line([x_headjoint(i_t), x_foot_f(i_t)], [y_headjoint(i_t), y_foot_f(i_t)], 'color', clr(i_t,:), 'LineWidth', 1);
-                drawnow
-                hold on
-            end
-            
+            % clr = cool(stick_num);
+            % for i_t = 1:skip_num:stick_num
+            %     line([x_hip(i_t), x_joint(i_t)], [y_hip(i_t), y_joint(i_t)], 'color', clr(i_t,:), 'LineWidth', 1);
+            %     line([x_joint(i_t), x_head(i_t)], [y_joint(i_t), y_head(i_t)], 'color', clr(i_t,:), 'LineWidth', 1);
+            %     line([x_hipjoint(i_t), x_foot_b(i_t)], [y_hipjoint(i_t), y_foot_b(i_t)], 'color', clr(i_t,:), 'LineWidth', 1);
+            %     line([x_headjoint(i_t), x_foot_f(i_t)], [y_headjoint(i_t), y_foot_f(i_t)], 'color', clr(i_t,:), 'LineWidth', 1);
+            %     drawnow
+            %     hold on
+            % end
+
             line([min(x_joint) - 1, max(x_joint)+ 1], [0, 0], 'color', 'k', 'LineWidth', 1);
 
             xlim([min(x_joint) - 1, max(x_joint)+ 1])
             ylim([-0.2 1.3])
 
-            qeout_ = self.qeout;
-            event_num = length(self.teout);
+            tset(1) = 0;
+            tset(2) = 0.5*(self.teout(1)+self.teout(2));
+            tset(3) = 0.5*(self.teout(2)+self.teout(3));
+            tset(4) = 0.5*(self.teout(3)+self.teout(4));
+            tset(5) = self.teout(end);
 
-            for i = 1:event_num
-                x =  qeout_(i, 1);   %質量中心
-                y =  qeout_(i, 2);
-                th = qeout_(i, 3);
-                ph = qeout_(i, 4);
+            qset = self.qout(1,:);
+            lset = self.lout(1,:);
+            gset = self.gout(1,:);
+            for i = 2:4
+                for i_t = 1:length(self.tout)
+                    if abs(self.tout(i_t)-tset(i))<1e-4
+                        qset(i,:) = self.qout(i_t,:);
+                        lset(i,:) = self.lout(i_t,:);
+                        gset(i,:) = self.gout(i_t,:);
+                        break
+                    end
+                end
+            end
+            qset(5,:) = self.qout(end,:);
+            lset(5,:) = self.lout(end,:);
+            gset(5,:) = self.gout(end,:);
+
+            clr2 = 0.75*hsv(5);
+            for i = 1:5
+                x =  qset(i, 1);   %質量中心
+                y =  qset(i, 2);
+                th = qset(i, 3);
+                ph = qset(i, 4);
 
                 x_joint(i) = x - self.L * cos(ph) * cos(th) + self.L * cos(th - ph);   %ジョイント部
                 y_joint(i) = y - self.L * cos(ph) * sin(th) + self.L * sin(th - ph);
@@ -770,27 +792,81 @@ classdef Twoleg < handle
                 x_headjoint(i) = x + self.L * cos(th) * cos(ph) + self.D * cos(th + ph);
                 y_headjoint(i) = y + self.L * cos(ph) * sin(th) + self.D * sin(th + ph);
 
-                x_foot_b(i) = x_hipjoint(i) + lout_(i, 1) * sin(gout_(i, 1));     %脚先
-                y_foot_b(i) = y_hipjoint(i) - lout_(i, 1) * cos(gout_(i, 1));
-                x_foot_f(i) = x_headjoint(i) + lout_(i, 2) * sin(gout_(i, 2));
-                y_foot_f(i) = y_headjoint(i) - lout_(i, 2) * cos(gout_(i, 2));
+                x_foot_b(i) = x_hipjoint(i) +  lset(i, 1) * sin(gset(i, 1));     %脚先
+                y_foot_b(i) = y_hipjoint(i) -  lset(i, 1) * cos(gset(i, 1));
+                x_foot_f(i) = x_headjoint(i) + lset(i, 2) * sin(gset(i, 2));
+                y_foot_f(i) = y_headjoint(i) - lset(i, 2) * cos(gset(i, 2));
 
-                line([x_hip(i), x_joint(i)], [y_hip(i), y_joint(i)], 'color', 'k', 'LineWidth', 2);
-                line([x_joint(i), x_head(i)], [y_joint(i), y_head(i)], 'color', 'k', 'LineWidth', 2);
-                line([x_hipjoint(i), x_foot_b(i)], [y_hipjoint(i), y_foot_b(i)], 'color', 'k', 'LineWidth', 2);
-                line([x_headjoint(i), x_foot_f(i)], [y_headjoint(i), y_foot_f(i)], 'color', 'k', 'LineWidth', 2);
+                line([x_hip(i), x_joint(i)], [y_hip(i), y_joint(i)], 'color', clr2(i,:), 'LineWidth', 2);
+                line([x_joint(i), x_head(i)], [y_joint(i), y_head(i)], 'color', clr2(i,:), 'LineWidth', 2);
+                line([x_hipjoint(i), x_foot_b(i)], [y_hipjoint(i), y_foot_b(i)], 'color', clr2(i,:), 'LineWidth', 2);
+                line([x_headjoint(i), x_foot_f(i)], [y_headjoint(i), y_foot_f(i)], 'color', clr2(i,:), 'LineWidth', 2);
                 drawnow
                 hold on
             end
 
             if saveflag == 1
-                figname = [date, 'stickDiagram'];
+                figname = ['fig/stickDiagram'];
                 saveas(gcf, figname, 'fig')
                 saveas(gcf, figname, 'png')
                 saveas(gcf, figname, 'pdf')
             end
 
         end % stick
+
+        % function stick_half(self,saveflag)
+        %     h1 = figure;
+        %     % スティックがほしいのは各フェーズの真ん中
+        %     tset(1) = 0;
+        %     tset(2) = 0.5*(self.teout(1)+self.teout(2));
+        %     tset(3) = 0.5*(self.teout(2)+self.teout(3));
+        %     tset(4) = 0.5*(self.teout(3)+self.teout(4));
+
+        %     qset = self.q_ini;
+        %     for index = 2:4
+        %         for i_t = 1:self.tout
+        %             if abs(self.tout(i_t)-tset(index))<1e-5
+        %                 iset(index) = i_t;
+        %                 qset(index,:) = self.qout(i_t)
+        %                 break
+        %             end
+        %         end
+        %     end
+
+        %     for index = 1:4
+        %         x =  qset(index, 1);   %質量中心
+        %         y =  qset(index, 2);
+        %         th = qset(index, 3);
+        %         ph = qset(index, 4);
+
+        %         x_joint(index) = x - self.L * cos(ph) * cos(th) + self.L * cos(th - ph);   %ジョイント部
+        %         y_joint(index) = y - self.L * cos(ph) * sin(th) + self.L * sin(th - ph);
+
+        %         x_hip(index) = x - self.L * cos(th) * cos(ph) - self.L * cos(th - ph);  %胴体
+        %         y_hip(index) = y - self.L * cos(ph) * sin(th) - self.L * sin(th - ph);
+        %         x_head(index) = x + self.L * cos(th) * cos(ph) + self.L * cos(th + ph);
+        %         y_head(index) = y + self.L * cos(ph) * sin(th) + self.L * sin(th + ph);
+
+        %         x_hipjoint(index) = x - self.L * cos(th) * cos(ph) - self.D * cos(th - ph);    %関節
+        %         y_hipjoint(index) = y - self.L * cos(ph) * sin(th) - self.D * sin(th - ph);
+        %         x_headjoint(index) = x + self.L * cos(th) * cos(ph) + self.D * cos(th + ph);
+        %         y_headjoint(index) = y + self.L * cos(ph) * sin(th) + self.D * sin(th + ph);
+
+        %         x_foot_b(index) = x_hipjoint(index) + lout_(index, 1) * sin(gout_(index, 1));     %脚先
+        %         y_foot_b(index) = y_hipjoint(index) - lout_(index, 1) * cos(gout_(index, 1));
+        %         x_foot_f(index) = x_headjoint(index) + lout_(index, 2) * sin(gout_(index, 2));
+        %         y_foot_f(index) = y_headjoint(index) - lout_(index, 2) * cos(gout_(index, 2));
+
+        %         body1 = line([x_hip(1), x_joint(1)], [y_hip(1), y_joint(1)], 'color', 'k', 'LineWidth', 3);
+        %         body2 = line([x_joint(1), x_head(1)], [y_joint(1), y_head(1)], 'color', 'k', 'LineWidth', 3);
+        %         hindLeg = line([x_hipjoint(1), x_foot_b(1)], [y_hipjoint(1), y_foot_b(1)], 'color', 'r', 'LineWidth', 3);
+        %         foreLeg = line([x_headjoint(1), x_foot_f(1)], [y_headjoint(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
+        %         line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
+        %         hold on
+        %     end
+
+        % end % stick_half
+
 
     end % methods
 

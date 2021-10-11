@@ -85,12 +85,18 @@ if calcflag == true
             u_ini = [fixedPoint_integrated(i).z_fix(2), fixedPoint_integrated(i).z_fix(3)];
             model.init;
             model.bound(q_ini, u_ini);
+            % 力積の計算
+            p = 0;
+            for i_t = 2:length(model.tout)
+                p = p + model.kh * (model.l3 - model.lout(i_t,1))*cos(model.gout(i_t,1))*(model.tout(i_t)-model.tout(i_t-1));
+            end
             fixedPoints(n).fixedPoint = [y0, dtheta0, phi0];
             fixedPoints(n).u = u_ini;
             fixedPoints(n).tout = model.tout;
             fixedPoints(n).qout = model.qout;
             fixedPoints(n).eeout = model.eeout;
             fixedPoints(n).GRF = fixedPoint_integrated(i).GRF;
+            fixedPoints(n).p = p;
             fixedPoints(n).vel = model.qout(end,1)/model.tout(end);
             if fixedPoints(n).eeout(3) == 3
                 % with DS
@@ -257,6 +263,44 @@ for i_dtheta = 1:length(dtheta0set)
         figname_png = ['fig/GRF_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.png'];
         figname_pdf = ['fig/GRF_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.pdf'];
         figname_fig = ['fig/GRF_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.fig'];
+        saveas(h, figname_png)
+        saveas(h, figname_pdf)
+        saveas(h, figname_fig)
+        disp('save finish!')
+        close(h)
+    end
+end
+
+%% y-p平面にプロット
+for i_dtheta = 1:length(dtheta0set)
+    h = figure;
+    dtheta = dtheta0set(i_dtheta);
+    for i=1:n
+        if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+            hold on
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p,'marker','*','MarkerEdgeColor',clr(fixedPoints(i).soltype(1),:))
+%             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
+%                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).GRF,'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
+%                 hold on
+%             else
+%                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).GRF,'marker','o','MarkerFaceColor',blue,'MarkerEdgeColor','none')
+%                 hold on
+%             end
+        end
+    end
+    figtitle = ['$$\dot{\theta}=$$',num2str(dtheta)];
+    title(figtitle,'interpreter','latex')
+    xlabel('$$y^*$$ [m]','interpreter','latex')
+    ylabel('GRF [N]','interpreter','latex')
+    xlim([y0set(1) y0set(end)])
+%     ylim([1400 2400])
+%     ylim([1000 3000])
+
+    if saveflag == true
+        figname_png = ['fig/p_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.png'];
+        figname_pdf = ['fig/p_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.pdf'];
+        figname_fig = ['fig/p_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.fig'];
         saveas(h, figname_png)
         saveas(h, figname_pdf)
         saveas(h, figname_fig)

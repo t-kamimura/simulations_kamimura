@@ -34,7 +34,7 @@ addpath(pwd, 'func')
 addpath(pwd, 'data')
 addpath(pwd, 'fig')
 
-%% 定数の決定
+% 定数の決定
 model = Twoleg;
 
 E0 = 4500; % [J]
@@ -44,7 +44,7 @@ E0 = 4500; % [J]
 filename = ['data/fixedPoints_for_E0=', num2str(E0), '_interporated.mat'];
 load(filename);
 
-% 安定性を求める
+%% 安定性を求める
 for i_dtheta = 1:length(dtheta0set)
     for i_y = 1:length(y0set)
         if isempty(solset(i_y,i_dtheta).q_ini)
@@ -128,12 +128,16 @@ for i_y = 1:length(y0set)
         else
             if solset(i_y,i_dtheta).isStable == true
                 plotsize = 3;
+                plot(y0,dtheta0,'Marker','o','MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerEdgeColor','none','MarkerSize',plotsize)
+                hold on
+                plot(y0,dtheta0,'Marker','x','MarkerEdgeColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerFaceColor','none','MarkerSize',plotsize)
+                hold on
             else
                 plotsize = 3;
             end
 %             plot3(y0,dtheta0,solset(i_y,i_dtheta).z_fix(1),'Marker','o','MarkerEdgeColor','none','MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
-            plot(y0,dtheta0,'Marker','x','MarkerEdgeColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
-            hold on
+%             plot(y0,dtheta0,'Marker','x','MarkerEdgeColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
+%             hold on
         end
     end
 end
@@ -194,4 +198,71 @@ if saveflag == true
     disp('save finish!')
 end
 
+%% カラーマップにする
+h3 = figure();
+h3.Renderer = "painters";
+lambdaset = NaN(length(dtheta0set),length(y0set));
+for i_y = 1:length(y0set)
+    y0 = y0set(i_y);
+    for i_dtheta = 1:length(dtheta0set)
+        dtheta0 = dtheta0set(i_dtheta);
+        if isempty(solset(i_y,i_dtheta).q_ini)
+        else
+            [maxlambda,id] = max(abs([solset(i_y,i_dtheta).eig.eigenValues]));
+            if abs(maxlambda - 1)<1e-3
+                eigenValues = solset(i_y,i_dtheta).eig.eigenValues;
+                eigenValues(id) = 0;
+                maxlambda = max(abs(eigenValues));                
+                lambdaset(i_dtheta,i_y) = maxlambda;
+            else
+                lambdaset(i_dtheta,i_y) = maxlambda;
+            end
+        end
+    end
+end
+
+surf(y0set,dtheta0set,lambdaset,'FaceColor','interp','LineStyle','none')
+view(2)
+xlabel('$$y$$ [m]','Interpreter','latex')
+ylabel('$$\dot{\theta}$$ [rad/s]','Interpreter','latex')
+
+xlim([min(y0set),max(y0set)])
+ylim([-max(abs(dtheta0set)),max(abs(dtheta0set))])
+caxis([0.75 2.5])
+colorbar
+colormap jet
+
+if saveflag == true
+    figname_png = ['fig/stableSols_colormap_E0=',num2str(E0),'.png'];
+    figname_fig = ['fig/stableSols_colormap_E0=',num2str(E0),'.fig'];
+    figname_pdf = ['fig/stableSols_colormap_E0=',num2str(E0),'.pdf'];
+    saveas(gcf, figname_png)
+    saveas(gcf, figname_fig)
+    saveas(gcf, figname_pdf)
+    disp('save finish!')
+end
+
+h4 = figure();
+h4.Renderer = "painters";
+v = [0.8,0.9,1,1.2,1.5,2];
+% v = [0.9,0.9];
+contour(y0set,dtheta0set,lambdaset,v,'LineColor','r','ShowText','off')
+xlabel('$$y$$ [m]','Interpreter','latex')
+ylabel('$$\dot{\theta}$$ [rad/s]','Interpreter','latex')
+
+xlim([min(y0set),max(y0set)])
+ylim([-max(abs(dtheta0set)),max(abs(dtheta0set))])
+caxis([0.5 2.5])
+colorbar
+colormap jet
+
+if saveflag == true
+    figname_png = ['fig/stableSols_boundary_E0=',num2str(E0),'.png'];
+    figname_fig = ['fig/stableSols_boundary_E0=',num2str(E0),'.fig'];
+    figname_pdf = ['fig/stableSols_boundary_E0=',num2str(E0),'.pdf'];
+    saveas(gcf, figname_png)
+    saveas(gcf, figname_fig)
+    saveas(gcf, figname_pdf)
+    disp('save finish!')
+end
 h = msgbox('Caluculation finished !');

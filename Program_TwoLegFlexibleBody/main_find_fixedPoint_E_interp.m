@@ -39,8 +39,8 @@ model = Twoleg;
 
 E0 = 4500; % [J]
 
-y0set = 0.75:-0.0005:0.60;
-dtheta0set = 0.5:0.005:1;
+y0set = 0.65:-0.0005:0.60;
+dtheta0set = 0.0:-0.01:-2.25;
 
 %% データの抜き出し
 for i_dtheta = 1:length(dtheta0set)
@@ -93,41 +93,78 @@ end
 %% 探索
 % figure
 
-% まず，y方向に密にする
-for i_dtheta = 1:length(dtheta0set)
-    dtheta0 = dtheta0set(i_dtheta);
-    if isempty(solset(1,i_dtheta).z_fix)
-        % 元になる固定点がないのでskip
-    else
-        for i_y = 1:length(y0set)
-            y0 = y0set(i_y);
-            u_ini = [y0 dtheta0 E0];    % 今回のループで求める周期解の定数（固定）部分
-            if isempty(solset(i_y,i_dtheta).z_fix)
-                z_ini = solset(i_y-1,i_dtheta).z_fix; % 今回のループで求める周期解の探索部分
-                [z_fix, logDat, exitflag] = func_find_fixedPoint_E(model, z_ini, u_ini);
-                solset(i_y,i_dtheta) = logDat;
-                fprintf('.')
-            end
-        end
-        fprintf('\n')
-    end
-end
-%%
-% 次に，dtheta方向に密にする
+% % まず，y方向に密にする
+% for i_dtheta = 1:length(dtheta0set)
+%     dtheta0 = dtheta0set(i_dtheta);
+%     if isempty(solset(1,i_dtheta).z_fix)
+%         % 元になる固定点がないのでskip
+%     else
+%         for i_y = 1:length(y0set)
+%             y0 = y0set(i_y);
+%             u_ini = [y0 dtheta0 E0];    % 今回のループで求める周期解の定数（固定）部分
+%             if isempty(solset(i_y,i_dtheta).z_fix)
+%                 z_ini = solset(i_y-1,i_dtheta).z_fix; % 今回のループで求める周期解の探索部分
+%                 [z_fix, logDat, exitflag] = func_find_fixedPoint_E(model, z_ini, u_ini);
+%                 solset(i_y,i_dtheta) = logDat;
+%                 fprintf('.')
+%             end
+%         end
+%         fprintf('\n')
+%     end
+% end
+% 
+% % 次に，dtheta方向に密にする
+% for i_y = 1:length(y0set)
+%     y0 = y0set(i_y);
+%     for i_dtheta = 1:length(dtheta0set)
+%         dtheta0 = dtheta0set(i_dtheta);
+%         u_ini = [y0 dtheta0 E0];    % 今回のループで求める周期解の定数（固定）部分
+%         if isempty(solset(i_y,i_dtheta).z_fix)
+%             z_ini = solset(i_y,i_dtheta-1).z_fix; % 今回のループで求める周期解の探索部分
+%             [z_fix, logDat, exitflag] = func_find_fixedPoint_E(model, z_ini, u_ini);
+%             solset(i_y,i_dtheta) = logDat;
+%             fprintf('_')
+%         end
+%     end
+%     fprintf('\n')
+% end
+
+% まず，dtheta方向に密にする
 for i_y = 1:length(y0set)
     y0 = y0set(i_y);
-    for i_dtheta = 1:length(dtheta0set)
-        dtheta0 = dtheta0set(i_dtheta);
+    if isempty(solset(i_y,1).z_fix)
+        % 元になる固定点がないのでskip
+    else
+        for i_dtheta = 1:length(dtheta0set)
+            dtheta0 = dtheta0set(i_dtheta);
+            u_ini = [y0 dtheta0 E0];    % 今回のループで求める周期解の定数（固定）部分
+            if isempty(solset(i_y,i_dtheta).z_fix)
+                z_ini = solset(i_y,i_dtheta-1).z_fix; % 今回のループで求める周期解の探索部分
+                [z_fix, logDat, exitflag] = func_find_fixedPoint_E(model, z_ini, u_ini);
+                solset(i_y,i_dtheta) = logDat;
+                fprintf('_')
+            end
+        end
+    end
+    
+    fprintf('\n')
+end
+
+for i_dtheta = 1:length(dtheta0set)
+    dtheta0 = dtheta0set(i_dtheta);
+    for i_y = 1:length(y0set)
+        y0 = y0set(i_y);
         u_ini = [y0 dtheta0 E0];    % 今回のループで求める周期解の定数（固定）部分
         if isempty(solset(i_y,i_dtheta).z_fix)
-            z_ini = solset(i_y,i_dtheta-1).z_fix; % 今回のループで求める周期解の探索部分
+            z_ini = solset(i_y-1,i_dtheta).z_fix; % 今回のループで求める周期解の探索部分
             [z_fix, logDat, exitflag] = func_find_fixedPoint_E(model, z_ini, u_ini);
             solset(i_y,i_dtheta) = logDat;
-            fprintf('_')
+            fprintf('.')
         end
     end
     fprintf('\n')
 end
+
 
 filename = ['data/fixedPoints_for_E0=', num2str(E0), '_interporated.mat'];
 save(filename, 'solset','y0set','dtheta0set','-v7.3');
