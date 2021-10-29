@@ -52,15 +52,13 @@ addpath(pwd, 'fig')
 %% データの抽出
 model = Twoleg;
 
-E0 = 4500;
-y0set = 0.60:0.0025:0.75;
-dtheta0set = -2.5:0.0625:2.5;
-% y0set = 0.60:0.01:0.75;
+% E0 = 4500;
+% y0set = 0.60:0.0025:0.75;
 % dtheta0set = -2:0.25:2;
 
-% E0 = 4500; % [J]
-% y0set = 0.630:0.002:0.710;
-% dtheta0set = [-1.5:0.05:1.5];
+E0 = 5500;
+y0set = 0.60:0.005:0.80;
+dtheta0set = -2.5:0.1:2.5;
 
 for i_theta = 1:length(dtheta0set)
     load(['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0set(i_theta)), '.mat'])
@@ -75,6 +73,9 @@ end
 %% 解の確認
 if calcflag == true
     n = 0;
+    num = length(fixedPoint_integrated);
+    symbols = {'/','-','\\','|'};
+    fprintf('\n[  0.0 %%] ');
     for i = 1:length(fixedPoint_integrated)
         if abs(fixedPoint_integrated(i).E - E0) < 1e-3
             n = n + 1;
@@ -85,10 +86,36 @@ if calcflag == true
             u_ini = [fixedPoint_integrated(i).z_fix(2), fixedPoint_integrated(i).z_fix(3)];
             model.init;
             model.bound(q_ini, u_ini);
-            % 力積の計算
-            p = 0;
+
+            % 力積の計算(脚1,後肢)
+            p1.abs = 0;
+            p1.hori_plus = 0;
+            p1.hori_minus = 0;
+            p1.vert= 0;
             for i_t = 2:length(model.tout)
-                p = p + model.kh * (model.l3 - model.lout(i_t,1))*cos(model.gout(i_t,1))*(model.tout(i_t)-model.tout(i_t-1));
+                delta_p = model.kh * 0.5*((model.l3 - model.lout(i_t,1))+(model.l3 - model.lout(i_t-1,1)))*(model.tout(i_t)-model.tout(i_t-1));
+                p1.abs = p1.abs + delta_p;
+                p1.vert = p1.vert + delta_p*cos(0.5*(model.gout(i_t,1)+model.gout(i_t-1,1)));
+                if model.gout(i_t,1) > 0
+                    p1.hori_minus = p1.hori_minus - delta_p*sin(0.5*(model.gout(i_t,1)+model.gout(i_t-1,1)));
+                else
+                    p1.hori_plus = p1.hori_plus - delta_p*sin(0.5*(model.gout(i_t,1)+model.gout(i_t-1,1)));
+                end
+            end
+            % 力積の計算(脚2,前肢)
+            p2.abs = 0;
+            p2.hori_plus = 0;
+            p2.hori_minus = 0;
+            p2.vert= 0;
+            for i_t = 2:length(model.tout)
+                delta_p = model.kf * 0.5*((model.l3 - model.lout(i_t,2))+(model.l3 - model.lout(i_t-1,2)))*(model.tout(i_t)-model.tout(i_t-1));
+                p2.abs = p2.abs + delta_p;
+                p2.vert = p2.vert + delta_p*cos(0.5*(model.gout(i_t,2)+model.gout(i_t-1,2)));
+                if model.gout(i_t,2) > 0
+                    p2.hori_minus = p2.hori_minus - delta_p*sin(0.5*(model.gout(i_t,2)+model.gout(i_t-1,2)));
+                else
+                    p2.hori_plus = p2.hori_plus - delta_p*sin(0.5*(model.gout(i_t,2)+model.gout(i_t-1,2)));
+                end
             end
             fixedPoints(n).fixedPoint = [y0, dtheta0, phi0];
             fixedPoints(n).u = u_ini;
@@ -96,7 +123,8 @@ if calcflag == true
             fixedPoints(n).qout = model.qout;
             fixedPoints(n).eeout = model.eeout;
             fixedPoints(n).GRF = fixedPoint_integrated(i).GRF;
-            fixedPoints(n).p = p;
+            fixedPoints(n).p1 = p1;
+            fixedPoints(n).p2 = p2;
             fixedPoints(n).vel = model.qout(end,1)/model.tout(end);
             if fixedPoints(n).eeout(3) == 3
                 % with DS
@@ -146,6 +174,9 @@ if calcflag == true
                 fixedPoints(n).soltype(2) = 2;
             end
         end % if solutionExit
+        fprintf('\b\b\b\b\b\b\b\b\b\b\b\b')
+        fprintf('[%6.2f %%] ',100*i/num)
+        fprintf(cell2mat(symbols(1+rem(i,4))))
     end
     filename = ['data/identical_energy_dtheta/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
     save(filename, 'fixedPoints');
@@ -154,6 +185,8 @@ else
     load(filename)
     n = length(fixedPoints);
 end
+fprintf('\n');
+
 %% 3次元空間にプロット
 
 % soltype
@@ -271,36 +304,90 @@ for i_dtheta = 1:length(dtheta0set)
     end
 end
 
-%% y-p平面にプロット
+%% y-p_vert平面にプロット
 for i_dtheta = 1:length(dtheta0set)
     h = figure;
     dtheta = dtheta0set(i_dtheta);
     for i=1:n
         if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
-            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p1.vert,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
             hold on
-            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p,'marker','*','MarkerEdgeColor',clr(fixedPoints(i).soltype(1),:))
-%             if max(abs(fixedPoints(i).soltype - [5,2])) == 0 || max(abs(fixedPoints(i).soltype - [6,1])) == 0
-%                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).GRF,'marker','o','MarkerFaceColor',red,'MarkerEdgeColor','none')
-%                 hold on
-%             else
-%                 plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).GRF,'marker','o','MarkerFaceColor',blue,'MarkerEdgeColor','none')
-%                 hold on
-%             end
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p1.vert,'marker','+','MarkerEdgeColor',clr(fixedPoints(i).soltype(1),:))
         end
     end
     figtitle = ['$$\dot{\theta}=$$',num2str(dtheta)];
     title(figtitle,'interpreter','latex')
     xlabel('$$y^*$$ [m]','interpreter','latex')
-    ylabel('GRF [N]','interpreter','latex')
+    ylabel('$$p_y$$ [Ns]','interpreter','latex')
     xlim([y0set(1) y0set(end)])
-%     ylim([1400 2400])
-%     ylim([1000 3000])
+    ylim([20 100])
 
     if saveflag == true
-        figname_png = ['fig/p_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.png'];
-        figname_pdf = ['fig/p_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.pdf'];
-        figname_fig = ['fig/p_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.fig'];
+        figname_png = ['fig/py_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.png'];
+        figname_pdf = ['fig/py_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.pdf'];
+        figname_fig = ['fig/py_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.fig'];
+        saveas(h, figname_png)
+        saveas(h, figname_pdf)
+        saveas(h, figname_fig)
+        disp('save finish!')
+        close(h)
+    end
+end
+%% y-p_hori平面にプロット
+for i_dtheta = 1:length(dtheta0set)
+    h = figure;
+    dtheta = dtheta0set(i_dtheta);
+    for i=1:n
+        if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p1.hori_plus,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+            hold on
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p1.hori_plus,'marker','+','MarkerEdgeColor',clr(fixedPoints(i).soltype(1),:))
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p1.hori_minus,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p1.hori_minus,'marker','+','MarkerEdgeColor',clr(fixedPoints(i).soltype(1),:))
+        end
+    end
+    figtitle = ['$$\dot{\theta}=$$',num2str(dtheta)];
+    title(figtitle,'interpreter','latex')
+    xlabel('$$y^*$$ [m]','interpreter','latex')
+    ylabel('$$p_{x1}$$ [Ns]','interpreter','latex')
+    xlim([y0set(1) y0set(end)])
+    ylim([-20 20])
+
+    if saveflag == true
+        figname_png = ['fig/px1_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.png'];
+        figname_pdf = ['fig/px1_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.pdf'];
+        figname_fig = ['fig/px1_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.fig'];
+        saveas(h, figname_png)
+        saveas(h, figname_pdf)
+        saveas(h, figname_fig)
+        disp('save finish!')
+        close(h)
+    end
+end
+%%
+for i_dtheta = 1:length(dtheta0set)
+    h = figure;
+    dtheta = dtheta0set(i_dtheta);
+    for i=1:n
+        if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p2.hori_plus,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+            hold on
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p2.hori_plus,'marker','+','MarkerEdgeColor',clr(fixedPoints(i).soltype(1),:))
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p2.hori_minus,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+            plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).p2.hori_minus,'marker','+','MarkerEdgeColor',clr(fixedPoints(i).soltype(1),:))
+        end
+    end
+    figtitle = ['$$\dot{\theta}=$$',num2str(dtheta)];
+    title(figtitle,'interpreter','latex')
+    xlabel('$$y^*$$ [m]','interpreter','latex')
+    ylabel('$$p_{x2}$$ [Ns]','interpreter','latex')
+    xlim([y0set(1) y0set(end)])
+    ylim([-20 20])
+
+    if saveflag == true
+        figname_png = ['fig/px2_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.png'];
+        figname_pdf = ['fig/px2_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.pdf'];
+        figname_fig = ['fig/px2_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.fig'];
         saveas(h, figname_png)
         saveas(h, figname_pdf)
         saveas(h, figname_fig)
@@ -333,7 +420,7 @@ for i_dtheta = 1:length(dtheta0set)
     ylabel('$$\bar{v}$$ [m/s]','interpreter','latex')
     xlim([y0set(1) y0set(end)])
 %     ylim([12.5 13.2])
-    ylim([14 15.5])
+    ylim([15.5 17])
 
     if saveflag == true
         figname_png = ['fig/vel_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.png'];

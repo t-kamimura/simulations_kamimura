@@ -180,7 +180,7 @@ for i = 1:n
 end
 xlabel('$$y^*$$ [m]','interpreter','latex')
 ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
-zlabel('$$\delta y$$ [m]','interpreter','latex')
+zlabel('$$\delta_y$$ [m]','interpreter','latex')
 
 if saveflag == true
     figname_png = ['fig/delta_y_E0=',num2str(E0),'.png'];
@@ -199,7 +199,7 @@ for i = 1:n
 end
 xlabel('$$y^*$$ [m]','interpreter','latex')
 ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
-zlabel('$$\delta\theta$$ [rad]','interpreter','latex')
+zlabel('$$\delta_\theta$$ [rad]','interpreter','latex')
 
 if saveflag == true
     figname_png = ['fig/delta_theta_E0=',num2str(E0),'.png'];
@@ -240,6 +240,51 @@ end
 xlabel('$$y^*$$ [m]','interpreter','latex')
 ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
 zlabel('$$\min\phi$$ [rad]','interpreter','latex')
+
+if saveflag == true
+    figname_png = ['fig/minPhi_E0=',num2str(E0),'.png'];
+    figname_fig = ['fig/minPhi_E0=',num2str(E0),'.fig'];
+    figname_pdf = ['fig/minPhi_E0=',num2str(E0),'.pdf'];
+    saveas(gcf, figname_png)
+    saveas(gcf, figname_fig)
+    saveas(gcf, figname_pdf)
+    disp('save finish!')
+end
+
+%% y-dtheta-meamPhi
+figure
+for i = 1:n
+    meanPhi = mean([fixedPoint_integrated(i).trajectory.qout(:,4)]);
+    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),meanPhi,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+    hold on
+end
+xlabel('$$y^*$$ [m]','interpreter','latex')
+ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
+zlabel('$$\bar{\phi}$$ [rad]','interpreter','latex')
+
+if saveflag == true
+    figname_png = ['fig/minPhi_E0=',num2str(E0),'.png'];
+    figname_fig = ['fig/minPhi_E0=',num2str(E0),'.fig'];
+    figname_pdf = ['fig/minPhi_E0=',num2str(E0),'.pdf'];
+    saveas(gcf, figname_png)
+    saveas(gcf, figname_fig)
+    saveas(gcf, figname_pdf)
+    disp('save finish!')
+end
+
+%% y-dtheta-deltaPhi
+figure
+for i = 1:n
+    meanPhi = mean([fixedPoint_integrated(i).trajectory.qout(:,4)]);
+    minPhi = min([fixedPoint_integrated(i).trajectory.qout(:,4)]);
+    maxPhi = max([fixedPoint_integrated(i).trajectory.qout(:,4)]);
+    dphi = maxPhi - minPhi;
+    plot3(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(2),dphi,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+    hold on
+end
+xlabel('$$y^*$$ [m]','interpreter','latex')
+ylabel('$$\dot{\theta}^*$$ [rad/s]','interpreter','latex')
+zlabel('$$\delta_\phi$$ [rad]','interpreter','latex')
 
 if saveflag == true
     figname_png = ['fig/minPhi_E0=',num2str(E0),'.png'];
@@ -379,3 +424,66 @@ for i_dtheta = 1:length(dtheta0set)
     end
 end
 
+%% y-meanPhi平面にプロット
+dtheta0set = [-1.5 1.5];
+for i_dtheta = 1:length(dtheta0set)
+    h = figure;
+    dtheta = dtheta0set(i_dtheta);
+    for i=1:n
+        if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
+            meanPhi = mean([fixedPoint_integrated(i).trajectory.qout(:,4)]);
+            plot(fixedPoints(i).fixedPoint(1),meanPhi,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+            hold on
+            plot(fixedPoints(i).fixedPoint(1),meanPhi,'marker','+','MarkerEdgeColor',clr(fixedPoints(i).soltype(1),:))
+        end
+    end
+    figtitle = ['$$\dot{\theta}=$$',num2str(dtheta),' [rad]'];
+    title(figtitle,'interpreter','latex')
+    xlabel('$$y^*$$ [m]','interpreter','latex')
+    ylabel('$$\bar{\phi}$$ [rad]','interpreter','latex')
+    xlim([y0set(1) y0set(end)])
+    ylim([-.2 .4])
+
+    if saveflag == true
+        figname_png = ['fig/meanPhi_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.png'];
+        figname_pdf = ['fig/meanPhi_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.pdf'];
+        figname_fig = ['fig/meanPhi_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.fig'];
+        saveas(h, figname_png)
+        saveas(h, figname_pdf)
+        saveas(h, figname_fig)
+        disp('save finish!')
+        close(h)
+    end
+end
+
+%% y-deltaPhi平面にプロット
+dtheta0set = [-1.5 1.5];
+for i_dtheta = 1:length(dtheta0set)
+    h = figure;
+    dtheta = dtheta0set(i_dtheta);
+    for i=1:n
+        if abs(dtheta - fixedPoints(i).fixedPoint(2)) < 1e-3
+            dPhi = max([fixedPoint_integrated(i).trajectory.qout(:,4)]) - min([fixedPoint_integrated(i).trajectory.qout(:,4)]);
+            plot(fixedPoints(i).fixedPoint(1),dPhi,'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
+            hold on
+            plot(fixedPoints(i).fixedPoint(1),dPhi,'marker','+','MarkerEdgeColor',clr(fixedPoints(i).soltype(1),:))
+        end
+    end
+    figtitle = ['$$\dot{\theta}=$$',num2str(dtheta),' [rad]'];
+    title(figtitle,'interpreter','latex')
+    xlabel('$$y^*$$ [m]','interpreter','latex')
+    ylabel('$$\delta_{\phi}$$ [rad]','interpreter','latex')
+    xlim([y0set(1) y0set(end)])
+    ylim([-0.1 2.7])
+
+    if saveflag == true
+        figname_png = ['fig/deltaPhi_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.png'];
+        figname_pdf = ['fig/deltaPhi_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.pdf'];
+        figname_fig = ['fig/deltaPhi_E0=',num2str(E0),'_dtheta0=',num2str(dtheta),'.fig'];
+        saveas(h, figname_png)
+        saveas(h, figname_pdf)
+        saveas(h, figname_fig)
+        disp('save finish!')
+        close(h)
+    end
+end

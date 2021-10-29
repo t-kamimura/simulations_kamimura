@@ -37,12 +37,12 @@ addpath(pwd, 'fig')
 %% 定数の決定
 model = Twoleg;
 
-E0 = 4500; % [J]
+E0 = 5500; % [J]
 
-% y0set = 0.6025:0.005:0.7975;
-% dtheta0set = [0.125:0.25:2.875]; % [rad/s]
-y0set = 0.60:0.001:0.75;
-dtheta0set = 0.75:0.01:1.25;
+y0set = 0.60:0.005:0.8;
+dtheta0set = 0:0.1:2.5; % [rad/s]
+% y0set = 0.60:0.001:0.75;
+% dtheta0set = 0.75:0.01:1.25;
 
 phi0set = [-2:0.5:1]; % [rad]T;tsasa
 % phi0set = 1; % [rad]
