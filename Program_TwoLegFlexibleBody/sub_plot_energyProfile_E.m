@@ -46,7 +46,7 @@ filename = ['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dt
 load(filename)
 
 %%
-i_sol = 21;
+i_sol = 15;
 
 % q_fix = fixedPoints(i_sol).q_ini;
 % u_fix(1) = fixedPoints(i_sol).u_ini(1);

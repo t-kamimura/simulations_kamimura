@@ -11,13 +11,13 @@ function model = Accumulate01(t, q, te, qe, ie, model)
             % disp('no event occured @phase1')
             model.eveflg = 20;
         case 1
-            if ie(1) == 1
+            if ie(end) == 1
                 % disp('hind leg touch down @phase1')
                 model.eveflg = 2;   % next phase: hind leg stance
-            elseif ie(1) == 2
+            elseif ie(end) == 2
                 % disp('fore leg touch down @phase1')
                 model.eveflg = 4;   % next phase: fore leg stance
-            elseif ie(1) == 3
+            elseif ie(end) == 3
                 % disp('fall down @phase1')
                 model.eveflg = 30;
             else
@@ -27,17 +27,13 @@ function model = Accumulate01(t, q, te, qe, ie, model)
 
         case 2  % 同時に2個のイベントが発生
 
-            if ie(1) == 1 && ie(2) == 2
+            if ie(2) == 1 && ie(1) == 2
                 % disp('hind & fore leg touch down @phase1')
                 model.eveflg = 3;
             else
                 % disp('fall down @phase1')
                 model.eveflg = 30;
             end
-
-        case 3
-            % disp('unknown error @phase1')
-            model.eveflg = 30;
     end
 
     model.tout = [model.tout; t(2:nt)];
@@ -46,8 +42,8 @@ function model = Accumulate01(t, q, te, qe, ie, model)
     model.lout = [model.lout; ones(nt - 1, 1) * model.l3, ones(nt - 1, 1) * model.l4];
     model.gout = [model.gout; ones(nt - 1, 1) * model.gamma_h_td(1), ones(nt - 1, 1) * model.gamma_f_td(1)];
 
-    model.teout = [model.teout; te(1)];
-    model.qeout = [model.qeout; qe(1, :)];
-    model.ieout = [model.ieout; ie(1)];
+    model.teout = [model.teout; te];
+    model.qeout = [model.qeout; qe];
+    model.ieout = [model.ieout; ie];
 
 end

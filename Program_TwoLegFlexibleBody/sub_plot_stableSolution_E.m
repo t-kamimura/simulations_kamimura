@@ -40,7 +40,7 @@ addpath(pwd, 'fig')
 
 model = Twoleg;
 
-E0 = 3500;
+E0 = 4500;
 filename = ['data/identical_energy_dtheta/fixedPoints_rearranged_E0=', num2str(E0),'.mat'];
 load(filename)
 

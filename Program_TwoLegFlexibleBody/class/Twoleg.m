@@ -171,7 +171,7 @@ classdef Twoleg < handle
 
                 switch self.eveflg
 
-                    case 1% Double Leg Flight
+                    case 1 % Double Leg Flight
 
                         eve1 = @(t, q) events1(q, self); %イベント関数を定義．ゼロになる変数と方向を指定．
                         ode1 = @(t, q) f1(q, self); %odeで解く微分方程式を定義．
@@ -536,9 +536,10 @@ classdef Twoleg < handle
             tspan = tfinal - tstart;
             teq = [tstart:dt:tfinal]';
             t_mid = 1e3 * 0.5 * (tfinal + tstart);
-            qout_ = resample(self.qout, self.tout, 1 / dt); % signal processingの関数
-            lout_ = resample(self.lout, self.tout, 1 / dt);
-            gout_ = resample(self.gout, self.tout, 1 / dt);
+
+            qout_ = interp1(self.tout, self.qout, teq);
+            lout_ = interp1(self.tout, self.lout, teq);
+            gout_ = interp1(self.tout, self.gout, teq);
 
             x_max = 2 * max(qout_(:, 1));
 
@@ -623,7 +624,7 @@ classdef Twoleg < handle
 
             F = [];
 
-            for i_t = 10:1:anim_num - 10
+            for i_t = 1:1:anim_num
                 body1.XData = [x_hip(i_t), x_joint(i_t)];
                 body1.YData = [y_hip(i_t), y_joint(i_t)];
                 body2.XData = [x_joint(i_t), x_head(i_t)];
