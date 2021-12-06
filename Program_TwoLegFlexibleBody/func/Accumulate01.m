@@ -10,7 +10,7 @@ function model = Accumulate01(t, q, te, qe, ie, model)
         case 0 % どのイベントも発生していない
             % disp('no event occured @phase1')
             model.eveflg = 20;
-        case 1
+        case 2
             if ie(end) == 1
                 % disp('hind leg touch down @phase1')
                 model.eveflg = 2;   % next phase: hind leg stance
@@ -25,9 +25,9 @@ function model = Accumulate01(t, q, te, qe, ie, model)
                 model.eveflg = 30;
             end
 
-        case 2  % 同時に2個のイベントが発生
+        case 3  % 同時に2個のイベントが発生
 
-            if ie(2) == 1 && ie(1) == 2
+            if ie(2) == 1 && ie(3) == 2
                 % disp('hind & fore leg touch down @phase1')
                 model.eveflg = 3;
             else

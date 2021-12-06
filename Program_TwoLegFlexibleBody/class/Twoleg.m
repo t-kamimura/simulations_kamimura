@@ -208,7 +208,7 @@ classdef Twoleg < handle
 
                         % ode45で微分方程式をとく
                         clearvars t q te ie
-                        [t, y, te, qe, ie] = ode45(ode2, [self.tstart, self.tfinal], qe(1, :), options2);
+                        [t, y, te, qe, ie] = ode45(ode2, [self.tstart, self.tfinal], qe(end, :), options2);
 
                         % 結果を保存とeveflg書き換え．
                         self = Accumulate02(t, y, te, qe, ie, self);
@@ -234,7 +234,7 @@ classdef Twoleg < handle
                         options3 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve3, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
                         % ode45で微分方程式をとく
                         clearvars t q te ie
-                        [t, q, te, qe, ie] = ode45(ode3, [self.tstart, self.tfinal], qe(1, :), options3);
+                        [t, q, te, qe, ie] = ode45(ode3, [self.tstart, self.tfinal], qe(end, :), options3);
                         % 結果を保存とeveflg書き換え．
                         self = Accumulate03(t, q, te, qe, ie, self);
                         self.tstart = t(end);
@@ -257,7 +257,7 @@ classdef Twoleg < handle
                         options4 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve4, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
                         % ode45で微分方程式をとく
                         clearvars t q te ie
-                        [t, q, te, qe, ie] = ode45(ode4, [self.tstart, self.tfinal], qe(1, :), options4);
+                        [t, q, te, qe, ie] = ode45(ode4, [self.tstart, self.tfinal], qe(end, :), options4);
                         % 結果を保存とeveflg書き換え．
                         [self] = Accumulate04(t, q, te, qe, ie, self);
                         %次のステップに渡す初期値を作る．時間と設置した脚先の位置．

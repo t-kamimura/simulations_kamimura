@@ -5,9 +5,9 @@
 clear
 close all
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-set(0, 'defaultAxesFontSize', 12);
+set(0, 'defaultAxesFontSize', 18);
 set(0, 'defaultAxesFontName', 'Arial');
-set(0, 'defaultTextFontSize', 16);
+set(0, 'defaultTextFontSize', 24);
 set(0, 'defaultTextFontName', 'Arial');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -54,7 +54,9 @@ u_fix(2) = fixedPoint(i_sol).z_fix(3);
 model.init
 model.bound(q_fix, u_fix)
 if dtheta0>0
-    model.q_ini = model.teout(3,:);
+    q_ini2 = model.qeout(4,:);
+    model.init
+    model.bound(q_ini2, u_fix)
 end
 %% animation
 speed = 0.05;
@@ -102,14 +104,15 @@ end
 
 %% 剛体とバネを作る
 psi = 0:0.02*pi:2*pi;
-ellipse = [model.L*cos(psi); 0.25*model.L*sin(psi)];
+ellipse = [model.L*cos(psi); 0.35*model.L*sin(psi)];
 spring_width = 0.05*model.l3;
 
 % 動画を描写
 % set(gca, 'position', [0.10, 0.15, 0.8, 0.7])
 
 h1 = figure;
-% h1.InnerPosition = [100, 50, 600, 600];
+h1.Color = 'w';
+h1.InnerPosition = [100, 50, 1024, 768];
 set(h1, 'DoubleBuffer', 'off');
 
 axis equal
@@ -134,7 +137,7 @@ for i_t = 1:1:anim_num
     phset = linspace(th1-pi,2*pi+th2,200);
     rset = linspace(0.2*model.L,0.1*model.L,200);
     spring = pos(i_t).joint*ones(1,length(phset))+[rset.*cos(phset); rset.*sin(phset)];
-    plot(spring(1,:),spring(2,:),'linewidth',1,'color','b')
+    plot(spring(1,:),spring(2,:),'linewidth',2,'color','b')
     % leg1 spring (hind)
     R1 = [cos(gout_(i_t, 1)) -sin(gout_(i_t, 1)); sin(gout_(i_t, 1)) cos(gout_(i_t, 1))];
     spring_normal(:,1) = [0; 0];
@@ -150,9 +153,9 @@ for i_t = 1:1:anim_num
     spring_hind = pos(i_t).hipjoint*ones(1,length(spring_normal)) + R1*spring_normal;
     for i_s = 1:9
         if abs(lout_(i_t,1)-model.l3)<1e-3
-            line([spring_hind(1,i_s) spring_hind(1,i_s+1)],[spring_hind(2,i_s) spring_hind(2,i_s+1)],'linewidth',1,'color',[0.8 0.8 0.8])
+            line([spring_hind(1,i_s) spring_hind(1,i_s+1)],[spring_hind(2,i_s) spring_hind(2,i_s+1)],'linewidth',2,'color',[0.8 0.8 0.8])
         else
-            line([spring_hind(1,i_s) spring_hind(1,i_s+1)],[spring_hind(2,i_s) spring_hind(2,i_s+1)],'linewidth',2,'color','k')
+            line([spring_hind(1,i_s) spring_hind(1,i_s+1)],[spring_hind(2,i_s) spring_hind(2,i_s+1)],'linewidth',4,'color','k')
         end
     end
     % leg2 spring (fore)
@@ -170,53 +173,53 @@ for i_t = 1:1:anim_num
     spring_fore = pos(i_t).headjoint*ones(1,length(spring_normal)) + R2*spring_normal;
     for i_s = 1:9
         if abs(lout_(i_t,2)-model.l3)<1e-3
-            line([spring_fore(1,i_s) spring_fore(1,i_s+1)],[spring_fore(2,i_s) spring_fore(2,i_s+1)],'linewidth',1,'color',[0.8 0.8 0.8])
+            line([spring_fore(1,i_s) spring_fore(1,i_s+1)],[spring_fore(2,i_s) spring_fore(2,i_s+1)],'linewidth',2,'color',[0.8 0.8 0.8])
         else
-            line([spring_fore(1,i_s) spring_fore(1,i_s+1)],[spring_fore(2,i_s) spring_fore(2,i_s+1)],'linewidth',2,'color','k')
+            line([spring_fore(1,i_s) spring_fore(1,i_s+1)],[spring_fore(2,i_s) spring_fore(2,i_s+1)],'linewidth',4,'color','k')
         end
     end
     % timer
     strng = [num2str(teq(i_t), '%.3f'), ' s'];
-    t = text(pos(i_t).joint(1)+0.5, -0.1, strng, 'color', 'k', 'fontsize', 16);
-    text(pos(i_t).joint(1)-0.7, -0.1, ['x',num2str(speed)], 'color', 'k', 'fontsize', 16);
+    t = text(pos(i_t).joint(1)+0.5, -0.1, strng, 'color', 'k', 'fontsize', 24);
+    text(pos(i_t).joint(1)-0.7, -0.1, ['x',num2str(speed)], 'color', 'k', 'fontsize', 24);
 
     % label
-    if teq(i_t) < model.teout(1)
-        if model.qeout(1,8)<0
+    if teq(i_t) < model.teout(2)
+        if model.qeout(1,8) < 0
             label = 'Extended Flight';
         else
             label = 'Gathered Flight';
         end
-    elseif teq(i_t) < model.teout(2)
+    elseif teq(i_t) < model.teout(3)
         if model.q_ini(7)>0
             label = 'Hind stance';
         else
             label = 'Fore stance';
         end
-    elseif teq(i_t) < model.teout(3)
-        if model.qeout(3,8)<0
+    elseif teq(i_t) < model.teout(5)
+        if model.qeout(4,3) > 0
             label = 'Extended Flight';
         else
             label = 'Gathered Flight';
         end
-    elseif teq(i_t) < model.teout(4)
-        if model.q_ini(7)>0
+    elseif teq(i_t) < model.teout(6)
+        if model.q_ini(7) > 0
             label = 'Fore stance';
         else
             label = 'Hind stance';
         end
     else
-        if model.qeout(1,8)<0
+        if model.qeout(1,8) < 0
             label = 'Extended Flight';
         else
             label = 'Gathered Flight';
         end
     end
-    text(pos(i_t).joint(1), 1, label, 'color', 'k', 'fontsize', 16,'HorizontalAlignment','center');
+    text(pos(i_t).joint(1), 1, label, 'color', 'k', 'fontsize',24,'HorizontalAlignment','center');
     
     
     xlim([pos(i_t).joint(1) - 1, pos(i_t).joint(1) + 1])
-    line([pos(i_t).joint(1) - 1.2, pos(i_t).joint(1) + 1.2],[0 0],'color','k','linewidth',1)
+    line([pos(i_t).joint(1) - 1.2, pos(i_t).joint(1) + 1.2],[0 0],'color','k','linewidth',2)
     ylim([-0.2 1.3])
     drawnow
 
