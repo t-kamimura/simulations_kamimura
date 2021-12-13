@@ -1,23 +1,18 @@
-% filename: execute_hindStance
-% function: numerical integration of hind stance phase
-% argument: time & state variables & model parameter
-
 function [terminalTime, terminalState, nextPhaseIndex, liftOffFlag] = execute_hindStance(model, tstart, q_ini, liftOffFlag)
 
-    myEvent = @(t, q) events2(q, model); %イベント関数を定義．ゼロになる変数と方向を指定．
-    myOde = @(t, q) f2(q, model); %odeで解く微分方程式を定義．
+    % ode45で微分方程式を解く準備
+    myEvent = @(t, q) events2(q, model); % イベント関数を定義．ゼロになる変数と方向を指定．
+    myOde = @(t, q) f2(q, model); % odeで解く微分方程式を定義．
     options = odeset('RelTol', model.relval, 'AbsTol', model.absval, 'Events', myEvent, 'Refine', model.refine, 'Stats', 'off'); %ode45のオプションを設定．
 
     % ode45で微分方程式をとく
     [tout, qout, te, qe, ie] = ode45(myOde, [tstart, model.tfinal], q_ini, options);
 
-    % 次のフェーズを判定
-    nextPhaseIndex = detectNextPhase(ie);
-    
     % 結果を保存
     [terminalTime, terminalState] = accumulate(model, tout, qout, te, qe, ie);
+    nextPhaseIndex = detectNextPhase(ie);
     calc_touchDownPos(model, nextPhaseIndex);
-    liftOffFlag = update_liftOffFlag(model, nextPhaseIndex, liftOffFlag);
+    liftOffFlag = update_liftOffFlag(nextPhaseIndex, liftOffFlag);
 
 end % execute_hindStance
 
@@ -99,7 +94,7 @@ function calc_touchDownPos(model, nextPhaseIndex)
     end
 end % calc_touchDownPos
 
-function liftOffFlag = update_liftOffFlag(model, nextPhaseIndex, liftOffFlag)
+function liftOffFlag = update_liftOffFlag(nextPhaseIndex, liftOffFlag)
     if nextPhaseIndex == 1
         % 次はFlight
         liftOffFlag.hind = true;

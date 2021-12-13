@@ -1,25 +1,9 @@
+% 2脚モデルのクラス
+% initial condition を与えると，「.bound」でバウンド歩容をしてくれます
+% 便利な描画機能付き！
+
 classdef TwoLeg < handle
-    % 2脚モデルのクラス
-    % initial condition を与えると，「.bound」でバウンド歩容をしてくれます
-    % 便利な描画機能付き！
-
     % プロパティは全てアクセス権限がpublicです．
-
-    %=====================================================================%
-    % Methods
-    %=====================================================================%
-    % init
-    % データ格納変数を全てクリアしてくれます．boundする前に必ず行うこと
-    %=====================================================================%
-    % bound
-    % バウンドしてくれます．
-    %=====================================================================%
-    % plot
-    % データをプロットする
-    %=====================================================================%
-    % anime
-    % 動きのアニメーションを作る．
-    %=====================================================================%
 
     properties (SetAccess = public)
         % robotParamの定義(Poulakais2013より)
@@ -77,15 +61,11 @@ classdef TwoLeg < handle
         function bound(self, q_initial, u_inital)
 
             % 初期値設定
-            tstart_ = 0;
-            q_ini_ = q_initial;
-            phaseIndex = initialize_state(self,q_initial, u_inital);
-            liftOffFlag.hind = false;
-            liftOffFlag.fore = false;
+            [tstart_, q_ini_, phaseIndex, liftOffFlag] = initialize_state(self, q_initial, u_inital);
 
             for i_phase = 1:6
-                % 前後肢がそれぞれ接地期を経た後，Apexに戻ったらポアンカレ断面
                 if liftOffFlag.fore == true && liftOffFlag.hind == true
+                    % 前後肢がそれぞれ接地期を経た後，Apexに戻ったらポアンカレ断面
                     break
                 end
 

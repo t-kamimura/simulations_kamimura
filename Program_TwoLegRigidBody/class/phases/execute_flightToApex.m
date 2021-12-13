@@ -1,22 +1,16 @@
-% filename: execute_flightToApex
-% function: numerical integration of flight phase until apex
-% argument: time & state variables & model parameter
-
-function [terminalTime, terminalState, nextPhaseIndex] = execute_flight(model, tstart, q_ini)
+function [terminalTime, terminalState, nextPhaseIndex] = execute_flightToApex(model, tstart, q_ini)
 
     % ode45で微分方程式を解く準備
-    myEvent = @(t, q) events5(q, model);    % イベント関数を定義．ゼロになる変数と方向を指定．
-    myOde = @(t, q) f1(q, model);         % odeで解く微分方程式を定義．
+    myEvent = @(t, q) events5(q, model); % イベント関数を定義．ゼロになる変数と方向を指定．
+    myOde = @(t, q) f1(q, model); % odeで解く微分方程式を定義．
     options = odeset('RelTol', model.relval, 'AbsTol', model.absval, 'Events', myEvent, 'Refine', model.refine, 'Stats', 'off'); %ode45のオプションを設定．
 
     % ode45で微分方程式を解く
     [tout, qout, te, qe, ie] = ode45(myOde, [tstart model.tfinal], q_ini, options);
 
-    % 次のフェーズを判定
-    nextPhaseIndex = detectNextPhase(ie);
-
     % 結果を保存
     [terminalTime, terminalState] = accumulate(model, tout, qout, te, qe, ie);
+    nextPhaseIndex = detectNextPhase(ie);
 
 end % execute_flight
 
@@ -44,7 +38,7 @@ function nextPhaseIndex = detectNextPhase(ie)
             nextPhaseIndex = 30;
         else
             % disp('unknown error @flight')
-            nextPhaseInd6ex = 30;
+            nextPhaseIndex = 30;
         end
 
     case 2
@@ -89,18 +83,4 @@ function [terminalTime, terminalState] = accumulate(model, tout, qout, te, qe, i
     terminalTime = tout(end);
     terminalState = qout(end,:);
 
-end
-
-function calc_touchDownPos(model, nextPhaseIndex)
-    if nextPhaseIndex == 2
-        % 次はhind leg stance
-        model.xh_toe = model.qout(end, 1) - model.L * cos(model.qout(end, 3)) + model.lout(end, 1) * sin(model.gout(end, 1));
-    elseif  nextPhaseIndex == 3
-        % 次はDouble leg stance
-        model.xh_toe = model.qout(end, 1) - model.L * cos(model.qout(end, 3)) + model.lout(end, 1) * sin(model.gout(end, 1));
-        model.xf_toe = model.qout(end, 1) + model.L * cos(model.qout(end, 3)) + model.lout(end, 2) * sin(model.gout(end, 2));
-    elseif nextPhaseIndex == 4
-        % 次はFore leg stance
-        model.xf_toe = model.qout(end, 1) + model.L * cos(model.qout(end, 3)) + model.lout(end, 2) * sin(model.gout(end, 2));
-    end
 end
