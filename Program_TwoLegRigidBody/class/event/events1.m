@@ -1,7 +1,4 @@
 function [value, isterminal, direction] = events1(y, model)
-    % Flight phaseの終端イベント
-
-    xg = y(1);
     yg = y(2);
     theta = y(3);
 

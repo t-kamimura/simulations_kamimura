@@ -7,9 +7,9 @@ function [value, isterminal, direction] = events3(y, model)
 
     HipB(1) = xg - model.L * cos(theta);
     HipB(2) = yg - model.L * sin(theta);
-    lb_x = model.xh_toe - HipB(1);
-    lb_y = HipB(2);
-    lb_length = sqrt(lb_x^2 + lb_y^2) - model.lh;
+    lh_x = model.xh_toe - HipB(1);
+    lh_y = HipB(2);
+    lh_length = sqrt(lh_x^2 + lh_y^2) - model.lh;
 
     Head(1) = xg + model.L * cos(theta);
     Head(2) = yg + model.L * sin(theta);
@@ -17,7 +17,7 @@ function [value, isterminal, direction] = events3(y, model)
     lf_y = Head(2);
     lf_length = sqrt(lf_x^2 + lf_y^2) - model.lf;
 
-    value = [lb_length; lf_length; yg];
+    value = [lh_length; lf_length; yg];
     isterminal = [1; 1; 1];
     direction = [1; 1; 0];
 end
