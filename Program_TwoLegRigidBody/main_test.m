@@ -25,4 +25,5 @@ u_ini = [gamma_h_td_ini gamma_f_td_ini];
 model.bound(q_ini, u_ini)
 
 model.plot(saveFlag)
-model.anime(0.1, false);
+speed = 0.05;
+model.anime(speed, saveFlag)
