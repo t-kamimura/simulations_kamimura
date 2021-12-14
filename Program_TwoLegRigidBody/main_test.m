@@ -4,20 +4,9 @@
 
 clear
 close all
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-set(0, 'defaultAxesFontSize', 12);
-set(0, 'defaultAxesFontName', 'times');
-set(0, 'defaultTextFontSize', 16);
-set(0, 'defaultTextFontName', 'times');
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-saveflag = false;
-
-% path追加
-addpath(pwd, genpath('class'))
-addpath(pwd, 'func')
-addpath(pwd, 'data')
-addpath(pwd, 'fig')
+add_subfolders();
+default_settings(16,'times');
+saveFlag = set_saveFlag('No');
 
 model = TwoLeg;
 
@@ -35,5 +24,5 @@ u_ini = [gamma_h_td_ini gamma_f_td_ini];
 
 model.bound(q_ini, u_ini)
 
-model.plot(saveflag)
-% model.anime(0.1, false);
+model.plot(saveFlag)
+model.anime(0.1, false);

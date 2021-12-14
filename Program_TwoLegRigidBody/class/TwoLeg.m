@@ -25,6 +25,8 @@ classdef TwoLeg < handle
         xh_toe = 0;
         xf_toe = 0;
         E = 0;
+        GRF = 0;
+        p = 0;
 
         % 計算に必要なものたち
         % 時系列履歴
@@ -71,22 +73,22 @@ classdef TwoLeg < handle
 
                 if phaseIndex > 9
                     % eveflgが大きい値をとったとき，ちゃんとイベント起こっていない．これ以上計算しても無駄なのでやめる．
-                    disp('fall down')
+                    % disp('fall down')
                     break
                 end
 
                 switch phaseIndex
                     case 1
-                        disp('flight')
+                        % disp('flight')
                         [tstart_, q_ini_, phaseIndex] = execute_flight(self, tstart_, q_ini_);
                     case 2
-                        disp('hind stance')
+                        % disp('hind stance')
                         [tstart_, q_ini_, phaseIndex, liftOffFlag] = execute_hindStance(self, tstart_, q_ini_, liftOffFlag);
                     case 3
-                        disp('double stance')
+                        % disp('double stance')
                         [tstart_, q_ini_, phaseIndex, liftOffFlag] = execute_doubleStance(self, tstart_, q_ini_, liftOffFlag);
                     case 4
-                        disp('fore stance')
+                        % disp('fore stance')
                         [tstart_, q_ini_, phaseIndex, liftOffFlag] = execute_foreStance(self, tstart_, q_ini_, liftOffFlag);
                 end % phaseIndex
 
@@ -94,7 +96,7 @@ classdef TwoLeg < handle
 
             % Double Leg Flight (until apex height)
             if phaseIndex == 1
-                disp('flight')
+                % disp('flight')
                 [~, ~, phaseIndex] = execute_flightToApex(self, tstart_, q_ini_);
             else
                 % disp('not entered to 2nd flight')
@@ -104,6 +106,7 @@ classdef TwoLeg < handle
             % 最終処理
             calc_error(self,phaseIndex);
             calc_Energy(self);
+            calc_GRF(self);
             
         end % bound
 
