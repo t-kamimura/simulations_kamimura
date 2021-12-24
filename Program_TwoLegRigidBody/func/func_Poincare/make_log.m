@@ -10,21 +10,22 @@ function logData = make_log(model, q_constants, u_fix, fsolveResult)
         if maxError > 1e-5
             %たまに不動点でない点が見つかってしまう
             fprintf('x');
-        end
-        
-        if model.phaseout(end) == 1
-            % 床反力の計算
-            % データ保存
-            logData.trajectory.tout = model.tout;
-            logData.trajectory.qout = model.qout;
-            logData.event.teout = model.teout;
-            logData.event.qeout = model.qeout;
-            logData.event.ieout = model.ieout;
-            logData.maxError = maxError;
-            logData.GRF = model.GRF;
-            logData.p = model.p;
         else
-            logData.fsolveResult.exitFlag = -10; % エラー起きたらとりあえず exitFlag = -10 入れておく
+        
+            if model.phaseout(end) == 1
+                % 床反力の計算
+                % データ保存
+                logData.trajectory.tout = model.tout;
+                logData.trajectory.qout = model.qout;
+                logData.event.teout = model.teout;
+                logData.event.qeout = model.qeout;
+                logData.event.ieout = model.ieout;
+                logData.maxError = maxError;
+                logData.GRF = model.GRF;
+                logData.p = model.p;
+            else
+                logData.fsolveResult.exitFlag = -10; % エラー起きたらとりあえず exitFlag = -10 入れておく
+            end
         end
 
     end % if exitflag
