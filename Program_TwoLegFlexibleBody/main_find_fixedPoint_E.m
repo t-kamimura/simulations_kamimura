@@ -37,14 +37,14 @@ addpath(pwd, 'fig')
 %% 定数の決定
 model = Twoleg;
 
-E0 = 5500; % [J]
+E0 = 4500; % [J]
 
-y0set = 0.60:0.005:0.8;
-dtheta0set = 0:0.1:2.5; % [rad/s]
-% y0set = 0.60:0.001:0.75;
-% dtheta0set = 0.75:0.01:1.25;
+y0set = 0.60:0.025:0.75;
+dtheta0set = -1.5; % [rad/s]
+% y0set = 0.60:0.005:0.8;
+% dtheta0set = 0:0.1:2.5; % [rad/s]
 
-phi0set = [-2:0.5:1]; % [rad]T;tsasa
+phi0set = [-2:0.5:1]; % [rad]
 % phi0set = 1; % [rad]
 
 gammaset = -60:10:60; % [deg]
@@ -127,7 +127,7 @@ for i_pitch = 1:length(dtheta0set)
     end % for y0
 
     % 保存
-    filename = ['data/fixedPoints_for_E0=', num2str(E0), '_dtheta0=', num2str(dtheta0), '.mat'];
+    filename = ['data/fixedPoints_for_kappa=',num2str(model.ke/model.kg),'_E0=', num2str(E0), '_dtheta0=', num2str(dtheta0), '.mat'];
     save(filename, 'fixedPoint');
     clearvars fixedPoint
     n = 1;

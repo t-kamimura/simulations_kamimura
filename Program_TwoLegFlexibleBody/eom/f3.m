@@ -1,8 +1,7 @@
 function dqdt1 = f3(q, model)
     %double stance phase
-    param = [model.m model.J model.kh model.kf model.kt model.xf_toe model.xh_toe model.gamma_h_td model.gamma_f_td model.L model.l3 model.l4 model.D model.g];
-    % param = [model.m model.J model.kh model.kf model.kt model.xf_toe model.xh_toe model.gamma_h_td model.gamma_f_td model.L model.l3 model.l4 model.g];
-
+%     param = [model.m model.J model.kh model.kf model.kt model.xf_toe model.xh_toe model.gamma_h_td model.gamma_f_td model.L model.l3 model.l4 model.D model.g];
+    
     % state variables
     x = q(1);
     y = q(2);
@@ -15,6 +14,11 @@ function dqdt1 = f3(q, model)
 
     q = [x y theta phi];
     dq = [dx dy dtheta dphi];
+    if phi > 0
+        param = [model.m model.J model.kh model.kf model.ke model.xf_toe model.xh_toe model.gamma_h_td model.gamma_f_td model.L model.l3 model.l4 model.D model.g];
+    else
+        param = [model.m model.J model.kh model.kf model.kg model.xf_toe model.xh_toe model.gamma_h_td model.gamma_f_td model.L model.l3 model.l4 model.D model.g];
+    end
 
     % Inertia matrix
     M = myMassMatrix_Doublestance(q, param);

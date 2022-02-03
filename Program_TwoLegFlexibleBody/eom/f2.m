@@ -1,7 +1,7 @@
 function dqdt1 = f2(q,model)
 
     %hind stance phase
-    param = [model.m model.J model.kh model.kt model.xh_toe model.gamma_h_td model.L model.l3  model.D model.g]; 
+%     param = [model.m model.J model.kh model.kt model.xh_toe model.gamma_h_td model.L model.l3  model.D model.g]; 
     
     % state variables
     x = q(1);
@@ -15,6 +15,11 @@ function dqdt1 = f2(q,model)
         
     q = [x y theta phi];
     dq = [dx dy dtheta dphi];
+    if phi > 0
+        param = [model.m model.J model.kh model.ke model.xh_toe model.gamma_h_td model.L model.l3  model.D model.g]; 
+    else
+        param = [model.m model.J model.kh model.kg model.xh_toe model.gamma_h_td model.L model.l3  model.D model.g]; 
+    end
     
      % Inertia matrix
     M = myMassMatrix_Hind(q, param);

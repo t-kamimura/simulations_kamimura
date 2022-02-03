@@ -1,7 +1,7 @@
 
     function dqdt1 = f1(q,model)
     %double flight stance        
-    param = [model.m  model.J model.kt model.L model.l3 model.l4 model.g];
+%     param = [model.m  model.J model.kt model.L model.l3 model.l4 model.g];
       
     % state variables
     x = q(1);
@@ -15,7 +15,11 @@
         
     q = [x y theta phi];
     dq = [dx dy dtheta dphi];
-    
+    if phi > 0
+        param = [model.m  model.J model.ke model.L model.l3 model.l4 model.g];
+    else
+        param = [model.m  model.J model.kg model.L model.l3 model.l4 model.g];
+    end
      % Inertia matrix
     M = myMassMatrixflight(q, param);
     % Colioris and gravity

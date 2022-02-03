@@ -14,7 +14,7 @@ set(0, 'defaultTextFontName', 'times');
 %Construct a questdlg with three options
 choice = questdlg('Do you want to save the result(s)?', ...
     'Saving opptions', ...
-    'Yes', 'No', 'Yes');
+    'Yes', 'No', 'No');
 % Handle response
 saveflag = false;
 
@@ -40,14 +40,15 @@ addpath(pwd, 'fig')
 model = Twoleg;
 
 %%
-dtheta0 = 1.5;
+dtheta0 = -1.5;
 
 E0 = 4500;
-filename = ['data/identical_energy_dtheta/fixedPoints_for_E0=4500_dtheta0=', num2str(dtheta0),'.mat'];
+filename = ['data/fixedPoints_for_kappa=',num2str(model.ke/model.kg),'_E0=', num2str(E0), '_dtheta0=', num2str(dtheta0), '.mat'];
+% filename = ['data/identical_energy_dtheta/fixedPoints_for_E0=4500_dtheta0=', num2str(dtheta0),'.mat'];
 load(filename)
 
 %%
-i_sol = 15;
+i_sol = 2;
 
 q_fix = fixedPoint(i_sol).q_ini;
 u_fix(1) = rem(fixedPoint(i_sol).z_fix(2),2*pi);
@@ -110,32 +111,32 @@ if saveflag == 1
     saveas(gcf, figname, 'pdf')
 end
 
-% %% エネルギーのグラフ
-% figure
-% % Eout_ = [(model.Eout(:, 1)./model.Eout(1,9)).*100, (model.Eout(:, 2)./model.Eout(1,9)).*100, (model.Eout(:, 3)./model.Eout(1,9)).*100, (model.Eout(:, 4)./model.Eout(1,9)).*100, (model.Eout(:, 6)./model.Eout(1,9)).*100, (model.Eout(:, 7)./model.Eout(1,9)).*100, (model.Eout(:, 8)./model.Eout(1,9)).*100, (model.Eout(:, 5)./model.Eout(1,9)).*100];
-% totalE = model.Eout(1,9);
-% Eout_ = model.Eout*100/totalE;
-% Eout_(:,9) = [];
-% area(model.tout, Eout_)
-% colors = jet(8);
-% 
-% h = area(model.tout, Eout_);
-% 
-% for i = 1:length(h)
-%    h(i).FaceColor = colors(i,:);
-% end
-% 
-% xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
-% ylabel('Energy', 'interpreter', 'latex', 'Fontsize', 14);
-% legend({'trans:x','trans:y', 'rot:theta', 'rot:phi', 'kh','kf','torso','grav'},'location','best')
-% xlim([0, model.tout(end)])
-% ylim([86, 95])
-% 
-% 
-% if saveflag == 1
-%     figname = ['Energy_timeprofile'];
-%     saveas(gcf, figname, 'fig')
-%     saveas(gcf, figname, 'png')
-%     % saveas(gcf, figname, 'pdf')
-%     %saveas(gcf, figname, 'epsc')
-% end
+%% エネルギーのグラフ
+figure
+% Eout_ = [(model.Eout(:, 1)./model.Eout(1,9)).*100, (model.Eout(:, 2)./model.Eout(1,9)).*100, (model.Eout(:, 3)./model.Eout(1,9)).*100, (model.Eout(:, 4)./model.Eout(1,9)).*100, (model.Eout(:, 6)./model.Eout(1,9)).*100, (model.Eout(:, 7)./model.Eout(1,9)).*100, (model.Eout(:, 8)./model.Eout(1,9)).*100, (model.Eout(:, 5)./model.Eout(1,9)).*100];
+totalE = model.Eout(1,9);
+Eout_ = model.Eout*100/totalE;
+Eout_(:,9) = [];
+area(model.tout, Eout_)
+colors = jet(8);
+
+h = area(model.tout, Eout_);
+
+for i = 1:length(h)
+   h(i).FaceColor = colors(i,:);
+end
+
+xlabel('$$t$$ [s]', 'interpreter', 'latex', 'Fontsize', 14);
+ylabel('Energy', 'interpreter', 'latex', 'Fontsize', 14);
+legend({'trans:x','trans:y', 'rot:theta', 'rot:phi', 'kh', 'kf','torso','grav'},'location','best')
+xlim([0, model.tout(end)])
+ylim([86, 95])
+
+
+if saveflag == 1
+    figname = ['Energy_timeprofile'];
+    saveas(gcf, figname, 'fig')
+    saveas(gcf, figname, 'png')
+    % saveas(gcf, figname, 'pdf')
+    %saveas(gcf, figname, 'epsc')
+end

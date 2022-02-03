@@ -36,6 +36,8 @@ classdef Twoleg < handle
         kh = 15000; %後脚のバネ定数
         kf = 15000; %前脚のバネ定数
         kt = 100; %ジョイント部分バネ定数
+        ke = 200; %extended側のばね定数
+        kg = 100; %gathered側のばね定数
 
         % 減衰定数 [Ns / m]
         c = 0;
