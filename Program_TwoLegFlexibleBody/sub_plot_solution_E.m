@@ -43,16 +43,17 @@ model = Twoleg;
 dtheta0 = -1.5;
 
 E0 = 4500;
-filename = ['data/fixedPoints_for_kappa=',num2str(model.ke/model.kg),'_E0=', num2str(E0), '_dtheta0=', num2str(dtheta0), '.mat'];
+% filename = ['data/fixedPoints_for_kappa=',num2str(model.ke/model.kg),'_E0=', num2str(E0), '_dtheta0=', num2str(dtheta0), '.mat'];
+filename = ['data/fixedPoints_for_ke=',num2str(model.ke),'_kg=',num2str(model.kg),'_E0=', num2str(E0), '_dtheta0=', num2str(dtheta0), '.mat'];
 % filename = ['data/identical_energy_dtheta/fixedPoints_for_E0=4500_dtheta0=', num2str(dtheta0),'.mat'];
 load(filename)
 
 %%
-i_sol = 2;
+i_sol = 6;
 
-q_fix = fixedPoint(i_sol).q_ini;
-u_fix(1) = rem(fixedPoint(i_sol).z_fix(2),2*pi);
-u_fix(2) = rem(fixedPoint(i_sol).z_fix(3),2*pi);
+q_fix = fixedPoint_(i_sol).q_ini;
+u_fix(1) = rem(fixedPoint_(i_sol).z_fix(2),2*pi);
+u_fix(2) = rem(fixedPoint_(i_sol).z_fix(3),2*pi);
 
 model.init
 model.bound(q_fix, u_fix)
