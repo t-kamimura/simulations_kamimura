@@ -42,13 +42,13 @@ for ie = 1:length(keset)
     ke = keset(ie);
     for ig = 1:length(kgset)
         kg = kgset(ig);
-        if ke==100 && kg==100
-        else
+%         if ke==100 && kg==100
+%         else
             model(n) = Twoleg;
             model(n).ke = ke;
             model(n).kg = kg;
             n = n+1;
-        end
+%         end
     end
 end
 
@@ -57,7 +57,7 @@ E0 = 4500; % [J]
 y0set = 0.60:0.01:0.75;
 dtheta0set = -1.5; % [rad/s]
 
-phi0set = 0:0.25:1; % [rad]
+phi0set = -2:0.25:1; % [rad]
 
 gammaset = -60:10:60; % [deg]
 gammaset = deg2rad(gammaset);

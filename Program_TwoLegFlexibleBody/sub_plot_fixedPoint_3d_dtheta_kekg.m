@@ -14,7 +14,7 @@ set(0, 'defaultTextFontName', 'times');
 % Construct a questdlg with three options
 choice = questdlg('Do you want to save the result(s)?', ...
     'Saving opptions', ...
-    'Yes', 'No', 'No');
+    'Yes', 'No', 'Yes');
 % Handle response
 saveflag = false;
 
@@ -50,8 +50,6 @@ addpath(pwd, 'fig')
 
 %% 定数の設定
 model = Twoleg;
-model.ke = 200;
-model.kg = 100;
 
 E0 = 4500; % [J]
 
@@ -152,7 +150,7 @@ if calcflag == true
         end % if solutionEnergy
 
         fprintf('\b\b\b\b\b\b\b\b\b\b\b\b')
-        fprintf('[%6.2f %%] ',100*i/num)
+        fprintf('\n[%6.2f %%] ',100*i/num)
         fprintf(cell2mat(symbols(1+rem(i,4))))
     end
     filename = ['data/fixedPoints_withStability_ke=',num2str(model.ke),'_kg=',num2str(model.kg),'_E0=', num2str(E0),'.mat'];
@@ -188,7 +186,7 @@ markerset = ['o','o'];
 n = length(fixedPoints);
 
 %% y-phi平面にプロット
-h = figure('Position',[100,100,400,300]);
+h = figure;
 for i=1:n
     if abs(dtheta0 - fixedPoints(i).fixedPoint(2)) < 1e-3
         plot(fixedPoints(i).fixedPoint(1),fixedPoints(i).fixedPoint(3),'marker',markerset(fixedPoints(i).soltype(2)),'MarkerFaceColor',clr(fixedPoints(i).soltype(1),:),'MarkerEdgeColor','none')
@@ -212,7 +210,7 @@ title(figtitle,'interpreter','latex')
 xlabel('$$y^*$$ [m]','interpreter','latex')
 ylabel('$$\phi^*$$ [rad]','interpreter','latex')
 xlim([y0set(1) y0set(end)])
-ylim([-1.5 1])
+ylim([0 1])
 
 if saveflag == true
     figname_png = ['fig/fixedPoints_E0=',num2str(E0),'_dtheta0=',num2str(dtheta0),'.png'];
