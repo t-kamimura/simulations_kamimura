@@ -35,8 +35,8 @@ addpath(pwd, 'data')
 addpath(pwd, 'fig')
 
 %% 定数の決定
-keset = [100,200];
-kgset = [100,25];
+keset = [200];
+kgset = [25];
 n = 1;
 for ie = 1:length(keset)
     ke = keset(ie);
@@ -54,8 +54,8 @@ end
 
 E0 = 4500; % [J]
 
-y0set = 0.60:0.01:0.75;
-dtheta0set = -1.5; % [rad/s]
+y0set = 0.60:0.05:0.75;
+dtheta0set = -1.5:0.5:0; % [rad/s]
 
 phi0set = -2:0.25:1; % [rad]
 

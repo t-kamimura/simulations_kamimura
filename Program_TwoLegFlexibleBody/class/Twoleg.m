@@ -37,7 +37,7 @@ classdef Twoleg < handle
         kf = 15000; %前脚のバネ定数
         kt = 100; %ジョイント部分バネ定数
         ke = 200; %extended側のばね定数
-        kg = 100; %gathered側のばね定数
+        kg = 25; %gathered側のばね定数
 
         % 減衰定数 [Ns / m]
         c = 0;
@@ -753,9 +753,9 @@ classdef Twoleg < handle
             ylim([-0.2 1.3])
 
             tset(1) = 0;
-            tset(2) = 0.5*(self.teout(1)+self.teout(2));
-            tset(3) = 0.5*(self.teout(2)+self.teout(3));
-            tset(4) = 0.5*(self.teout(3)+self.teout(4));
+            tset(2) = 0.5*(self.teout(2)+self.teout(3));
+            tset(3) = 0.5*(self.teout(3)+self.teout(5));
+            tset(4) = 0.5*(self.teout(5)+self.teout(6));
             tset(5) = self.teout(end);
 
             qset = self.qout(1,:);
@@ -777,6 +777,7 @@ classdef Twoleg < handle
 
             clr2 = 0.75*hsv(5);
             for i = 1:5
+                figure(h1);
                 x =  qset(i, 1);   %質量中心
                 y =  qset(i, 2);
                 th = qset(i, 3);

@@ -41,27 +41,28 @@ addpath(pwd, 'fig')
 model = Twoleg;
 
 E0 = 4500;
-dtheta0 = 1.5;
-filename = ['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0),'.mat'];
-load(filename)
+dtheta0 = -1.5;
+% filename = ['data/identical_energy_dtheta/fixedPoints_for_E0=', num2str(E0),'_dtheta0=',num2str(dtheta0),'.mat'];
+% load(filename)
+load('/Users/kamimura/Documents/GitHub/simulations_kamimura/Program_TwoLegFlexibleBody/data/fixedPoints_withStability_ke=200_kg=25_E0=4500.mat')
 
 %%
-i_sol = 15;
+i_sol = 3;
 
-% q_fix = fixedPoints(i_sol).q_ini;
-% u_fix(1) = fixedPoints(i_sol).u_ini(1);
-% u_fix(2) = fixedPoints(i_sol).u_ini(2);
+q_fix = fixedPoints(i_sol).q_ini;
+u_fix(1) = fixedPoints(i_sol).u_ini(1);
+u_fix(2) = fixedPoints(i_sol).u_ini(2);
 
-q_fix = fixedPoint(i_sol).q_ini;
-u_fix(1) = fixedPoint(i_sol).z_fix(2);
-u_fix(2) = fixedPoint(i_sol).z_fix(3);
+% q_fix = fixedPoint(i_sol).q_ini;
+% u_fix(1) = fixedPoint(i_sol).z_fix(2);
+% u_fix(2) = fixedPoint(i_sol).z_fix(3);
 
 model.init
 model.bound(q_fix, u_fix)
 
 % model.plot(saveflag)
 % model.anime(0.1, saveflag);
-% model.stick(50, saveflag);
+model.stick(50, saveflag);
 
 %%
 % -----------------------------------------------------------------
