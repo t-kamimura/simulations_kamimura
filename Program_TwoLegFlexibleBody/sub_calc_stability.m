@@ -126,15 +126,15 @@ for i_y = 1:length(y0set)
         if isempty(solset(i_y,i_dtheta).q_ini)
             fprintf('.')
         else
-            if solset(i_y,i_dtheta).isStable == true
+%             if solset(i_y,i_dtheta).isStable == true
                 plotsize = 3;
                 plot(y0,dtheta0,'Marker','o','MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerEdgeColor','none','MarkerSize',plotsize)
                 hold on
                 plot(y0,dtheta0,'Marker','x','MarkerEdgeColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerFaceColor','none','MarkerSize',plotsize)
                 hold on
-            else
-                plotsize = 3;
-            end
+%             else
+%                 plotsize = 3;
+%             end
 %             plot3(y0,dtheta0,solset(i_y,i_dtheta).z_fix(1),'Marker','o','MarkerEdgeColor','none','MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
 %             plot(y0,dtheta0,'Marker','x','MarkerEdgeColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerFaceColor',clr(solset(i_y,i_dtheta).soltype,:),'MarkerSize',plotsize)
 %             hold on
@@ -146,7 +146,7 @@ xlabel('$$y$$','Interpreter','latex')
 ylabel('$$\dot{\theta}$$','Interpreter','latex')
 
 xlim([min(y0set),max(y0set)])
-ylim([-max(abs(dtheta0set)),max(abs(dtheta0set))])
+ylim([-max(abs(dtheta0set)),max(dtheta0set)])
 
 if saveflag == true
     figname_png = ['fig/FixedPoints_E0=',num2str(E0),'.png'];
@@ -227,7 +227,7 @@ xlabel('$$y$$ [m]','Interpreter','latex')
 ylabel('$$\dot{\theta}$$ [rad/s]','Interpreter','latex')
 
 xlim([min(y0set),max(y0set)])
-ylim([-max(abs(dtheta0set)),max(abs(dtheta0set))])
+ylim([-max(abs(dtheta0set)),max((dtheta0set))])
 caxis([0.75 2.5])
 colorbar
 colormap jet
@@ -241,17 +241,17 @@ if saveflag == true
     saveas(gcf, figname_pdf)
     disp('save finish!')
 end
-
+%%
 h4 = figure();
 h4.Renderer = "painters";
 v = [0.8,0.9,1,1.2,1.5,2];
 % v = [0.9,0.9];
-contour(y0set,dtheta0set,lambdaset,v,'LineColor','r','ShowText','off')
+contour(y0set,dtheta0set,lambdaset,v,'LineColor','r','ShowText','on')
 xlabel('$$y$$ [m]','Interpreter','latex')
 ylabel('$$\dot{\theta}$$ [rad/s]','Interpreter','latex')
 
 xlim([min(y0set),max(y0set)])
-ylim([-max(abs(dtheta0set)),max(abs(dtheta0set))])
+ylim([-max(abs(dtheta0set)),max((dtheta0set))])
 caxis([0.5 2.5])
 colorbar
 colormap jet
