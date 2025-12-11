@@ -1,24 +1,21 @@
 % １周期のバウンド歩行の周期解を見つける関数
-%
 
 % 結果
 %   u_fix       : [gb, gf] 指定されたポアンカレ断面上の状態量zで周期解を達成するための入力
 %   logData     : 固定点の各種状態量の変化のログ
 %   exitflag    : Newton法の収束状況 　正なら成功　負なら失敗           1
 
-function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_constants)
+function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model)
 
     % 今回，解を探す関数の定義
-    % 入力uを計算することになる
-    myNewtonFunc = @(u) func_poincreMapBound(u, model, q_constants);
+    myNewtonFunc = @(u) func_poincreMapBound(u, model);
 
     % Newton法実行
-%     options = optimset('Algorithm','levenberg-marquardt','Display','iter'); %debug
-    options = optimset('Algorithm','levenberg-marquardt','Display','none');
+    % options = optimset('Algorithm','levenberg-marquardt','Display','iter'); %debug
+    options = optimset('Algorithm','levenberg-marquardt','Display','none','UseParallel',true);
     [u_fix, fval, exitflag, output, jacobi] = fsolve(myNewtonFunc, u_ini, options);
 
     % logDatの初期化
-    logDat.q_constants = q_constants;
     logDat.q_ini = [];
     logDat.u_fix = u_fix;
 
@@ -42,19 +39,19 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
 
     % logDataを得るために一度バウンド実行
     % disp('make Logdata')
-    if exitflag > 0
+    if exitflag == 1
         % 初期値代入
         x0 = 0.0;
-        y0 = q_constants(1);
+        y0 = u_fix(1);
         theta0 = 0;
-        phi0 = u_fix(3);
-        dx0 = q_constants(2);
+        phi0 = u_fix(2);
+        dx0 = u_fix(3);
         dy0 = 0;
-        dtheta0 = q_constants(3);
-        dphi0 = 0;
-
-        gb_ini = u_fix(1);
-        gf_ini = u_fix(2);
+        dtheta0 = u_fix(4);
+        dphi0 = 0 ;
+    
+        gb_ini = u_fix(5);
+        gf_ini = u_fix(6);
 
         q_ini = [x0 y0 theta0 phi0 dx0 dy0 dtheta0 dphi0];
         u_ini = [gb_ini gf_ini];
@@ -62,19 +59,14 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_consta
         model.init
         model.bound(q_ini, u_ini)
 
-        % fprintf('*')
-%         model.plot(false) % debug
-
-
-        % 誤差最大のものを抜き出し，本当に固定点になっているか確認
-        maxError = max(abs(model.q_err));
-        if maxError > 1e-5
-            %たまに不動点でない点が見つかってしまう
-            % logDat.error.zmax
-            % disp('invalid fsolve! this is not fixed point...')
-            fprintf('x')
-            model.eveflg = 100;
-        end
+        % % 誤差最大のものを抜き出し，本当に固定点になっているか確認
+        % maxError = max(abs(model.q_err));
+        % if maxError > 1e-5
+        %     % たまに不動点でない点が見つかってしまう
+        %     % disp('invalid fsolve! this is not fixed point...')
+        %     fprintf('x')
+        %     model.eveflg = 100;
+        % end
 
         if model.eveflg == 1
             % 最大床反力の計算

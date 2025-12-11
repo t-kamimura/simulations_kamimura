@@ -1,4 +1,6 @@
-function dqdt1 = f5(q,model)
+function dqdt = f5(t,q,model)
+
+    model.kt = set_kt(t,model);
     param = [model.m  model.J model.kt model.L model.l3 model.l4 model.g]; 
     % param = [model.m  model.J  model.L model.l3 model.l4 model.g];   
    
@@ -22,8 +24,7 @@ function dqdt1 = f5(q,model)
     % acceleration
     dd_q = M\(-f_cg);
     
-    dqdt1 = [dx ; dy ;  dtheta ; dphi ;  dd_q(1) ; dd_q(2) ; dd_q(3) ; dd_q(4)];
-    % dqdt1 = [dxg ; dyg ;  dtheta ; dd_q(1) ; dd_q(2) ; dd_q(3)];
+    dqdt = [dx ; dy ;  dtheta ; dphi ;  dd_q(1) ; dd_q(2) ; dd_q(3) ; dd_q(4)];
 
 end
 

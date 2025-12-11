@@ -38,7 +38,7 @@ classdef Twoleg < handle
         omega0 = 0;
 
         % 減衰定数 [Ns / m]
-        c = 0;
+        c = 1;
 
         %  胴体の長さl[m](脚の付根から重心まで)
         L = 0.29;
@@ -98,7 +98,7 @@ classdef Twoleg < handle
     methods
 
         function obj = Twoleg()
-            self.omega0 = sqrt(self.J/self.kt);
+            obj.omega0 = sqrt(obj.kt/obj.J);
         end
 
         function init(self)
@@ -204,7 +204,7 @@ classdef Twoleg < handle
 
                     case 2 % Hind leg stance
                         eve2 = @(t, q) events2(q, self); %イベント関数を定義．ゼロになる変数と方向を指定．
-                        ode2 = @(t, q) f2(q, self); %odeで解く微分方程式を定義．
+                        ode2 = @(t, q) f2(t, q, self); %odeで解く微分方程式を定義．
                         options2 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve2, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
 
                         % ode45で微分方程式をとく
@@ -231,7 +231,7 @@ classdef Twoleg < handle
 
                     case 3 % Double leg stance
                         eve3 = @(t, q) events3(q, self); %イベント関数を定義．ゼロになる変数と方向を指定．
-                        ode3 = @(t, q) f3(q, self); %odeで解く微分方程式を定義．
+                        ode3 = @(t, q) f3(t, q, self); %odeで解く微分方程式を定義．
                         options3 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve3, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
                         % ode45で微分方程式をとく
                         clearvars t q te ie
@@ -254,7 +254,7 @@ classdef Twoleg < handle
 
                     case 4% Fore leg stance
                         eve4 = @(t, q) events4(q, self); %イベント関数を定義．ゼロになる変数と方向を指定．
-                        ode4 = @(t, q) f4(q, self); %odeで解く微分方程式を定義．
+                        ode4 = @(t, q) f4(t, q, self); %odeで解く微分方程式を定義．
                         options4 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve4, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
                         % ode45で微分方程式をとく
                         clearvars t q te ie
@@ -329,10 +329,6 @@ classdef Twoleg < handle
 
                 % エネルギーの計算
                 self.Eout = calc_Energy(self);
-                % T1 = 0.5 * self.m * (dx^2 + dy^2);
-                % T2 = 0.5 * self.J * dth^2;
-                % V = self.m * self.g * y;
-                % self.E = T1 + T2 + V;
 
             else
                 % disp('gone away')
@@ -353,18 +349,6 @@ classdef Twoleg < handle
                 dy = self.qout(end, 6);
                 dth = self.qout(end, 7);
                 dph = self.qout(end, 8);
-                % x0 = self.q_ini(1);
-                % y0 = self.q_ini(2);
-                % th0 = self.q_ini(3);
-                % dx0 = self.q_ini(4);
-                % dy0 = self.q_ini(5);
-                % dth0 = self.q_ini(6);
-                % x = self.qout(end, 1);
-                % y = self.qout(end, 2);
-                % th = self.qout(end, 3);
-                % dx = self.qout(end, 4);
-                % dy = self.qout(end, 5);
-                % dth = self.qout(end, 6);
 
                 self.mileage = x - x0;
                 self.q_err(1) = y - y0;
@@ -375,19 +359,8 @@ classdef Twoleg < handle
                 self.q_err(6) = dth - dth0;
                 self.q_err(7) = dph - dph0;
                 self.q_err_max = max(self.q_err);
-                % self.mileage = x - x0;
-                % self.q_err(1) = y - y0;
-                % self.q_err(2) = th - th0;
-                % self.q_err(3) = dx - dx0;
-                % self.q_err(4) = dy - dy0;
-                % self.q_err(5) = dth - dth0;
-                % self.q_err_max = max(self.q_err);
                 % エネルギーの計算
                 self.Eout = calc_Energy(self);
-                % T1 = 0.5 * self.m * (dx^2 + dy^2);
-                % T2 = 0.5 * self.J * dth^2;
-                % V = self.m * self.g * y;
-                % self.E = T1 + T2 + V;
             end
 
         end % bound
@@ -408,11 +381,9 @@ classdef Twoleg < handle
             qout_(:, 7) = self.qout(:, 7) * 180 / pi; %degに変換;
             qout_(:, 8) = self.qout(:, 8) * 180 / pi;
 
-            tend = self.tout(end);
             tout_ = self.tout;
 
             %% 状態量のグラフ
-            %figure
             figure('outerposition', [50, 200, 1200, 500])
 
             for pp = 1:8
@@ -425,7 +396,7 @@ classdef Twoleg < handle
             end
 
             if saveflag == 1
-                figname = [date, 'variable1'];
+                figname = ['variable1'];
                 saveas(gcf, figname, 'fig')
                 saveas(gcf, figname, 'png')
                 saveas(gcf, figname, 'epsc')
@@ -434,6 +405,7 @@ classdef Twoleg < handle
             %% 状態変数以外
             % 脚長さのグラフ
             figure
+            subplot(1,2,1)
             plot(tout_, self.lout(:, 1));
             hold on
             plot(tout_, self.lout(:, 2), '--');
@@ -444,15 +416,8 @@ classdef Twoleg < handle
             % ylim([min(self.lout(:, 1)) - 0.01, 0.37]);
             legend({'hind leg', 'fore leg'}, 'Location', 'best')
 
-            if saveflag == 1
-                figname = [date, 'variable2'];
-                saveas(gcf, figname, 'fig')
-                saveas(gcf, figname, 'png')
-                saveas(gcf, figname, 'epsc')
-            end
-
             % 脚角度のグラフ
-            figure
+            subplot(1,2,2)
             plot(tout_, self.gout(:, 1));
             hold on
             plot(tout_, self.gout(:, 2), '--r');
@@ -462,7 +427,7 @@ classdef Twoleg < handle
             legend({'hind leg', 'fore leg'}, 'Location', 'best')
 
             if saveflag == 1
-                figname = [date, 'variable3'];
+                figname = ['leg_variables'];
                 saveas(gcf, figname, 'fig')
                 saveas(gcf, figname, 'png')
                 saveas(gcf, figname, 'epsc')
@@ -479,11 +444,20 @@ classdef Twoleg < handle
             ylim([0, max(self.Eout(:, 7))])
 
             if saveflag == 1
-                figname = [date, 'variable4'];
+                figname = ['energy'];
                 saveas(gcf, figname, 'fig')
                 saveas(gcf, figname, 'png')
                 saveas(gcf, figname, 'epsc')
             end
+
+            figure
+            ktout = nan(length(self.tout),1);
+            for i = 1:length(self.tout)
+                ktout(i) = set_kt(self.tout(i), self);
+            end
+            plot(self.tout, ktout)
+            xlabel("$$t$$", "Interpreter","latex")
+            ylabel("$$k_t$$", "Interpreter","latex")
 
         end % plot
 

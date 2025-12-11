@@ -38,7 +38,7 @@ addpath(pwd, 'fig')
 model = Twoleg;
 
 %% 定数の決定
-dx0 = 11.111; % [m/s]
+dx0 = 12; % [m/s]
 y0 = 0.68; % [m]
 
 phi0set = [-20:20:20]; % [deg]
@@ -49,7 +49,6 @@ dtheta0set = [0:10:100]; % [deg/s]
 dtheta0set = deg2rad(dtheta0set);
 
 gammaset = [-50:10:50]; % [deg]
-%gammaset = 0; % [deg]
 gammaset = deg2rad(gammaset);
 
 u_fixset = [];
@@ -63,22 +62,19 @@ for i_phi = 1:length(phi0set)
 
     for i_pitch = 1:length(dtheta0set)
         dtheta0 = dtheta0set(i_pitch);
-%         fprintf('%1.4f',dtheta0)
-        q_constants = [y0 dx0 dtheta0];
 
         for i_gb = 1:length(gammaset)
             gb_ini = gammaset(i_gb);
 
             for i_gf = 1:length(gammaset)
                 gf_ini = gammaset(i_gf);
-                u_ini = [gb_ini gf_ini phi0];
-                [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model, q_constants);
+                u_ini = [y0 phi0 dx0 dtheta0 gb_ini gf_ini];
+                [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model);
 
                 if exitflag > 0
 
                     if n == 1
                         fprintf('*');
-                        q_fixset = q_constants;
                         u_fixset = u_fix;
                         fixedPoint = logDat;
                         n = n + 1;
@@ -87,7 +83,7 @@ for i_phi = 1:length(phi0set)
 
                         for i_sol = 1:length(u_fixset(:,1))
 
-                            if abs(q_constants(3) - q_fixset(i_sol,3)) < 1e-3 && abs(u_fix(1) - u_fixset(i_sol, 1)) < 1e-3 && abs(u_fix(2) - u_fixset(i_sol, 2)) < 1e-3 && abs(u_fix(3) - u_fixset(i_sol, 3))
+                            if abs(u_fix - u_fixset(i_sol, :)) < 1e-5
                                 % すでに見つかっているのと同じ固定点
                                 breakflag = true;
                                 break
@@ -98,7 +94,6 @@ for i_phi = 1:length(phi0set)
                         if breakflag == false
                             fprintf('*');
                             % データの保存
-                            q_fixset = [q_fixset; q_constants];
                             u_fixset = [u_fixset; u_fix];
                             fixedPoint(n) = logDat;
                             n = n + 1;
