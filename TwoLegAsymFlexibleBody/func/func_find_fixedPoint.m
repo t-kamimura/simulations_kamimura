@@ -15,31 +15,32 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model)
     options = optimset('Algorithm','levenberg-marquardt','Display','none','UseParallel',true);
     [u_fix, fval, exitflag, output, jacobi] = fsolve(myNewtonFunc, u_ini, options);
 
-    % logDatの初期化
-    logDat.q_ini = [];
-    logDat.u_fix = u_fix;
-
-    logDat.fsolveResult.fval = fval;
-    logDat.fsolveResult.exitflag = exitflag;
-    logDat.fsolveResult.output = output;
-    logDat.fsolveResult.jacobi = jacobi;
-
-    logDat.trajectory.tout = [];
-    logDat.trajectory.qout = [];
-
-    logDat.event.teout = [];
-    logDat.event.qeout = [];
-    logDat.event.ieout = [];
-
-    logDat.error.q_err = [];
-    logDat.error.q_err_max = [];
-
-    logDat.GRF = 0;
-    logDat.p = 0;
-
-    % logDataを得るために一度バウンド実行
-    % disp('make Logdata')
     if exitflag == 1
+        % logDatの初期化
+        logDat.q_ini = [];
+        logDat.u_fix = u_fix;
+    
+        logDat.fsolveResult.fval = fval;
+        logDat.fsolveResult.exitflag = exitflag;
+        logDat.fsolveResult.output = output;
+        logDat.fsolveResult.jacobi = jacobi;
+    
+        logDat.trajectory.tout = [];
+        logDat.trajectory.qout = [];
+    
+        logDat.event.teout = [];
+        logDat.event.qeout = [];
+        logDat.event.ieout = [];
+    
+        logDat.error.q_err = [];
+        logDat.error.q_err_max = [];
+    
+        logDat.GRF = 0;
+        logDat.p = 0;
+    
+        % logDataを得るために一度バウンド実行
+        % disp('make Logdata')
+
         % 初期値代入
         x0 = 0.0;
         y0 = u_fix(1);
@@ -96,7 +97,8 @@ function [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model)
         else
             exitflag = -10; % エラー起きたらとりあえず　exitFlag = -10 入れておく
         end
-
+    else
+        logDat = [];
     end % if exitflag
 
 end % function

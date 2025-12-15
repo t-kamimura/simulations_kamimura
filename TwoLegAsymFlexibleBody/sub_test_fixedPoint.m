@@ -21,21 +21,25 @@ addpath(pwd, 'fig')
 
 model = Twoleg(0.2);
 
-x_ini = 0.0;
-y_ini = 1.0;
-theta_ini = 0;
-phi_ini = deg2rad(0);
-dx_ini = 2.5;
-dy_ini = 0;
-dtheta_ini = deg2rad(0);
-dphi_ini = 0;
-% gb_ini = 0*pi / 8;
-% gf_ini = 0*pi / 8;
-gamma_h_td_ini = deg2rad(18);
-gamma_f_td_ini = deg2rad(14);
+load("fixedPoints_for_kt=144.mat")
 
-q_ini = [x_ini y_ini theta_ini phi_ini dx_ini dy_ini dtheta_ini dphi_ini];
-u_ini = [gamma_h_td_ini gamma_f_td_ini];
+i = 1;
+u_fix = fixedPoint(i).u_fix;
+
+x0 = 0.0;
+y0 = u_fix(1);
+theta0 = 0;
+phi0 = u_fix(2);
+dx0 = u_fix(3);
+dy0 = 0;
+dtheta0 = u_fix(4);
+dphi0 = 0 ;
+
+gb_ini = u_fix(5);
+gf_ini = u_fix(6);
+
+q_ini = [x0 y0 theta0 phi0 dx0 dy0 dtheta0 dphi0];
+u_ini = [gb_ini gf_ini];
 
 model.init
 model.bound(q_ini, u_ini)

@@ -22,7 +22,7 @@ classdef Twoleg < handle
     %=====================================================================%
 
     properties (SetAccess = public)
-        % チーターParamの定義( 上村先生論文より)
+        % チーターParamの定義(上村論文より)
         % 慣性モーメント [kg m^2]
         J = 0.53; %後胴体の慣性モーメント
 
@@ -36,9 +36,10 @@ classdef Twoleg < handle
         kg = 80; % 曲げた時のバネ定数（柔らかい）
         ke = 120; % 伸ばした時のバネ定数（硬い）
         omega0 = 0;
+        kappa = 0;
 
         % 減衰定数 [Ns / m]
-        c = 1;
+        c = 10;
 
         %  胴体の長さl[m](脚の付根から重心まで)
         L = 0.29;
@@ -69,7 +70,6 @@ classdef Twoleg < handle
         lout = [];
         gout = [];
 
-
         teout = [];
         qeout = [];
         ieout = [];
@@ -82,6 +82,7 @@ classdef Twoleg < handle
         mileage = 0;
         v = 0;
         tstart = 0;
+        ktout = [];
         Eout = [];
 
         % ODE param
@@ -97,8 +98,15 @@ classdef Twoleg < handle
 
     methods
 
-        function obj = Twoleg()
+        function obj = Twoleg(kappa)
+            obj.kappa = kappa;
             obj.omega0 = sqrt(obj.kt/obj.J);
+            % omega_high = obj.omega0 * (1 + kappa);
+            % omega_low  = obj.omega0 * (1 - kappa);
+            % obj.ke = obj.J * omega_high^2;
+            % obj.kg = obj.J * omega_low^2;
+            obj.ke = obj.kt * (1 + kappa)^2;
+            obj.kg = obj.kt * (1 - kappa)^2;
         end
 
         function init(self)
@@ -108,7 +116,6 @@ classdef Twoleg < handle
             self.qout = [];
             self.gout = [];
             self.lout = [];
-
 
             self.teout = [];
             self.qeout = [];
@@ -158,21 +165,10 @@ classdef Twoleg < handle
                 %  3 Double leg Stance
                 %  4 Fore   leg Stance
 
-                % ode45は微分方程式のソルバー
-                % [T, Q, TE, QE, IE] = ode45(odefun,tspan,q0,options)
-                % odefun  微分方程式の右辺を計算する．dq=f(t,q)の形の微分方程式．
-                % tspan   積分区間[t0,tf]を指定するベクトル．
-                % q0      初期条件のベクトル
-                % options 関数odesetで作られるオプション．
-                % T       時刻の列ベクトル
-                % Q       解の配列．Yの各行は，Tの対応する行に返される時刻での解．
-                % TE      イベントが発生した時刻
-                % QE      イベント時刻での解
-                % IE      ゼロになるイベント関数のインデックス
-
                 switch self.eveflg
 
-                    case 1% Double Leg Flight
+                    case 1
+                        % Double Leg Flight
 
                         eve1 = @(t, q) events1(q, self); %イベント関数を定義．ゼロになる変数と方向を指定．
                         ode1 = @(t, q) f1(t, q, self); %odeで解く微分方程式を定義．
@@ -202,7 +198,8 @@ classdef Twoleg < handle
                         end
 
 
-                    case 2 % Hind leg stance
+                    case 2
+                        % Hind leg stance
                         eve2 = @(t, q) events2(q, self); %イベント関数を定義．ゼロになる変数と方向を指定．
                         ode2 = @(t, q) f2(t, q, self); %odeで解く微分方程式を定義．
                         options2 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve2, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
@@ -229,7 +226,8 @@ classdef Twoleg < handle
                             liftOffFlag.hind = true;
                         end
 
-                    case 3 % Double leg stance
+                    case 3
+                        % Double leg stance
                         eve3 = @(t, q) events3(q, self); %イベント関数を定義．ゼロになる変数と方向を指定．
                         ode3 = @(t, q) f3(t, q, self); %odeで解く微分方程式を定義．
                         options3 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve3, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
@@ -252,7 +250,8 @@ classdef Twoleg < handle
                             liftOffFlag.hind = true;
                         end
 
-                    case 4% Fore leg stance
+                    case 4
+                        % Fore leg stance
                         eve4 = @(t, q) events4(q, self); %イベント関数を定義．ゼロになる変数と方向を指定．
                         ode4 = @(t, q) f4(t, q, self); %odeで解く微分方程式を定義．
                         options4 = odeset('RelTol', self.relval, 'AbsTol', self.absval, 'Events', eve4, 'Refine', self.refine, 'Stats', 'off'); %ode45のオプションを設定．
@@ -296,6 +295,11 @@ classdef Twoleg < handle
             end
 
             % 最終処理　apex heightに戻ってきたか否かでやることが変わる
+            % 体幹バネの履歴
+            self.ktout = nan(length(self.tout),1);
+            for i = 1:length(self.tout)
+                self.ktout(i) = set_kt(self.tout(i), self);
+            end
             if self.eveflg == 1
                 % reached apex height
                 % disp('reached apex height')
@@ -383,7 +387,7 @@ classdef Twoleg < handle
 
             tout_ = self.tout;
 
-            %% 状態量のグラフ
+            % 状態量のグラフ
             figure('outerposition', [50, 200, 1200, 500])
 
             for pp = 1:8
@@ -402,7 +406,7 @@ classdef Twoleg < handle
                 saveas(gcf, figname, 'epsc')
             end
 
-            %% 状態変数以外
+            % 状態変数以外
             % 脚長さのグラフ
             figure
             subplot(1,2,1)
@@ -450,12 +454,9 @@ classdef Twoleg < handle
                 saveas(gcf, figname, 'epsc')
             end
 
+            % ジョイント部のばね定数のグラフ
             figure
-            ktout = nan(length(self.tout),1);
-            for i = 1:length(self.tout)
-                ktout(i) = set_kt(self.tout(i), self);
-            end
-            plot(self.tout, ktout)
+            plot(self.tout, self.ktout)
             xlabel("$$t$$", "Interpreter","latex")
             ylabel("$$k_t$$", "Interpreter","latex")
 
@@ -526,34 +527,11 @@ classdef Twoleg < handle
             foreLeg = line([x_headjoint(1), x_foot_f(1)], [y_headjoint(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
             line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
 
-            %もともと
-            % body1 = line([x_hip(1), qout_(1, 1)], [y_hip(1), qout_(1, 2)], 'color', 'k', 'LineWidth', 3);
-            % body2 = line([qout_(1, 1), x_head(1)], [qout_(1, 2), y_head(1)], 'color', 'k', 'LineWidth', 3);
-            % hindLeg = line([x_hipjoint(1), x_foot_b(1)], [y_hipjoint(1), y_foot_b(1)], 'color', 'r', 'LineWidth', 3);
-            % foreLeg = line([x_headjoint(1), x_foot_f(1)], [y_headjoint(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
-            % line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
-
-
-            %体バラしてみたかった
-            % body1 = line([x_hip(1), x_hipjoint(1)], [y_hip(1), y_hipjoint(1)], 'color', 'k', 'LineWidth', 3);
-            % body2 = line([x_hipjoint(1), qout_(1, 1)], [y_hipjoint(1), qout_(1, 2)], 'color', 'k', 'LineWidth', 3);
-            % body3 = line([qout_(1, 1), x_headjoint(1)], [qout_(1, 2), y_headjoint(1)], 'color', 'k', 'LineWidth', 3);
-            % body4 = line([x_headjoint(1), x_head(1)], [y_headjoint(1), y_head(1)], 'color', 'k', 'LineWidth', 3);
-            % hindLeg = line([x_hipjoint(1), x_foot_b(1)], [y_hipjoint(1), y_foot_b(1)], 'color', 'r', 'LineWidth', 3);
-            % foreLeg = line([x_headjoint(1), x_foot_f(1)], [y_headjoint(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
-            % line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
-
             strng = [num2str(0, '%.2f'), ' s'];
             t = text(0, -0.1, strng, 'color', 'k', 'fontsize', 16);
             strng2 = ['x', num2str(speed, '%.2f')];
             t2 = text(max(x_head) - 0.1, -0.1, strng2, 'color', 'k', 'fontsize', 16);
-            % xlim([-0.5 max(x_head) + 0.2])
-            % ylim([-0.2 1.3])
-            % body = line([x_hip(1), x_head(1)], [y_hip(1), y_head(1)], 'color', 'k', 'LineWidth', 3);
-            % hindLeg = line([x_hip(1), x_foot_b(1)], [y_hip(1), y_foot_b(1)], 'color', 'r', 'LineWidth', 3);
-            % foreLeg = line([x_head(1), x_foot_f(1)], [y_head(1), y_foot_f(1)], 'color', 'b', 'LineWidth', 3);
-            % line([-0.5 max(x_head) + 0.2], [0, 0], 'color', 'k', 'LineWidth', 1);
-
+            
             F = [];
             
             for i_t = 10:1:anim_num - 10
@@ -574,25 +552,9 @@ classdef Twoleg < handle
                 end
 
             end
-            % for i_t = 10:1:anim_num - 10
-            %     body.XData = [x_hip(i_t), x_head(i_t)];
-            %     body.YData = [y_hip(i_t), y_head(i_t)];
-            %     hindLeg.XData = [x_hip(i_t), x_foot_b(i_t)];
-            %     hindLeg.YData = [y_hip(i_t), y_foot_b(i_t)];
-            %     foreLeg.XData = [x_head(i_t), x_foot_f(i_t)];
-            %     foreLeg.YData = [y_head(i_t), y_foot_f(i_t)];
-            %     strng = [num2str(teq(i_t), '%.3f'), ' s'];
-            %     t.String = strng;
-            %     drawnow
-
-            %     if rec == true
-            %         F = [F; getframe(h1)];
-            %     end
-
-            % end
 
             if rec == true
-                videoobj = VideoWriter([date, 'movie.mp4'], 'MPEG-4');
+                videoobj = VideoWriter(['movie.mp4'], 'MPEG-4');
                 videoobj.FrameRate = FPS;
                 fprintf('video saving...')
                 open(videoobj);
