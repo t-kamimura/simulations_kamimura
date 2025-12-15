@@ -29,17 +29,17 @@ classdef Twoleg < handle
         % 質量m [kg]
         m = 18.8;
 
-        % ばね定数k_leg [N / m]
+        % ばね定数k_leg [N/m]
         kh = 8000; %後脚のバネ定数
         kf = 8000; %前脚のバネ定数
         kt = 100; %ジョイント部分バネ定数
         kg = 80; % 曲げた時のバネ定数（柔らかい）
         ke = 120; % 伸ばした時のバネ定数（硬い）
-        omega0 = 0;
-        kappa = 0;
+        omega0 = [];
+        kappa = [];
 
-        % 減衰定数 [Ns / m]
-        c = 10;
+        % 減衰定数 [Ns/m]
+        c = 0.0;
 
         %  胴体の長さl[m](脚の付根から重心まで)
         L = 0.29;
@@ -75,8 +75,6 @@ classdef Twoleg < handle
         ieout = [];
         eveflgout = [];
 
-        Hipout = [];
-        Toeout = [];
         q_err = [];
         q_err_max = 0;
         mileage = 0;
@@ -100,16 +98,12 @@ classdef Twoleg < handle
 
         function obj = Twoleg(kappa)
             obj.kappa = kappa;
-            obj.omega0 = sqrt(obj.kt/obj.J);
-            % omega_high = obj.omega0 * (1 + kappa);
-            % omega_low  = obj.omega0 * (1 - kappa);
-            % obj.ke = obj.J * omega_high^2;
-            % obj.kg = obj.J * omega_low^2;
+            obj.omega0 = sqrt(2*obj.kt/obj.J);
             obj.ke = obj.kt * (1 + kappa)^2;
             obj.kg = obj.kt * (1 - kappa)^2;
         end
 
-        function init(self)
+        function init(self,tstart)
             self.eveflg = 1;
 
             self.tout = [];
@@ -122,9 +116,7 @@ classdef Twoleg < handle
             self.ieout = [];
             self.eveflgout = [];
 
-            self.Hipout = [];
-            self.Toeout = [];
-            self.tstart = 0;
+            self.tstart = tstart;
         end % init
 
         function bound(self, q_initial, u_inital)
@@ -304,24 +296,24 @@ classdef Twoleg < handle
                 % reached apex height
                 % disp('reached apex height')
                 % 誤差の計算
-                x0 = self.q_ini(1);
-                y0 = self.q_ini(2);
-                th0 = self.q_ini(3);
-                ph0 = self.q_ini(4);
-                dx0 = self.q_ini(5);
-                dy0 = self.q_ini(6);
+                x0   = self.q_ini(1);
+                y0   = self.q_ini(2);
+                th0  = self.q_ini(3);
+                ph0  = self.q_ini(4);
+                dx0  = self.q_ini(5);
+                dy0  = self.q_ini(6);
                 dth0 = self.q_ini(7);
                 dph0 = self.q_ini(8);
-                x = self.qout(end, 1);
-                y = self.qout(end, 2);
-                th = self.qout(end, 3);
-                ph = self.qout(end, 4);
-                dx = self.qout(end, 5);
-                dy = self.qout(end, 6);
+                x   = self.qout(end, 1);
+                y   = self.qout(end, 2);
+                th  = self.qout(end, 3);
+                ph  = self.qout(end, 4);
+                dx  = self.qout(end, 5);
+                dy  = self.qout(end, 6);
                 dth = self.qout(end, 7);
                 dph = self.qout(end, 8);
 
-                self.mileage = x - x0;
+                self.mileage  = x - x0;
                 self.q_err(1) = y - y0;
                 self.q_err(2) = th - th0;
                 self.q_err(3) = ph - ph0;
@@ -378,11 +370,11 @@ classdef Twoleg < handle
             % 座標変換
             qout_(:, 1) = self.qout(:, 1);
             qout_(:, 2) = self.qout(:, 2);
-            qout_(:, 3) = self.qout(:, 3) * 180 / pi; %degに変換
+            qout_(:, 3) = self.qout(:, 3) * 180 / pi; % degに変換
             qout_(:, 4) = self.qout(:, 4) * 180 / pi;
             qout_(:, 5) = self.qout(:, 5);
             qout_(:, 6) = self.qout(:, 6);
-            qout_(:, 7) = self.qout(:, 7) * 180 / pi; %degに変換;
+            qout_(:, 7) = self.qout(:, 7) * 180 / pi; % degに変換;
             qout_(:, 8) = self.qout(:, 8) * 180 / pi;
 
             tout_ = self.tout;
@@ -497,7 +489,7 @@ classdef Twoleg < handle
                 y_hip(i) = y - self.L * cos(ph) * sin(th) - self.L * sin(th - ph);
                 x_head(i) = x + self.L * cos(th) * cos(ph) + self.L * cos(th + ph);
                 y_head(i) = y + self.L * cos(ph) * sin(th) + self.L * sin(th + ph);
-                
+
                 x_hipjoint(i) = x - self.L * cos(th) * cos(ph) - self.D * cos(th - ph);    %関節
                 y_hipjoint(i) = y - self.L * cos(ph) * sin(th) - self.D * sin(th - ph);
                 x_headjoint(i) = x + self.L * cos(th) * cos(ph) + self.D * cos(th + ph);
@@ -531,9 +523,9 @@ classdef Twoleg < handle
             t = text(0, -0.1, strng, 'color', 'k', 'fontsize', 16);
             strng2 = ['x', num2str(speed, '%.2f')];
             t2 = text(max(x_head) - 0.1, -0.1, strng2, 'color', 'k', 'fontsize', 16);
-            
+
             F = [];
-            
+
             for i_t = 10:1:anim_num - 10
                 body1.XData = [x_hip(i_t), x_joint(i_t)];
                 body1.YData = [y_hip(i_t), y_joint(i_t)];

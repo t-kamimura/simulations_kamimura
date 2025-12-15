@@ -1,23 +1,25 @@
 % 1周期のバウンド歩行を行う関数
 % ポアンカレ断面でシミュレーションを開始し，1周期だけ運動させておわる．
 
-function [z_new] = func_poincreMapBound(u, model)
+function [z_new] = func_poincreMapBound(z, model)
 
     % 初期値代入
     x0 = 0.0;
-    y0 = u(1);
+    y0 = z(1);
     theta0 = 0;
-    phi0 = u(2);
-    dx0 = u(3);
+    phi0 = z(2);
+    dx0 = z(3);
     dy0 = 0;
-    dtheta0 = u(4);
+    dtheta0 = z(4);
     dphi0 = 0 ;
 
-    gb_ini = u(5);
-    gf_ini = u(6);
+    gb_ini = z(5);
+    gf_ini = z(6);
 
     q_ini = [x0 y0 theta0 phi0 dx0 dy0 dtheta0 dphi0];
     u_ini = [gb_ini gf_ini];
+
+    % % 描画用
 
     % x_joint = x0 - model.L * cos(phi0) * cos(theta0) + model.L * cos(theta0 - phi0);   %ジョイント部
     % y_joint = y0 - model.L * cos(phi0) * sin(theta0) + model.L * sin(theta0 - phi0);
@@ -25,7 +27,7 @@ function [z_new] = func_poincreMapBound(u, model)
     % head.y = y0 + model.L * cos(phi0) * sin(theta0) + model.D * sin(theta0 + phi0);
     % hip.x = x0 - model.L * cos(theta0) * cos(phi0) - model.D * cos(theta0 - phi0);
     % hip.y = y0 - model.L * cos(phi0) * sin(theta0) - model.D * sin(theta0 - phi0);
-    % 
+
     % toe_b.x = hip.x + model.l3*sin(gb_ini);
     % toe_b.y = hip.y - model.l3*cos(gb_ini);
     % toe_f.x = head.x + model.l4*sin(gf_ini);
@@ -40,9 +42,9 @@ function [z_new] = func_poincreMapBound(u, model)
     % ylim([-0.2 1.5])
     % drawnow
 
-    model.init
+    model.init(0);
     try
-        model.bound(q_ini, u_ini)
+        model.bound(q_ini, u_ini);
         % 誤差確認
         if model.eveflg == 1
             % Apexに戻ってきていたら，一周したあとの状態変数誤差
@@ -61,6 +63,5 @@ function [z_new] = func_poincreMapBound(u, model)
         z_new = [1 1 1 1 1 1];
     end
 
-% return;
 end
 

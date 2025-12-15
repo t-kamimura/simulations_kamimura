@@ -11,20 +11,6 @@ set(0, 'defaultTextFontSize', 16);
 set(0, 'defaultTextFontName', 'times');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Construct a questdlg with three options
-choice = questdlg('Do you want to save the result(s)?', ...
-    'Saving opptions', ...
-    'Yes', 'No', 'Yes');
-% Handle response
-saveflag = false;
-
-switch choice
-    case 'Yes'
-        saveflag = true;
-    case 'No'
-        saveflag = false;
-end
-
 % path追加
 addpath(genpath('class'))
 addpath(pwd, 'func')
@@ -32,19 +18,19 @@ addpath(pwd, 'data')
 addpath(pwd, 'fig')
 
 %% 定数の決定
-kappa = 0.2;
+kappa = 0.5;
 model = Twoleg(kappa);
 
 dx0 = 12; % [m/s]
-y0 = 0.68; % [m]
+y0 = 0.7; % [m]
 
 phi0set = 0; % [deg]
 phi0set = deg2rad(phi0set);
 
-dtheta0set = 0:20:100; % [deg/s]
+dtheta0set = 50:25:100; % [deg/s]
 dtheta0set = deg2rad(dtheta0set);
 
-gammaset = -50:10:50; % [deg]
+gammaset = 50:-10:0; % [deg]
 gammaset = deg2rad(gammaset);
 
 u_fixset = [];
@@ -65,6 +51,7 @@ for i_phi = 1:length(phi0set)
                 [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model);
                 if exitflag == 1
                     if n == 1
+                        % fprintf('%d', exitflag);
                         fprintf('*');
                         u_fixset = u_fix;
                         fixedPoint = logDat;
@@ -79,6 +66,7 @@ for i_phi = 1:length(phi0set)
                             end
                         end
                         if breakflag == false
+                            % fprintf('%d', exitflag);
                             fprintf('*');
                             % データの保存
                             u_fixset = [u_fixset; u_fix];
@@ -88,16 +76,19 @@ for i_phi = 1:length(phi0set)
                             fprintf('-')
                         end
                     end % if n==1
+                elseif exitflag > 1
+                    % fprintf('%d', exitflag);
+                    fprintf('.');
                 else
                     fprintf('.');
                 end % if exitflag
             end % gf
         end % gb
-        
+
         % 次のステップへ
         fprintf('\n')
         fprintf('[%5.1f %%] ', ((i_phi- 1) * length(dtheta0set) + i_pitch) / (length(phi0set) * length(dtheta0set)) * 100);
-        
+
     end % dtheta0
 end % phi0
 
@@ -107,4 +98,4 @@ fprintf('\n')
 filename = ['data/fixedPoints_for_kappa=', num2str(model.kappa), '.mat'];
 save(filename, 'fixedPoint');
 
-h = msgbox('Caluculation finished !');
+% h = msgbox('Caluculation finished !');
