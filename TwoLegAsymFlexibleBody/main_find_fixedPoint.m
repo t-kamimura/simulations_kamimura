@@ -94,7 +94,7 @@ end % phi0
 
 fprintf('\n')
 
-% 保存
+%% 保存
 filename = ['data/fixedPoints_for_kappa=', num2str(model.kappa), '.mat'];
 save(filename, 'fixedPoint');
 
