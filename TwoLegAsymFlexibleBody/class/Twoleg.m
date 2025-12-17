@@ -40,7 +40,7 @@ classdef Twoleg < handle
         eps = [];
 
         % 減衰定数 [Ns/m]
-        c = 1.5;
+        c = 0.01;
 
         %  胴体の長さl[m](脚の付根から重心まで)
         L = 0.29;
