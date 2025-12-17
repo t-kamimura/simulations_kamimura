@@ -18,8 +18,9 @@ addpath(pwd, 'data')
 addpath(pwd, 'fig')
 
 %% 定数の決定
-kappa = 0.5;
-model = Twoleg(kappa);
+kappa = 1;
+eps = 0.1;
+model = Twoleg(kappa, eps);
 
 dx0 = 12; % [m/s]
 y0 = 0.7; % [m]
@@ -47,12 +48,12 @@ for i_phi = 1:length(phi0set)
             gb_ini = gammaset(i_gb);
             for i_gf = 1:length(gammaset)
                 gf_ini = gammaset(i_gf);
-                u_ini = [y0 phi0 dx0 dtheta0 gb_ini gf_ini];
+                u_ini = [y0 phi0 dx0 dtheta0 gb_ini gf_ini kappa];
                 [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model);
-                if exitflag == 1
+                if exitflag > 0
                     if n == 1
-                        % fprintf('%d', exitflag);
-                        fprintf('*');
+                        fprintf('%d', exitflag);
+                        % fprintf('*');
                         u_fixset = u_fix;
                         fixedPoint = logDat;
                         n = n + 1;
@@ -66,8 +67,8 @@ for i_phi = 1:length(phi0set)
                             end
                         end
                         if breakflag == false
-                            % fprintf('%d', exitflag);
-                            fprintf('*');
+                            fprintf('%d', exitflag);
+                            % fprintf('*');
                             % データの保存
                             u_fixset = [u_fixset; u_fix];
                             fixedPoint(n) = logDat;
@@ -77,8 +78,8 @@ for i_phi = 1:length(phi0set)
                         end
                     end % if n==1
                 elseif exitflag > 1
-                    % fprintf('%d', exitflag);
-                    fprintf('.');
+                    fprintf('%d', exitflag);
+                    % fprintf('.');
                 else
                     fprintf('.');
                 end % if exitflag
@@ -95,7 +96,7 @@ end % phi0
 fprintf('\n')
 
 % 保存
-filename = ['data/fixedPoints_for_kappa=', num2str(model.kappa), '.mat'];
+filename = ['data/fixedPoints_for_kappa=', num2str(kappa), '_eps=',num2str(eps),'.mat'];
 save(filename, 'fixedPoint');
 
 % h = msgbox('Caluculation finished !');

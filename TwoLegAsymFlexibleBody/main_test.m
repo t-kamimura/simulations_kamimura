@@ -19,7 +19,9 @@ addpath(pwd, 'func')
 addpath(pwd, 'data')
 addpath(pwd, 'fig')
 
-model = Twoleg(0.5);
+kappa = 0.25;
+eps = 0.2;
+model = Twoleg(kappa, eps);
 
 % x_ini = 0.0;
 % y_ini = 1.0;
@@ -37,8 +39,8 @@ model = Twoleg(0.5);
 % q_ini = [x_ini y_ini theta_ini phi_ini dx_ini dy_ini dtheta_ini dphi_ini];
 % u_ini = [gamma_h_td_ini gamma_f_td_ini];
 
-q_ini = [0,0.771805444763325,0,-0.004022061596525,11.826707147929236,0,1.977738571535911,0]; % [x y theta phi dx dy dtheta dphi]
-u_ini = [0.817453417228301,0.796122251883640];               % [gamma_b gamma_f]
+q_ini = [0,0.804771899819683,0,-0.058099015945371,11.966837506458754,0,2.246719948738898,0]; % [x y theta phi dx dy dtheta dphi]
+u_ini = [0.844008792068432,0.811729639670647];               % [gamma_b gamma_f]
 
 model.init(0);
 model.bound(q_ini, u_ini);

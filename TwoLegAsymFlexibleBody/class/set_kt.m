@@ -1,6 +1,6 @@
 function kt = set_kt(t,model)
     % Step func
-    if rem(model.omega0*t, 2*pi)<pi
+    if rem(model.omega*t, 2*pi)<pi
         kt = model.ke;
     else
         kt = model.kg;

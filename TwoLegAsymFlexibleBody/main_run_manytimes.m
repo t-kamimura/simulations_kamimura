@@ -18,14 +18,15 @@ addpath(pwd, 'data')
 addpath(pwd, 'fig')
 
 %% 定数の決定
-kappa = 0.2;
-model = Twoleg(kappa);
+kappa = 0.4;
+eps = 0.2;
+model = Twoleg(kappa, eps);
 
-q_ini = [0,0.694280807845082,0,-0.152859394693977,12.430002401450801,0,2.396278701777110,0]; % [x y theta phi dx dy dtheta dphi]
-u_ini = [0.810162808644968,0.804419959308218];               % [gamma_b gamma_f]
+q_ini = [0,0.638601532177743,0,-0.127947480609015,12.285567721471939,0,1.358913624716430,0]; % [x y theta phi dx dy dtheta dphi]
+u_ini = [0.747992462377388,0.735967259588560];               % [gamma_b gamma_f]
 
 %% 何歩も歩かせてみる
-numTrials = 10;
+numTrials = 50;
 toutset = [];
 qoutset = [];
 loutset = [];
@@ -66,5 +67,5 @@ model.gout = goutset;
 model.ktout = ktoutset;
 model.Eout = Eoutset;
 model.plot(false);
-model.anime(0.1, false);
+% model.anime(0.1, false);
 % h = msgbox('Caluculation finished !');

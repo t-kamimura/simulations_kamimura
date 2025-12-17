@@ -19,6 +19,9 @@ function [z_new] = func_poincreMapBound(z, model)
     q_ini = [x0 y0 theta0 phi0 dx0 dy0 dtheta0 dphi0];
     u_ini = [gb_ini gf_ini];
 
+    % kappa = z(7);
+    % model.omega = model.omega0/kappa;
+
     % % 描画用
 
     % x_joint = x0 - model.L * cos(phi0) * cos(theta0) + model.L * cos(theta0 - phi0);   %ジョイント部

@@ -6,8 +6,8 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint(z_ini, model)
 
     % Newton法実行
     % options = optimset('Algorithm','levenberg-marquardt','Display','iter'); % debug
-    % options = optimset('Algorithm','levenberg-marquardt','Display','none'); % 並列なし
-    options = optimset('Algorithm','levenberg-marquardt','Display','none','UseParallel',true);
+    options = optimset('Algorithm','levenberg-marquardt','Display','none'); % 並列なし
+    % options = optimset('Algorithm','levenberg-marquardt','Display','none','UseParallel',true);
     [z_fix, fval, exitflag, output, jacobi] = fsolve(myNewtonFunc, z_ini, options);
 
     if exitflag == 1
@@ -27,6 +27,9 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint(z_ini, model)
 
         q_ini = [x0 y0 theta0 phi0 dx0 dy0 dtheta0 dphi0];
         u_ini = [gb_ini gf_ini];
+
+        kappa = z_fix(7);
+        model.omega = model.omega0/kappa;
 
         model.init(0);
         model.bound(q_ini, u_ini)
