@@ -25,8 +25,8 @@ else
 end
 
 %% 定数の決定
-kappa = 0.8;
-eps = 0.8;
+kappa = 1.0;
+eps = 0.2;
 model = Twoleg(kappa, eps);
 
 dx0 = 12; % [m/s]

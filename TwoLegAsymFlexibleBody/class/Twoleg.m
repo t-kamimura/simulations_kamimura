@@ -40,7 +40,7 @@ classdef Twoleg < handle
         eps = [];
 
         % 減衰定数 [Ns/m]
-        c = 0.01;
+        c = 5.0;
 
         %  胴体の長さl[m](脚の付根から重心まで)
         L = 0.29;
@@ -101,8 +101,8 @@ classdef Twoleg < handle
             obj.eps = eps;
             obj.omega0 = sqrt(2*obj.kt/obj.J);
             obj.omega = obj.omega0/kappa;
-            obj.ke = obj.kt * (1 + kappa)^2;
-            obj.kg = obj.kt * (1 - kappa)^2;
+            obj.ke = obj.kt * (1 + eps)^2;
+            obj.kg = obj.kt * (1 - eps)^2;
         end
 
         function init(self,tstart)

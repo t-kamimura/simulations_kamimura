@@ -6,8 +6,12 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint(z_ini, model)
 
     % Newton法実行
     % options = optimset('Algorithm','levenberg-marquardt','Display','iter'); % debug
-    options = optimset('Algorithm','levenberg-marquardt','Display','none'); % 並列なし
-    % options = optimset('Algorithm','levenberg-marquardt','Display','none','UseParallel',true);
+    pool = gcp('nocreate');
+    if isempty(pool)
+        options = optimset('Algorithm','levenberg-marquardt','Display','none'); % 並列なし
+    else
+        options = optimset('Algorithm','levenberg-marquardt','Display','none','UseParallel',true);
+    end
     [z_fix, fval, exitflag, output, jacobi] = fsolve(myNewtonFunc, z_ini, options);
     
     % 初期値代入
@@ -26,20 +30,24 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint(z_ini, model)
     q_ini = [x0 y0 theta0 phi0 dx0 dy0 dtheta0 dphi0];
     u_ini = [gb_ini gf_ini];
 
-    model.init(0);
-    model.bound(q_ini, u_ini)
 
-    logDat.exitflag = exitflag;
+    % logDat.exitflag = exitflag; % debug
+
+    logDat.omega0 = model.omega0;
+    logDat.c = model.c;
 
     logDat.q_ini = q_ini;
     logDat.u_fix = u_ini;
 
-    logDat.trajectory.tout = model.tout;
-    logDat.trajectory.qout = model.qout;
+    % model.init(0);
+    % model.bound(q_ini, u_ini)
 
-    logDat.event.teout = model.teout;
-    logDat.event.qeout = model.qeout;
-    logDat.event.ieout = model.ieout;
+    % logDat.trajectory.tout = model.tout;
+    % logDat.trajectory.qout = model.qout;
+
+    % logDat.event.teout = model.teout;
+    % logDat.event.qeout = model.qeout;
+    % logDat.event.ieout = model.ieout;
 
     logDat.fsolveResult.fval = fval;
     logDat.fsolveResult.exitflag = exitflag;
@@ -48,8 +56,9 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint(z_ini, model)
 
     if exitflag == 1
 
-        [eivenVectors, eigenValues] = eig(jacobi);
-        maxEigen = max(max(abs(eigenValues)));
+        % 固定点の安定性解析
+        [eigenValues, eivenVectors, jacobi] = calc_eigenvalue(model, q_ini, u_ini);
+        maxEigen = max(abs(diag(eigenValues)));
 
         % 最大床反力の計算
         GRF = model.kh*(model.l3 - min(model.lout(:,1)));
@@ -65,6 +74,7 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint(z_ini, model)
         else
             logDat.stability.isStable = false;
         end
+        logDat.stability.jacobi = jacobi;
         logDat.stability.eigenVectors = eivenVectors;
         logDat.stability.eigenValues = eigenValues;
         logDat.stability.maxEigen = maxEigen;
@@ -72,6 +82,7 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint(z_ini, model)
         logDat.p = p;
     else
         logDat.stability.isStable = [];
+        logDat.stability.jacobi = [];
         logDat.stability.eigenVectors = [];
         logDat.stability.eigenValues = [];
         logDat.stability.maxEigen = [];

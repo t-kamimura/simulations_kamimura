@@ -20,7 +20,7 @@ function [eigenValues, eivenVectors, jacobi] = calc_eigenvalue(model, q_fix, u_f
         z_fix_plus = z_fix;
         z_fix_plus(i_z) = z_fix_plus(i_z) + dz;
         q_fix_plus = [x_fix, z_fix_plus(1), z_fix_plus(2), z_fix_plus(3), z_fix_plus(4), dy_fix, z_fix_plus(5) z_fix_plus(6)];
-        model.init;
+        model.init(0);
         model.bound(q_fix_plus, u_fix);
         zend_plus(1) = model.qout(end, 2); % y
         zend_plus(2) = model.qout(end, 3); % theta
@@ -33,7 +33,7 @@ function [eigenValues, eivenVectors, jacobi] = calc_eigenvalue(model, q_fix, u_f
         z_fix_minus = z_fix;
         z_fix_minus(i_z) = z_fix_minus(i_z) - dz;
         q_fix_minus = [x_fix, z_fix_minus(1), z_fix_minus(2), z_fix_minus(3), z_fix_minus(4), dy_fix, z_fix_minus(5) z_fix_minus(6)];
-        model.init;
+        model.init(0);
         model.bound(q_fix_minus, u_fix);
         zend_minus(1) = model.qout(end, 2); % y
         zend_minus(2) = model.qout(end, 3); % theta
