@@ -48,7 +48,7 @@ for i_phi = 1:length(phi0set)
             gb_ini = gammaset(i_gb);
             for i_gf = 1:length(gammaset)
                 gf_ini = gammaset(i_gf);
-                u_ini = [y0 phi0 dx0 dtheta0 gb_ini gf_ini kappa];
+                u_ini = [y0 phi0 dx0 dtheta0 gb_ini gf_ini];
                 [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model);
                 if exitflag > 0
                     if n == 1
