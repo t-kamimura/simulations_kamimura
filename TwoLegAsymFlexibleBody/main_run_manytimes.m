@@ -18,12 +18,12 @@ addpath(pwd, 'data')
 addpath(pwd, 'fig')
 
 %% 定数の決定
-kappa = 0.4;
-eps = 0.2;
+kappa = 0.8;
+eps = 0.8;
 model = Twoleg(kappa, eps);
 
-q_ini = [0,0.638601532177743,0,-0.127947480609015,12.285567721471939,0,1.358913624716430,0]; % [x y theta phi dx dy dtheta dphi]
-u_ini = [0.747992462377388,0.735967259588560];               % [gamma_b gamma_f]
+q_ini = [0,0.594420968999931,0,0.163891349550317,12.722029880821570,0,4.483799075286497,0]; % [x y theta phi dx dy dtheta dphi]
+u_ini = [0.836133858175499,0.831136120235923];               % [gamma_b gamma_f]
 
 %% 何歩も歩かせてみる
 numTrials = 50;

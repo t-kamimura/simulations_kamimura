@@ -26,7 +26,7 @@ end
 
 %% 定数の決定
 kappa = 0.8;
-eps = 0.8;
+eps = 0.5;
 model = Twoleg(kappa, eps);
 
 dx0 = 12; % [m/s]
@@ -35,10 +35,10 @@ y0 = 0.7; % [m]
 phi0set = 0; % [deg]
 phi0set = deg2rad(phi0set);
 
-dtheta0set = 50:25:100; % [deg/s]
+dtheta0set = 50:10:100; % [deg/s]
 dtheta0set = deg2rad(dtheta0set);
 
-gammaset = 50:-10:0; % [deg]
+gammaset = 50:-5:0; % [deg]
 gammaset = deg2rad(gammaset);
 
 u_fixset = [];
@@ -55,10 +55,10 @@ for i_phi = 1:length(phi0set)
             gb_ini = gammaset(i_gb);
             for i_gf = 1:length(gammaset)
                 gf_ini = gammaset(i_gf);
-                u_ini = [y0 phi0 dx0 dtheta0 gb_ini gf_ini];
+                u_ini = [y0 phi0 dx0 dtheta0 gb_ini gf_ini, kappa];
                 [u_fix, logDat, exitflag] = func_find_fixedPoint(u_ini, model);
-                if exitflag == 1
-                % if exitflag > 0 && exitflag < 4 % debug
+                % if exitflag == 1
+                if exitflag > 0 && exitflag < 4 % debug
                     if n == 1
                         fprintf('%d', exitflag);
                         % fprintf('*');

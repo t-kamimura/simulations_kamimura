@@ -33,10 +33,12 @@ classdef Twoleg < handle
         kh = 8000; %後脚のバネ定数
         kf = 8000; %前脚のバネ定数
         kt = 100; %ジョイント部分バネ定数
+        kt0= 100;
         kg = 80; % 曲げた時のバネ定数（柔らかい）
         ke = 120; % 伸ばした時のバネ定数（硬い）
         omega0 = [];
         omega = [];
+        kappa = [];
         eps = [];
 
         % 減衰定数 [Ns/m]
@@ -99,14 +101,16 @@ classdef Twoleg < handle
 
         function obj = Twoleg(kappa,eps)
             obj.eps = eps;
-            obj.omega0 = sqrt(2*obj.kt/obj.J);
+            obj.omega0 = sqrt(2*obj.kt0/obj.J);
             obj.omega = obj.omega0/kappa;
-            obj.ke = obj.kt * (1 + eps)^2;
-            obj.kg = obj.kt * (1 - eps)^2;
+            obj.ke = obj.kt0 * (1 + eps)^2;
+            obj.kg = obj.kt0 * (1 - eps)^2;
         end
 
-        function init(self,tstart)
+        function init(self, tstart)
             self.eveflg = 1;
+            
+            self.omega = self.omega0/self.kappa;
 
             self.tout = [];
             self.qout = [];

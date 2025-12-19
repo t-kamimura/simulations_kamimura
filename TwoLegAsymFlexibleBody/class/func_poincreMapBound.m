@@ -11,7 +11,7 @@ function [z_new] = func_poincreMapBound(z, model)
     dx0 = z(3);
     dy0 = 0;
     dtheta0 = z(4);
-    dphi0 = 0 ;
+    dphi0 = 0;
 
     gb_ini = z(5);
     gf_ini = z(6);
@@ -19,8 +19,7 @@ function [z_new] = func_poincreMapBound(z, model)
     q_ini = [x0 y0 theta0 phi0 dx0 dy0 dtheta0 dphi0];
     u_ini = [gb_ini gf_ini];
 
-    % kappa = z(7);
-    % model.omega = model.omega0/kappa;
+    model.kappa = z(7);
 
     % % 描画用
 
@@ -44,7 +43,7 @@ function [z_new] = func_poincreMapBound(z, model)
     % xlim([-0.8 0.8])
     % ylim([-0.2 1.5])
     % drawnow
-
+    
     model.init(0);
     try
         model.bound(q_ini, u_ini);
@@ -57,13 +56,15 @@ function [z_new] = func_poincreMapBound(z, model)
             z_new(4) = model.q_err(4);
             z_new(5) = model.q_err(6);
             z_new(6) = model.q_err(7);
+            z_new(7) = sin(model.omega*model.tout(end)); % kappaの制約条件．ちょうどｎ周期で戻ってくるようにする
         else
             % エラー起きたらとりあえず　全てに１を入れておく
-            z_new = [1 1 1 1 1 1];
+            z_new = ones(1,7);
         end
     catch
         % エラー起きたらとりあえず　全てに１を入れておく
-        z_new = [1 1 1 1 1 1];
+        % disp("Error in func_poincreMapBound")
+        z_new = ones(1,7);
     end
 
 end

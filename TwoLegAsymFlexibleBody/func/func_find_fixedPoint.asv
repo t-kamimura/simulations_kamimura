@@ -12,7 +12,7 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint(z_ini, model)
     else
         options = optimset('Algorithm','levenberg-marquardt','Display','none','UseParallel',true);
     end
-    [z_fix, fval, exitflag, ~, jacobi] = fsolve(myNewtonFunc, z_ini, options);
+    [z_fix, fval, exitflag, output, jacobi] = fsolve(myNewtonFunc, z_ini, options);
     
     % 初期値代入
     x0 = 0.0;
@@ -38,12 +38,21 @@ function [z_fix, logDat, exitflag] = func_find_fixedPoint(z_ini, model)
     logDat.q_ini = q_ini;
     logDat.u_fix = u_ini;
 
+
+    % logDat.trajectory.tout = model.tout;
+    % logDat.trajectory.qout = model.qout;
+
+    % logDat.event.teout = model.teout;
+    % logDat.event.qeout = model.qeout;
+    % logDat.event.ieout = model.ieout;
+
     logDat.fsolveResult.fval = fval;
     logDat.fsolveResult.exitflag = exitflag;
+    logDat.fsolveResult.output = output;
     logDat.fsolveResult.jacobi = jacobi;
 
     if exitflag == 1
-        model.kappa = z_fix(7);
+        model
         model.init(0);
         model.bound(q_ini, u_ini)
 
